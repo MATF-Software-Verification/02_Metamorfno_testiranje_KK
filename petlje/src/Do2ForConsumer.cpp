@@ -3,22 +3,21 @@
 /* Posetilac koji do pretvara u for */
 bool Do2ForVisitor::VisitDoStmt(DoStmt *s) {
     /* Pomocne promenljive za pretragu */
-    std::string ime("cond"), novo(ime);
+    std::string cond("cond"), ime(cond);
     auto i = 0ull; /* brojac */
 
     /* Pronalazak prvog slobodnog imena */
-    if (TheASTContext.Idents.find(ime)
-        != TheASTContext.Idents.end()) do {
+    while (TheASTContext.Idents.find(ime)
+           != TheASTContext.Idents.end()) {
         if (i == ULLONG_MAX) exit(EXIT_FAILURE);
-        novo = ime + std::to_string(i++);
-    } while (TheASTContext.Idents.find(novo)
-             != TheASTContext.Idents.end());
+        ime = cond + std::to_string(i++);
+    }
 
     /* Deklaracija uslovne promenljive */
     const auto tip = TheASTContext.IntTy;
     auto *dekl = VarDecl::Create(TheASTContext, tekdek->getDeclContext(),
                                  SourceLocation(), SourceLocation(),
-                                 &TheASTContext.Idents.getOwn(novo),
+                                 &TheASTContext.Idents.getOwn(ime),
                                  tip, nullptr, SC_None);
 
     /* Celobrojna jedinica za inicijalizaciju */
