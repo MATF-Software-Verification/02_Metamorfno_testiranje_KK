@@ -38,6 +38,8 @@ link_directories(${LibClang_LINK_PATH})
 
 add_executable(petlje petlje.cpp
                       ../inc/MTKConsumer.hpp
+                      ../inc/MTKContext.hpp
+                      ../src/MTKContext.cpp
                       ../inc/Do2ForVisitor.hpp
                       ../src/Do2ForVisitor.cpp
                       ../inc/For2DoVisitor.hpp
