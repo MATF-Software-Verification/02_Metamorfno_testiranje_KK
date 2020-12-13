@@ -17,4 +17,3 @@ Primer pokretanja (testiranja) programa:
 ./petlje <ulaz> <izlaz> <do|while|for>
 ./petlje ulaz.c izlaz.c do
 ```
-
