@@ -1,10 +1,10 @@
 /* Ukljucivanje implementiranih klasa */
-#include "While2DoConsumer.hpp"
-#include "Do2ForConsumer.hpp"
-#include "While2ForConsumer.hpp"
-#include "For2WhileConsumer.hpp"
-#include "For2DoConsumer.hpp"
-#include "PrepForConsumer.hpp"
+#include "While2DoVisitor.hpp"
+#include "Do2ForVisitor.hpp"
+#include "While2ForVisitor.hpp"
+#include "For2WhileVisitor.hpp"
+#include "For2DoVisitor.hpp"
+#include "PrepForVisitor.hpp"
 
 /* Enumeracija akcija */
 enum class Akcija {
@@ -17,7 +17,7 @@ enum class Akcija {
 };
 
 /* Nacin upotrebe programa */
-static std::string stari, novi, petlja;
+static std::string *stari, *novi, *petlja;
 const auto upotreba = "Upotreba: ./petlje <ulaz> <izlaz> <do|while|for>\n";
 const auto greska = "Neuspelo otvaranje datoteke!\n";
 
@@ -58,7 +58,7 @@ static void obradi(const Akcija akcija) {
         TheRewriter.setSourceMgr(SourceMgr, TheCompInst.getLangOpts());
 
         /* Citanje prosledjenog fajla */
-        const auto FileIn = FileMgr.getFile(stari).get();
+        const auto FileIn = FileMgr.getFile(*stari).get();
         if (!FileIn) {
             llvm::errs() << greska;
             exit(EXIT_FAILURE);
@@ -75,22 +75,22 @@ static void obradi(const Akcija akcija) {
         ASTConsumer* TheConsumer;
         switch (akcija) {
             case Akcija::While2Do:
-                TheConsumer = new LoopConsumer<While2DoVisitor>(TheRewriter, TheASTContext);
+                TheConsumer = new MTKConsumer<While2DoVisitor>(TheRewriter, TheASTContext);
                 break;
             case Akcija::Do2For:
-                TheConsumer = new LoopConsumer<Do2ForVisitor>(TheRewriter, TheASTContext);
+                TheConsumer = new MTKConsumer<Do2ForVisitor>(TheRewriter, TheASTContext);
                 break;
             case Akcija::While2For:
-                TheConsumer = new LoopConsumer<While2ForVisitor>(TheRewriter, TheASTContext);
+                TheConsumer = new MTKConsumer<While2ForVisitor>(TheRewriter, TheASTContext);
                 break;
             case Akcija::PrepFor:
-                TheConsumer = new LoopConsumer<PrepForVisitor>(TheRewriter, TheASTContext);
+                TheConsumer = new MTKConsumer<PrepForVisitor>(TheRewriter, TheASTContext);
                 break;
             case Akcija::For2While:
-                TheConsumer = new LoopConsumer<For2WhileVisitor>(TheRewriter, TheASTContext);
+                TheConsumer = new MTKConsumer<For2WhileVisitor>(TheRewriter, TheASTContext);
                 break;
             case Akcija::For2Do:
-                TheConsumer = new LoopConsumer<For2DoVisitor>(TheRewriter, TheASTContext);
+                TheConsumer = new MTKConsumer<For2DoVisitor>(TheRewriter, TheASTContext);
                 break;
         }
 
@@ -104,7 +104,7 @@ static void obradi(const Akcija akcija) {
             TheRewriter.getRewriteBufferFor(SourceMgr.getMainFileID());
         if (RewriteBuf) {
             /* Otvaranje izlazne datoteke */
-            std::ofstream izlaz(novi);
+            std::ofstream izlaz(*novi);
             if (!izlaz) {
                 llvm::errs() << greska;
                 exit(EXIT_FAILURE);
@@ -112,12 +112,12 @@ static void obradi(const Akcija akcija) {
 
             /* Upisivanje rezultata */
             izlaz << std::string(RewriteBuf->begin(), RewriteBuf->end());
-        } else if (stari == novi) {
+        } else if (*stari == *novi) {
             break;
         } else {
             /* Otvaranje ulazne i izlazne datoteke */
-            std::ifstream ulaz(stari);
-            std::ofstream izlaz(novi);
+            std::ifstream ulaz(*stari);
+            std::ofstream izlaz(*novi);
             if (!ulaz || !izlaz) {
                 llvm::errs() << greska;
                 exit(EXIT_FAILURE);
@@ -131,7 +131,7 @@ static void obradi(const Akcija akcija) {
         }
 
         /* Zamena starog fajla */
-        stari = novi;
+        *stari = *novi;
 
         /* Priprema je jednoprolazna */
         if (akcija == Akcija::PrepFor)
@@ -148,40 +148,45 @@ int main(int argc, char *argv[]) {
     }
 
     /* Citanje argumenata */
-    stari = argv[1];
-    novi = argv[2];
-    petlja = argv[3];
+    stari = new std::string(argv[1]);
+    novi = new std::string(argv[2]);
+    petlja = new std::string(argv[3]);
 
     /* Prekid pogresno pokrenutog programa */
-    if (petlja != "do" &&
-        petlja != "while" &&
-        petlja != "for") {
+    if (*petlja != "do" &&
+        *petlja != "while" &&
+        *petlja != "for") {
         llvm::errs() << upotreba;
         exit(EXIT_FAILURE);
     }
 
     /* Prvi deo algoritma */
-    if (petlja == "do")
+    if (*petlja == "do")
         obradi(Akcija::While2Do);
     else
         obradi(Akcija::Do2For);
 
     /* Drugi deo algoritma */
-    if (petlja == "for")
+    if (*petlja == "for")
         obradi(Akcija::While2For);
     else
         obradi(Akcija::PrepFor);
 
     /* Treci deo algoritma */
-    if (petlja == "while")
+    if (*petlja == "while")
         obradi(Akcija::For2While);
-    else if (petlja == "do")
+    else if (*petlja == "do")
         obradi(Akcija::For2Do);
 
     /* Lepo formatiranje novog koda */
     std::ostringstream buffer;
-    buffer << "clang-format -i " << novi;
+    buffer << "clang-format -i " << *novi;
     std::system(buffer.str().c_str());
+
+    /* Oslobadjanje memorije */
+    delete stari;
+    delete novi;
+    delete petlja;
 
     /* Normalno zavrsavanje programa */
     exit(EXIT_SUCCESS);

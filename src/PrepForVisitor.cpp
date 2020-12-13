@@ -1,4 +1,4 @@
-#include "PrepForConsumer.hpp"
+#include "PrepForVisitor.hpp"
 
 #include "clang/AST/ParentMapContext.h"
 
@@ -24,8 +24,9 @@ bool PrepForVisitor::VisitContinueStmt(ContinueStmt *s) {
                 return true;
 
             /* Pravljenje nove naredbe */
+            auto inc = const_cast<Stmt *>(cast<Stmt>(rr->getInc()));
             stmt = CompoundStmt::Create(TheASTContext,
-                       std::vector<Stmt *>{(Stmt *)rr->getInc(), s},
+                       std::vector<Stmt *>{inc, s},
                        SourceLocation(), SourceLocation());
             break;
         }

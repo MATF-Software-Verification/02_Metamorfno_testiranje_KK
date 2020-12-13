@@ -1,14 +1,14 @@
 #ifndef PREPFOR_H
 #define PREPFOR_H
 
-#include "LoopConsumer.hpp"
+#include "MTKConsumer.hpp"
 
 /* Posetilac koji dodaje korak petlje */
-class PrepForVisitor : public LoopVisitor<PrepForVisitor> {
+class PrepForVisitor : public MTKVisitor<PrepForVisitor> {
 public:
     /* Inicijalizacija prepisivaca i konteksta */
     PrepForVisitor(Rewriter &R, ASTContext &A)
-      : LoopVisitor(R, A) {}
+      : MTKVisitor(R, A) {}
 
     /* Dodavanje inkrementa pre continue */
     bool VisitContinueStmt(ContinueStmt *s);

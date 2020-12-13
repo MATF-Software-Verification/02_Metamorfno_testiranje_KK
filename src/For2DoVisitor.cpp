@@ -1,7 +1,7 @@
-#include "For2WhileConsumer.hpp"
-  
-/* Posetilac koji for pretvara u while */
-bool For2WhileVisitor::VisitForStmt(ForStmt *s) {
+#include "For2DoVisitor.hpp"
+
+/* Posetilac koji for pretvara u do */
+bool For2DoVisitor::VisitForStmt(ForStmt *s) {
     /* Slozena naredba sa telom i inkrementacijom
      * ili samo telo ako nema inkrementacije */
     Stmt *telo;
@@ -13,7 +13,7 @@ bool For2WhileVisitor::VisitForStmt(ForStmt *s) {
       telo = s->getBody();
     }
 
-    /* While petlja sa novim telom i uslovom
+    /* Do petlja sa novim telom i uslovom
      * ili beskonacna petlja ako nema uslova */
     Expr *cond = s->getCond();
     if (!cond) {
@@ -22,19 +22,23 @@ bool For2WhileVisitor::VisitForStmt(ForStmt *s) {
       cond = IntegerLiteral::Create(TheASTContext, APValue,
                                     tip, SourceLocation());
     }
-    const auto petlja =
-        WhileStmt::Create(TheASTContext, nullptr, cond, telo,
-                          SourceLocation(), SourceLocation(), SourceLocation());
+    DoStmt petlja(telo, cond, SourceLocation(),
+                  SourceLocation(), SourceLocation());
+
+    /* If naredba za proveru uslova petlje */
+    const auto uslov =
+        IfStmt::Create(TheASTContext, SourceLocation(),
+                       false, nullptr, nullptr, cond, &petlja);
 
     /* Slozena naredba sa inicijalizacijom i petljom
      * ili samo petlja ako nema inicijalizacije */
     Stmt *initpet;
     if (s->getInit()) {
       initpet = CompoundStmt::Create(TheASTContext,
-                    std::vector<Stmt *>{s->getInit(), petlja},
+                    std::vector<Stmt *>{s->getInit(), uslov},
                     SourceLocation(), SourceLocation());
     } else {
-      initpet = petlja;
+      initpet = uslov;
     }
 
     /* Tekstualna zamena koda */
@@ -44,7 +48,7 @@ bool For2WhileVisitor::VisitForStmt(ForStmt *s) {
     return true;
 }
 
-/* Prekid obilaska kod while petlje */
-bool For2WhileVisitor::TraverseForStmt(ForStmt *s) {
+/* Prekid obilaska kod for petlje */
+bool For2DoVisitor::TraverseForStmt(ForStmt *s) {
     return WalkUpFromForStmt(s);
 }

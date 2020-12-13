@@ -1,4 +1,4 @@
-#include "While2ForConsumer.hpp"
+#include "While2ForVisitor.hpp"
 
 /* Posetilac koji while pretvara u for */
 bool While2ForVisitor::VisitWhileStmt(WhileStmt *s) {

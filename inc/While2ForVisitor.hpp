@@ -1,14 +1,14 @@
 #ifndef WHILE2FOR_H
 #define WHILE2FOR_H
 
-#include "LoopConsumer.hpp"
+#include "MTKConsumer.hpp"
 
 /* Posetilac koji while pretvara u for */
-class While2ForVisitor : public LoopVisitor<While2ForVisitor> {
+class While2ForVisitor : public MTKVisitor<While2ForVisitor> {
 public:
     /* Inicijalizacija prepisivaca i konteksta */
     While2ForVisitor(Rewriter &R, ASTContext &A)
-      : LoopVisitor(R, A) {}
+      : MTKVisitor(R, A) {}
 
     /* Pretvaranje while petlji u for */
     bool VisitWhileStmt(WhileStmt *s);

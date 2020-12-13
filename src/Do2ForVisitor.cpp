@@ -1,4 +1,4 @@
-#include "Do2ForConsumer.hpp"
+#include "Do2ForVisitor.hpp"
 
 /* Posetilac koji do pretvara u for */
 bool Do2ForVisitor::VisitDoStmt(DoStmt *s) {

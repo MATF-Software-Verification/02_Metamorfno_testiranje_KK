@@ -31,21 +31,37 @@ add_definitions(${LibClang_DEFINITIONS})
 
 include_directories(
   ${LibClang_INCLUDE_DIR}
-  inc
+  ../inc
 )
 
-add_executable(petlje src/petlje.cpp src/Do2ForConsumer.cpp src/For2DoConsumer.cpp src/For2WhileConsumer.cpp src/While2DoConsumer.cpp src/While2ForConsumer.cpp src/PrepForConsumer.cpp)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libLLVM-11.so)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangTooling.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangAnalysis.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangAST.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangBasic.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangDriver.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangEdit.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangFrontend.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangLex.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangParse.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangRewrite.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangSema.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangSerialization.a)
-target_link_libraries(petlje ${LibClang_LINK_PATH}/libclangTooling.a)
+link_directories(${LibClang_LINK_PATH})
+
+add_executable(petlje petlje.cpp
+                      ../inc/MTKConsumer.hpp
+                      ../inc/Do2ForVisitor.hpp
+                      ../src/Do2ForVisitor.cpp
+                      ../inc/For2DoVisitor.hpp
+                      ../src/For2DoVisitor.cpp
+                      ../inc/For2WhileVisitor.hpp
+                      ../src/For2WhileVisitor.cpp
+                      ../inc/While2DoVisitor.hpp
+                      ../src/While2DoVisitor.cpp
+                      ../inc/While2ForVisitor.hpp
+                      ../src/While2ForVisitor.cpp
+                      ../inc/PrepForVisitor.hpp
+                      ../src/PrepForVisitor.cpp)
+
+target_link_libraries(petlje libLLVM-11.so
+                             libclangTooling.a
+                             libclangAnalysis.a
+                             libclangAST.a
+                             libclangBasic.a
+                             libclangDriver.a
+                             libclangEdit.a
+                             libclangFrontend.a
+                             libclangLex.a
+                             libclangParse.a
+                             libclangRewrite.a
+                             libclangSema.a
+                             libclangSerialization.a
+                             libclangTooling.a)

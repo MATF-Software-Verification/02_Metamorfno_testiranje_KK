@@ -1,5 +1,5 @@
-#ifndef LOOPCONS_H
-#define LOOPCONS_H
+#ifndef MTKVISITOR_H
+#define MTKVISITOR_H
 
 /* Ukljucivanje standardnih biblioteka */
 #include <iostream>
@@ -32,11 +32,11 @@ using namespace clang;
 
 /* Pomocna natklasa sa bitnim metodama */
 template <typename VisitorT>
-class LoopVisitor : public RecursiveASTVisitor<VisitorT> {
+class MTKVisitor : public RecursiveASTVisitor<VisitorT> {
 public:
     /* Konstruktor inicijalizuje posetioca
      * prepisivacem i kontekstom parsiranja */
-    LoopVisitor(Rewriter &R, ASTContext &A)
+    MTKVisitor(Rewriter &R, ASTContext &A)
       : TheRewriter(R), TheASTContext(A) {}
 
     /* Tekstualna reprezentacija naredbe */
@@ -91,11 +91,11 @@ protected:
 
 /* Klasa za obradu dobijenog AST stabla */
 template <typename VisitorT>
-class LoopConsumer : public ASTConsumer {
+class MTKConsumer : public ASTConsumer {
 public:
     /* Konstruktor inicijalizuje posetioca
      * prepisivacem i kontekstom parsiranja */
-    LoopConsumer(Rewriter &R, ASTContext &A)
+    MTKConsumer(Rewriter &R, ASTContext &A)
       : TheVisitor(R, A) {}
 
     /* Svaka deklaracija obradjuje se zasebno */
