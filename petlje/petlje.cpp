@@ -23,7 +23,7 @@ const auto greska = "Neuspelo otvaranje datoteke!\n";
 
 /* Obrada prema zeljenoj akciji; sustinski
  * boilerplate (sablonski) kod za rad sa AST */
-static void obradi(const Akcija akcija) {
+static void obradi(const Akcija &akcija) {
     /* Parsiranje dokle god ima promena */
     for(;;) {
         /* Pravljenje i inicijalizacija prevodioca */
