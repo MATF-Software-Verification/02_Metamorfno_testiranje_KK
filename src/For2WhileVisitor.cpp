@@ -6,33 +6,24 @@ bool For2WhileVisitor::VisitForStmt(ForStmt *s) {
      * ili samo telo ako nema inkrementacije */
     Stmt *telo;
     if (s->getInc()) {
-      telo = CompoundStmt::Create(TheASTContext,
-                 std::vector<Stmt *>{s->getBody(), s->getInc()},
-                 SourceLocation(), SourceLocation());
+      telo = napraviSlozenu({s->getBody(), s->getInc()});
     } else {
       telo = s->getBody();
     }
 
     /* While petlja sa novim telom i uslovom
      * ili beskonacna petlja ako nema uslova */
-    Expr *cond = s->getCond();
-    if (!cond) {
-      const auto tip = TheASTContext.IntTy;
-      llvm::APInt APValue(static_cast<unsigned>(TheASTContext.getTypeSize(tip)), 1);
-      cond = IntegerLiteral::Create(TheASTContext, APValue,
-                                    tip, SourceLocation());
+    auto *uslov = s->getCond();
+    if (!uslov) {
+      uslov = napraviTrue();
     }
-    const auto petlja =
-        WhileStmt::Create(TheASTContext, nullptr, cond, telo,
-                          SourceLocation(), SourceLocation(), SourceLocation());
+    const auto petlja = napraviWhile(uslov, telo);
 
     /* Slozena naredba sa inicijalizacijom i petljom
      * ili samo petlja ako nema inicijalizacije */
     Stmt *initpet;
     if (s->getInit()) {
-      initpet = CompoundStmt::Create(TheASTContext,
-                    std::vector<Stmt *>{s->getInit(), petlja},
-                    SourceLocation(), SourceLocation());
+      initpet = napraviSlozenu({s->getInit(), petlja});
     } else {
       initpet = petlja;
     }

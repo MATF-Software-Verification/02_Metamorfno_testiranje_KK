@@ -3,13 +3,10 @@
 /* Posetilac koji while pretvara u do */
 bool While2DoVisitor::VisitWhileStmt(WhileStmt *s) {
     /* Odgovarajuca do-while verzija */
-    DoStmt petlja(s->getBody(), s->getCond(),
-                  SourceLocation(), SourceLocation(), SourceLocation());
+    const auto petlja = napraviDo(s->getBody(), s->getCond());
 
     /* If iskaz za proveru uslova petlje */
-    const auto uslov =
-        IfStmt::Create(TheASTContext, SourceLocation(), false,
-                       nullptr, nullptr, s->getCond(), &petlja);
+    const auto uslov = napraviIf(s->getCond(), petlja);
 
     /* Tekstualna zamena koda */
     zameni(s, uslov);

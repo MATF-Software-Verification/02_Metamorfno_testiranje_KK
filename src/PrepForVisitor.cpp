@@ -25,9 +25,7 @@ bool PrepForVisitor::VisitContinueStmt(ContinueStmt *s) {
 
             /* Pravljenje nove naredbe */
             auto inc = const_cast<Stmt *>(cast<Stmt>(rr->getInc()));
-            stmt = CompoundStmt::Create(TheASTContext,
-                       std::vector<Stmt *>{inc, s},
-                       SourceLocation(), SourceLocation());
+            stmt = napraviSlozenu({inc, s});
             break;
         }
 

@@ -3,11 +3,10 @@
 /* Posetilac koji while pretvara u for */
 bool While2ForVisitor::VisitWhileStmt(WhileStmt *s) {
     /* Formiranje nove for petlje */
-    ForStmt petlja(TheASTContext, nullptr, s->getCond(), nullptr, nullptr, s->getBody(),
-                   SourceLocation(), SourceLocation(), SourceLocation());
+    const auto petlja = napraviFor(s->getCond(), nullptr, s->getBody());
 
     /* Tekstualna zamena koda */
-    zameni(s, &petlja);
+    zameni(s, petlja);
 
     /* Nastavljanje dalje */
     return true;
