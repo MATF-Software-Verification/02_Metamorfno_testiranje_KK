@@ -12,10 +12,9 @@ Ideja za transformaciju petlji: [autorski](https://github.com/matfija/Clang-petl
 ## Podešavanje :memo:
 Primer podešavanja zavisnosti za Ubuntu:
 ```
-sudo apt-get update
-sudo apt-get install libclang-11-dev llvm-11-dev
+sudo apt install libclang-11-dev llvm-11-dev
 ```
-Korišćeno okruženje je Qt Creator, a sistem izgradnje CMake.
+Korišćeni sistem izgradnje je CMake.
 
 ## Članovi tima :boy:
 * [Momir Adžemović](https://github.com/Robotmurlock), 1005/2020
