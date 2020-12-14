@@ -1,5 +1,9 @@
 #include "MTKContext.hpp"
 
+#include "clang/Lex/Preprocessor.h"
+
+#include <climits>
+
 /* Tekstualna reprezentacija naredbe */
 std::string MTKContext::stampaj(const clang::Stmt * const s) const {
     /* Inicijalizacija izlaznog toka */

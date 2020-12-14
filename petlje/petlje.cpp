@@ -1,10 +1,18 @@
-/* Ukljucivanje implementiranih klasa */
 #include "While2DoVisitor.hpp"
 #include "Do2ForVisitor.hpp"
 #include "While2ForVisitor.hpp"
 #include "For2WhileVisitor.hpp"
 #include "For2DoVisitor.hpp"
 #include "PrepForVisitor.hpp"
+
+#include "clang/Basic/FileManager.h"
+#include "clang/Basic/TargetInfo.h"
+#include "clang/Frontend/CompilerInstance.h"
+#include "clang/Parse/ParseAST.h"
+#include "llvm/Support/Host.h"
+
+#include <fstream>
+#include <sstream>
 
 /* Enumeracija akcija */
 enum class Akcija {

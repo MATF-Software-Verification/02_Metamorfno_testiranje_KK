@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-project("Transformacije petlji")
+project("Transformacije uslova")
 
 set(CMAKE_MODULE_PATH
   ${CMAKE_MODULE_PATH}

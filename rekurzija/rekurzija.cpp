@@ -1,5 +1,6 @@
-/* Ukljucivanje implementiranih klasa */
 #include "MTKConsumer.hpp"
+
+#include <sstream>
 
 /* Enumeracija akcija */
 enum class Akcija {

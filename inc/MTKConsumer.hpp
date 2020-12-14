@@ -3,6 +3,8 @@
 
 #include "MTKContext.hpp"
 
+#include "clang/AST/ASTConsumer.h"
+
 /* Pomocna natklasa sa bitnim metodama */
 template <typename VisitorT>
 class MTKVisitor : public MTKContext, public RecursiveASTVisitor<VisitorT> {

@@ -1,31 +1,8 @@
 #ifndef MTKCONTEXT_H
 #define MTKCONTEXT_H
 
-/* Ukljucivanje standardnih biblioteka */
-#include <iostream>
-#include <memory>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <climits>
-#include <system_error>
-
-/* Ukljucivanje Clangovih biblioteka */
-#include "clang/AST/ASTContext.h"
-#include "clang/AST/ASTConsumer.h"
-#include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/RecursiveASTVisitor.h"
-#include "clang/Basic/Diagnostic.h"
-#include "clang/Basic/FileManager.h"
-#include "clang/Basic/SourceManager.h"
-#include "clang/Basic/TargetInfo.h"
-#include "clang/Basic/TargetOptions.h"
-#include "clang/Frontend/CompilerInstance.h"
-#include "clang/Lex/Preprocessor.h"
-#include "clang/Parse/ParseAST.h"
 #include "clang/Rewrite/Core/Rewriter.h"
-#include "llvm/Support/Host.h"
-#include "llvm/Support/raw_ostream.h"
 
 /* Upotreba Clangovog imenskog prostora */
 using namespace clang;
@@ -39,10 +16,10 @@ public:
       : TheRewriter(R), TheASTContext(A) {}
 
     /* Tekstualna reprezentacija naredbe */
-    std::string stampaj(const Stmt *const s) const;
+    std::string stampaj(const Stmt * const s) const;
 
     /* Tekstualna zamena koda */
-    void zameni(const Stmt *const stari, const Stmt *const novi);
+    void zameni(const Stmt * const stari, const Stmt * const novi);
 
     /* Pronalazak prvog slobodnog imena */
     std::string nadjiIme(const std::string &pocetno) const;
