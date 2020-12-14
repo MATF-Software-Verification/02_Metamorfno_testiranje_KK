@@ -39,7 +39,15 @@ link_directories(${LibClang_LINK_PATH})
 add_executable(uslovi uslovi.cpp
                       ../inc/MTKConsumer.hpp
                       ../inc/MTKContext.hpp
-                      ../src/MTKContext.cpp)
+                      ../src/MTKContext.cpp
+                      ../inc/PrepIfVisitor.hpp
+                      ../src/PrepIfVisitor.cpp
+                      ../inc/PrepSwitchVisitor.hpp
+                      ../src/PrepSwitchVisitor.cpp
+                      ../inc/If2SwitchVisitor.hpp
+                      ../src/If2SwitchVisitor.cpp
+                      ../inc/Switch2IfVisitor.hpp
+                      ../src/Switch2IfVisitor.cpp)
 
 target_link_libraries(uslovi libLLVM-11.so
                              libclangTooling.a
