@@ -3,7 +3,7 @@
 
 #include "MTKConsumer.hpp"
 
-#include <unordered_set>
+#include <unordered_map>
 
 /* Posetilac koji do pretvara u for */
 class PrepSwitchVisitor : public MTKVisitor<PrepSwitchVisitor> {
@@ -13,14 +13,20 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Obrada odgovarajuceg switch */
-    bool obradiSwitch(SwitchStmt *s);
+    DeclRefExpr *obradiSwitch(const SwitchStmt *s);
 
     /* Priprema switch naredbe */
     bool VisitContinueStmt(ContinueStmt *s);
 
+    /* Nacin obrade deklaracije */
+    bool TraverseDecl(Decl *d);
+
 private:
+    /* Privatno cuvanje tekuce deklaracije */
+    Decl *tekdek;
+
     /* Privatno cuvanje vec pripremljenih naredbi */
-    std::unordered_set<SwitchStmt *> prip;
+    std::unordered_map<const SwitchStmt *, DeclRefExpr *> prip;
 };
 
 #endif

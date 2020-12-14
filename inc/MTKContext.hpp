@@ -18,8 +18,17 @@ public:
     /* Tekstualna reprezentacija naredbe */
     std::string stampaj(const Stmt * const s) const;
 
+    /* Odredjivanje mesta naredbe u kodu */
+    SourceRange odrediMesto(const Stmt * const s) const;
+
     /* Tekstualna zamena koda */
     void zameni(const Stmt * const stari, const Stmt * const novi);
+
+    /* Prednja tekstualna dopuna koda */
+    void dodajIspred(const Stmt * const stari, const Stmt * const novi);
+
+    /* Zadnja tekstualna dopuna koda */
+    void dodajIza(const Stmt * const stari, const Stmt * const novi);
 
     /* Pronalazak prvog slobodnog imena */
     std::string nadjiIme(const std::string &pocetno) const;
@@ -65,6 +74,12 @@ public:
 
     /* Pravljenje for petlje */
     ForStmt *napraviFor(Expr *uslov, Expr *korak, Stmt *telo);
+
+    /* Pravljenje continue naredbe */
+    ContinueStmt *napraviCont();
+
+    /* Pravljenje break naredbe */
+    BreakStmt *napraviBreak();
 
 protected:
     /* Zasticeno cuvanje prepisivaca i konteksta */

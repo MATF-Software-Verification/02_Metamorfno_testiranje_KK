@@ -21,14 +21,11 @@ std::string MTKContext::stampaj(const clang::Stmt * const s) const {
     return stmt;
 }
 
-/* Tekstualna zamena koda */
-void MTKContext::zameni(const Stmt * const stari, const Stmt * const novi) {
-    /* Tekstualna reprezentacija novog iskaza */
-    const auto stmt = stampaj(novi);
-
+/* Odredjivanje mesta naredbe u kodu */
+SourceRange MTKContext::odrediMesto(const Stmt * const s) const {
     /* Granicne oznake u kodu */
-    const auto start = stari->getSourceRange().getBegin();
-    const auto end = stari->getSourceRange().getEnd();
+    const auto start = s->getSourceRange().getBegin();
+    const auto end = s->getSourceRange().getEnd();
 
     /* Dohvatanje poslednjeg tokena */
     Token tok;
@@ -36,16 +33,51 @@ void MTKContext::zameni(const Stmt * const stari, const Stmt * const novi) {
                        TheRewriter.getLangOpts());
     const std::string ime = tok.getName();
 
-    /* Racunanje offseta osim ukoliko je kraj slozene naredbe;
-         * tada je tacka-zapeta ili zatvorena zagrada suvisni token */
+    /* Racunanje offseta osim ukoliko je kraj slozene naredbe; tada
+     * je tacka-zapeta ili zatvorena velika zagrada suvisni token */
     const auto offset = Lexer::MeasureTokenLength(end,
                                                   TheRewriter.getSourceMgr(),
                                                   TheRewriter.getLangOpts())
             + (ime != "r_brace" && ime != "semi");
 
+    /* Vracanje tacno izracunatog mesta */
+    return SourceRange(start, end.getLocWithOffset(static_cast<int>(offset)));
+}
+
+/* Tekstualna zamena koda */
+void MTKContext::zameni(const Stmt * const stari, const Stmt * const novi) {
+    /* Odredjivanje mesta naredbe u kodu */
+    const auto mesto = odrediMesto(stari);
+
+    /* Tekstualna reprezentacija novog iskaza */
+    const auto stmt = stampaj(novi);
+
     /* Promena teksta na izracunatom mestu */
-    const SourceRange sr(start, end.getLocWithOffset(static_cast<int>(offset)));
-    TheRewriter.ReplaceText(sr, stmt);
+    TheRewriter.ReplaceText(mesto, stmt);
+}
+
+/* Prednja tekstualna dopuna koda */
+void MTKContext::dodajIspred(const Stmt * const stari, const Stmt * const novi) {
+    /* Odredjivanje mesta naredbe u kodu */
+    const auto mesto = odrediMesto(stari);
+
+    /* Tekstualna reprezentacija novog iskaza */
+    const auto stmt = "{" + stampaj(novi);
+
+    /* Dodavanje teksta na izracunatom mestu */
+    TheRewriter.InsertTextBefore(mesto.getBegin(), stmt);
+}
+
+/* Zadnja tekstualna dopuna koda */
+void MTKContext::dodajIza(const Stmt * const stari, const Stmt * const novi) {
+    /* Odredjivanje mesta naredbe u kodu */
+    const auto mesto = odrediMesto(stari);
+
+    /* Tekstualna reprezentacija novog iskaza */
+    const auto stmt = stampaj(novi) + "}";
+
+    /* Dodavanje teksta na izracunatom mestu */
+    TheRewriter.InsertTextAfter(mesto.getEnd(), stmt);
 }
 
 /* Pronalazak prvog slobodnog imena */
@@ -150,5 +182,21 @@ ForStmt *MTKContext::napraviFor(Expr *uslov, Expr *korak, Stmt *telo) {
                    SourceLocation(), SourceLocation(), SourceLocation());
     auto *adresa = static_cast<ForStmt *>(malloc(sizeof(petlja)));
     memcpy(adresa, &petlja, sizeof(petlja));
+    return adresa;
+}
+
+/* Pravljenje continue naredbe */
+ContinueStmt *MTKContext::napraviCont() {
+    ContinueStmt cont{SourceLocation()};
+    auto *adresa = static_cast<ContinueStmt *>(malloc(sizeof(cont)));
+    memcpy(adresa, &cont, sizeof(cont));
+    return adresa;
+}
+
+/* Pravljenje break naredbe */
+BreakStmt *MTKContext::napraviBreak() {
+    BreakStmt br{SourceLocation()};
+    auto *adresa = static_cast<BreakStmt *>(malloc(sizeof(br)));
+    memcpy(adresa, &br, sizeof(br));
     return adresa;
 }
