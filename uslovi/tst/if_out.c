@@ -1,12 +1,12 @@
 #include <stdio.h>
 
 int main() {
-  int k;
+  double k;
   do {
-    scanf("%d", &k);
+    scanf("%lf", &k);
     {
       int br = 0;
-      switch (!k) {
+      switch ((int)!!k) {
       case 1: {
         br = 1;
         break;

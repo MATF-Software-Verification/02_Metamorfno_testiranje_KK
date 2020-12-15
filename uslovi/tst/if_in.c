@@ -1,10 +1,10 @@
 #include <stdio.h>
 
 int main() {
-  int k;
+  double k;
   do {
-    scanf("%d", &k);
-    if (!k)
+    scanf("%lf", &k);
+    if (k)
       break;
     else
       continue;

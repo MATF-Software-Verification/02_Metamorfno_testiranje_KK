@@ -1,18 +1,28 @@
 #include "Switch2IfVisitor.hpp"
 
 /* Izracunavanje uslova za default */
-Expr *Switch2IfVisitor::defUslov(StmtIterator d, SwitchStmt *s, DeclRefExpr *u) {
+Expr *Switch2IfVisitor::defUslov(StmtIterator dete,
+                                 StmtIterator kraj,
+                                 DeclRefExpr *uslov) {
+    /* Inicijalizacija uslova */
     Expr *cond = nullptr;
-    for (; d != s->getBody()->children().end(); d++) {
-        const auto cas = dyn_cast<CaseStmt>(*d);
-        if (cas) {
-            if (cond)
-                cond = napraviKonjunkciju(cond, napraviNejednakost(u, cas->getLHS()));
-            else
-                cond = napraviNejednakost(u, cas->getLHS());
-        }
+
+    /* Popunjavanje svim nejednakostima */
+    for (; dete != kraj; dete++) {
+        const auto cas = dyn_cast<CaseStmt>(*dete);
+
+        /* Konjukcija nejednakosti ako ih ima vise */
+        if (cas) cond = !cond ? napraviNejednakost(uslov, cas->getLHS()) :
+        napraviKonjunkciju(cond, napraviNejednakost(uslov, cas->getLHS()));
     }
+
+    /* Vracanje rezultata */
     return cond;
+}
+
+/* Provera da li je prazan default */
+bool Switch2IfVisitor::prazanDefault(DefaultStmt *s) {
+    return !s || isa<BreakStmt>(s->getSubStmt());
 }
 
 /* Pretvaranje switch naredbe u if */
@@ -20,33 +30,45 @@ bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) {
     /* Uslovna promenljiva switcha */
     const auto dekl = napraviUslovnu(tekdek, "cond", false);
 
-    /* Deklaracija sa duplom nagacijom */
-    cast<VarDecl>(dekl->getSingleDecl())
-        ->setInit(napraviNegaciju(napraviNegaciju(s->getCond())));
+    /* Deklaracija sa prepisanim uslovom */
+    cast<VarDecl>(dekl->getSingleDecl())->setInit(s->getCond());
 
     /* Uslovna promenljiva kao izraz */
     const auto uslov = napraviDeclExpr(dekl);
 
-    /* Sakupljanje podataka o switchu */
+    /* Nizovi uslova i if naredbi */
     std::vector<Expr *> conds;
-
     std::vector<Stmt *> ifovi;
-    for (auto dete = s->getBody()->children().begin(); dete != s->getBody()->children().end(); dete++) {
+
+    /* Telo switcha kroz koje se iterira */
+    const auto start = std::cbegin(s->getBody()->children());
+    const auto kraj = std::cend(s->getBody()->children());
+
+    /* Iteracija kroz telo switcha */
+    for (auto dete = start; dete != kraj; dete++) {
+        /* Case naredba: dodavanje uslova jednakosti */
         if (auto cas = dyn_cast<CaseStmt>(*dete)) {
             conds.push_back(napraviJednakost(uslov, cas->getLHS()));
 
+            /* Disjunkcija svih dosadasnjih uslova */
             Expr *cond = conds[0];
             for (auto i = 1ul; i < conds.size(); i++) {
                 cond = napraviDisjunkciju(cond, conds[i]);
             }
 
+            /* Pravljenje odgovarajuce if naredbe */
             ifovi.push_back(napraviIf(cond, cas->getSubStmt()));
+        /* Default naredba: posebno sracunat uslov */
         } else if (auto def = dyn_cast<DefaultStmt>(*dete)) {
-            const auto defUsl = defUslov(dete, s, uslov);
+            const auto defUsl = defUslov(dete, kraj, uslov);
+
+            /* Ima uslova -> dodavanje if naredbe */
             if (defUsl)
                 ifovi.push_back(napraviIf(defUsl, def->getSubStmt()));
-            else if (!isa<BreakStmt>(def->getSubStmt()))
+            /* Nema uslova -> dodavanje ako nije break */
+            else if (!prazanDefault(def))
                 ifovi.push_back(def->getSubStmt());
+        /* Ostale naredbe: dodavanje na kraj prethodnog ifa */
         } else {
             const auto iff = cast<IfStmt>(ifovi.back());
             iff->setThen(napraviSlozenu({iff->getThen(), *dete}));

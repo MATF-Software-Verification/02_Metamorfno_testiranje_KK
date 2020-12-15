@@ -154,12 +154,28 @@ UnaryOperator *MTKContext::napraviUnarni(Expr *input,
                                          const QualType &tip) const {
     return UnaryOperator::Create(TheASTContext, input, op,
                                  tip, VK_RValue, OK_Ordinary,
-                                 SourceLocation(), false, FPOptionsOverride());
+                                 SourceLocation(), false,
+                                 FPOptionsOverride());
 }
 
 /* Pravljenje logicke negacije */
 UnaryOperator *MTKContext::napraviNegaciju(Expr *input) const {
     return napraviUnarni(input, UO_LNot, input->getType());
+}
+
+/* Dohvatanje celobrojne vrednosti */
+Expr *MTKContext::dohvatiCelobrojnu(Expr *input) const {
+    const auto tip = TheASTContext.IntTy;
+    const auto tsi = TheASTContext.getTrivialTypeSourceInfo(tip, SourceLocation());
+    return CStyleCastExpr::Create(TheASTContext, tip, VK_RValue,
+                                  CK_IntegralCast, input, nullptr, tsi,
+                                  SourceLocation(), SourceLocation());
+}
+
+/* Dohvatanje istinitosne vrednosti */
+Expr *MTKContext::dohvatiIstinitost(Expr *input) const {
+    return input->getType()->isIntegerType() ? input
+        : dohvatiCelobrojnu(napraviNegaciju(napraviNegaciju(input)));
 }
 
 /* Pravljenje binarnog operatora */

@@ -63,6 +63,12 @@ public:
     /* Pravljenje logicke negacije */
     UnaryOperator *napraviNegaciju(Expr *input) const;
 
+    /* Dohvatanje celobrojne vrednosti */
+    Expr *dohvatiCelobrojnu(Expr *input) const;
+
+    /* Dohvatanje istinitosne vrednosti */
+    Expr *dohvatiIstinitost(Expr *input) const;
+
     /* Pravljenje binarnog operatora */
     BinaryOperator *napraviBinarni(Expr *lhs, Expr *rhs,
                                    const BinaryOperator::Opcode &op,

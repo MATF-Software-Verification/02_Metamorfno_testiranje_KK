@@ -51,8 +51,11 @@ bool If2SwitchVisitor::VisitIfStmt(IfStmt *s) {
     const auto telo = !s->getElse() ? napraviSlozenu({cas}) :
                                       napraviSlozenu({cas, br, def});
 
+    /* Uslov kao istinitosna vrednost */
+    const auto uslov = dohvatiIstinitost(s->getCond());
+
     /* Odgovarajuca switch naredba */
-    const auto sw = napraviSwitch(s->getCond(), telo);
+    const auto sw = napraviSwitch(uslov, telo);
 
     /* Tekstualna zamena koda */
     zameni(s, sw);

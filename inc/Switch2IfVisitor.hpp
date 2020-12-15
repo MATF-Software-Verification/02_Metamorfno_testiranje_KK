@@ -11,7 +11,12 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Izracunavanje uslova za default */
-    Expr *defUslov(StmtIterator d, SwitchStmt *s, DeclRefExpr *u);
+    Expr *defUslov(StmtIterator dete,
+                   StmtIterator kraj,
+                   DeclRefExpr *uslov);
+
+    /* Provera da li je prazan default */
+    bool prazanDefault(DefaultStmt *s);
 
     /* Pretvaranje switch naredbe u if */
     bool VisitSwitchStmt(SwitchStmt *s);

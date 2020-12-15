@@ -7,7 +7,7 @@ int main() {
     {
       int cont = 0;
       {
-        int cond = !!k;
+        int cond = k;
         do {
           if (cond == 1)
             return 1;
