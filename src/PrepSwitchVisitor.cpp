@@ -8,27 +8,17 @@ DeclRefExpr *PrepSwitchVisitor::obradiSwitch(const SwitchStmt *s) {
     if (prip.count(s))
         return prip[s];
 
-    /* Pronalazak prvog slobodnog imena */
-    const auto ime = nadjiIme("cont");
-
     /* Deklaracija uslovne promenljive */
-    const auto tip = TheASTContext.IntTy;
-    auto dekl = napraviDecl(tekdek->getDeclContext(), tip, ime);
-
-    /* Celobrojna nula za inicijalizaciju */
-    dekl->setInit(napraviFalse());
-
-    /* Naredba deklaracije uslovne promenljive */
-    DeclStmt deknar{DeclGroupRef(dekl), SourceLocation(), SourceLocation()};
+    const auto dekl = napraviUslovnu(tekdek, "cont", false);
 
     /* Obmotavanje switcha deklaracijom */
-    dodajIspred(s, &deknar);
+    dodajIspred(s, dekl);
+
+    /* Uslovna promenljiva kao izraz */
+    const auto uslov = napraviDeclExpr(dekl);
 
     /* Continue za skok iz petlje */
     const auto cont = napraviCont();
-
-    /* Uslovna promenljiva kao izraz */
-    const auto uslov = napraviDeclExpr(dekl, tip);
 
     /* Uslov iskakanja iz petlje */
     const auto skok = napraviIf(uslov, cont);
@@ -69,8 +59,7 @@ bool PrepSwitchVisitor::VisitContinueStmt(ContinueStmt *s) {
     if (!dekl) return true;
 
     /* Postavljanje zastavice za skok iz petlje */
-    const auto tip = TheASTContext.IntTy;
-    const auto dodela = napraviDodelu(dekl, napraviTrue(), tip);
+    const auto dodela = napraviDodelu(dekl, napraviTrue());
 
     /* Break za skok iz switcha */
     const auto iskoci = napraviBreak();

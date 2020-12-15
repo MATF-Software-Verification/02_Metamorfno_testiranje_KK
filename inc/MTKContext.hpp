@@ -22,13 +22,13 @@ public:
     SourceRange odrediMesto(const Stmt * const s) const;
 
     /* Tekstualna zamena koda */
-    void zameni(const Stmt * const stari, const Stmt * const novi);
+    void zameni(const Stmt * const stari, const Stmt * const novi) const;
 
     /* Prednja tekstualna dopuna koda */
-    void dodajIspred(const Stmt * const stari, const Stmt * const novi);
+    void dodajIspred(const Stmt * const stari, const Stmt * const novi) const;
 
     /* Zadnja tekstualna dopuna koda */
-    void dodajIza(const Stmt * const stari, const Stmt * const novi);
+    void dodajIza(const Stmt * const stari, const Stmt * const novi) const;
 
     /* Pronalazak prvog slobodnog imena */
     std::string nadjiIme(const std::string &pocetno) const;
@@ -36,50 +36,60 @@ public:
     /* Pravljenje nove deklaracije */
     VarDecl *napraviDecl(DeclContext *kontekst,
                          const CanQual<Type> &tip,
-                         const std::string &ime);
+                         const std::string &ime) const;
 
     /* Pravljenje izraza deklaracije */
-    DeclRefExpr *napraviDeclExpr(ValueDecl *deklaracija,
-                                 const CanQual<Type> &tip);
+    DeclRefExpr *napraviDeclExpr(DeclStmt *deknar) const;
 
     /* Pravljenje celobrojne vrednosti */
-    IntegerLiteral *napraviInt(unsigned long long val);
+    IntegerLiteral *napraviInt(unsigned long long val) const;
 
     /* Pravljenje tacne istinitosne vrednosti */
-    IntegerLiteral *napraviTrue();
+    IntegerLiteral *napraviTrue() const;
 
     /* Pravljenje netacne istinitosne vrednosti */
-    IntegerLiteral *napraviFalse();
+    IntegerLiteral *napraviFalse() const;
+
+    /* Pravljenje deklaracije uslovne promenljive */
+    DeclStmt *napraviUslovnu(Decl *deklaracija,
+                             const std::string &ime,
+                             const bool pocetna) const;
 
     /* Pravljenje binarnog operatora */
     BinaryOperator *napraviBinarni(Expr *lhs, Expr *rhs,
                                    const BinaryOperator::Opcode &op,
-                                   const CanQual<Type> &tip);
+                                   const CanQual<Type> &tip) const;
 
     /* Pravljenje izraza dodele */
-    BinaryOperator *napraviDodelu(Expr *lhs, Expr *rhs,
-                                  const CanQual<Type> &tip);
+    BinaryOperator *napraviDodelu(Expr *lhs, Expr *rhs) const;
 
     /* Pravljenje slozene naredbe */
-    CompoundStmt *napraviSlozenu(const std::vector<Stmt *> &naredbe);
+    CompoundStmt *napraviSlozenu(const std::vector<Stmt *> &naredbe) const;
 
     /* Pravljenje uslovne naredbe */
-    IfStmt *napraviIf(Expr *ako, Stmt *onda, Stmt *inace = nullptr);
+    IfStmt *napraviIf(Expr *ako, Stmt *onda, Stmt *inace = nullptr) const;
 
     /* Pravljenje do petlje */
-    DoStmt *napraviDo(Stmt *telo, Expr *uslov);
+    DoStmt *napraviDo(Stmt *telo, Expr *uslov) const;
 
     /* Pravljenje while petlje */
-    WhileStmt *napraviWhile(Expr *uslov, Stmt *telo);
+    WhileStmt *napraviWhile(Expr *uslov, Stmt *telo) const;
 
     /* Pravljenje for petlje */
-    ForStmt *napraviFor(Expr *uslov, Expr *korak, Stmt *telo);
+    ForStmt *napraviFor(Expr *uslov, Expr *korak, Stmt *telo) const;
 
     /* Pravljenje continue naredbe */
-    ContinueStmt *napraviCont();
+    ContinueStmt *napraviCont() const;
 
     /* Pravljenje break naredbe */
-    BreakStmt *napraviBreak();
+    BreakStmt *napraviBreak() const;
+
+    /* Prebacivanje naredbe na hip */
+    template <typename Naredba>
+    Naredba *naHip(const Naredba &nar) const {
+        const auto adresa = static_cast<Naredba *>(malloc(sizeof(nar)));
+        memcpy(adresa, &nar, sizeof(nar)); return adresa;
+    }
 
 protected:
     /* Zasticeno cuvanje prepisivaca i konteksta */

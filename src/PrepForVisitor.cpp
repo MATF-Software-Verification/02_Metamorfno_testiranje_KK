@@ -11,14 +11,14 @@ bool PrepForVisitor::VisitContinueStmt(ContinueStmt *s) {
     auto rod = TheASTContext.getParentMapContext().getParents(*s);
     while (!rod.empty()) {
         /* Izdvajanje glavnog roditelja */
-        const auto *r = rod.begin()->get<Stmt>();
+        const auto r = rod.begin()->get<Stmt>();
 
         /* Odustajanje ako je do ili while */
         if (isa<DoStmt>(r) || isa<WhileStmt>(r))
             return true;
 
         /* Uzimanje roditelja koji je for */
-        if (auto *rr = dyn_cast<ForStmt>(r)) {
+        if (const auto rr = dyn_cast<ForStmt>(r)) {
             /* Odustajanje ako nema inkrement */
             if (!rr->getInc())
                 return true;

@@ -45,7 +45,7 @@ SourceRange MTKContext::odrediMesto(const Stmt * const s) const {
 }
 
 /* Tekstualna zamena koda */
-void MTKContext::zameni(const Stmt * const stari, const Stmt * const novi) {
+void MTKContext::zameni(const Stmt * const stari, const Stmt * const novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
@@ -57,7 +57,7 @@ void MTKContext::zameni(const Stmt * const stari, const Stmt * const novi) {
 }
 
 /* Prednja tekstualna dopuna koda */
-void MTKContext::dodajIspred(const Stmt * const stari, const Stmt * const novi) {
+void MTKContext::dodajIspred(const Stmt * const stari, const Stmt * const novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
@@ -69,7 +69,7 @@ void MTKContext::dodajIspred(const Stmt * const stari, const Stmt * const novi) 
 }
 
 /* Zadnja tekstualna dopuna koda */
-void MTKContext::dodajIza(const Stmt * const stari, const Stmt * const novi) {
+void MTKContext::dodajIza(const Stmt * const stari, const Stmt * const novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
@@ -100,7 +100,7 @@ std::string MTKContext::nadjiIme(const std::string &pocetno) const {
 /* Pravljenje nove deklaracije */
 VarDecl *MTKContext::napraviDecl(DeclContext *kontekst,
                                  const CanQual<Type> &tip,
-                                 const std::string &ime) {
+                                 const std::string &ime) const {
     return VarDecl::Create(TheASTContext, kontekst,
                            SourceLocation(), SourceLocation(),
                            &TheASTContext.Idents.getOwn(ime),
@@ -108,15 +108,15 @@ VarDecl *MTKContext::napraviDecl(DeclContext *kontekst,
 }
 
 /* Pravljenje izraza deklaracije */
-DeclRefExpr *MTKContext::napraviDeclExpr(ValueDecl *deklaracija,
-                                         const CanQual<Type> &tip) {
+DeclRefExpr *MTKContext::napraviDeclExpr(DeclStmt *deknar) const {
+    const auto dekl = cast<VarDecl>(deknar->getSingleDecl());
     return DeclRefExpr::Create(TheASTContext, NestedNameSpecifierLoc(),
-                               SourceLocation(), deklaracija, true,
-                               SourceLocation(), tip, VK_LValue);
+                               SourceLocation(), dekl, true,
+                               SourceLocation(), dekl->getType(), VK_LValue);
 }
 
 /* Pravljenje celobrojne vrednosti */
-IntegerLiteral *MTKContext::napraviInt(unsigned long long val) {
+IntegerLiteral *MTKContext::napraviInt(unsigned long long val) const {
     const auto tip = TheASTContext.IntTy;
     llvm::APInt APValue(static_cast<unsigned>(TheASTContext.getTypeSize(tip)), val);
     return IntegerLiteral::Create(TheASTContext, APValue,
@@ -124,79 +124,84 @@ IntegerLiteral *MTKContext::napraviInt(unsigned long long val) {
 }
 
 /* Pravljenje tacne istinitosne vrednosti */
-IntegerLiteral *MTKContext::napraviTrue() {
+IntegerLiteral *MTKContext::napraviTrue() const {
     return napraviInt(1);
 }
 
 /* Pravljenje netacne istinitosne vrednosti */
-IntegerLiteral *MTKContext::napraviFalse() {
+IntegerLiteral *MTKContext::napraviFalse() const {
     return napraviInt(0);
+}
+
+/* Pravljenje deklaracije uslovne promenljive */
+DeclStmt *MTKContext::napraviUslovnu(Decl *deklaracija,
+                                     const std::string &ime,
+                                     const bool pocetna) const {
+    /* Pronalazak prvog slobodnog imena */
+    const auto slobime = nadjiIme(ime);
+
+    /* Deklaracija uslovne promenljive */
+    const auto tip = TheASTContext.IntTy;
+    auto dekl = napraviDecl(deklaracija->getDeclContext(), tip, slobime);
+
+    /* Celobrojna vrednost za inicijalizaciju */
+    dekl->setInit(napraviInt(pocetna));
+
+    /* Naredba deklaracije uslovne promenljive */
+    return naHip(DeclStmt(DeclGroupRef(dekl), SourceLocation(), SourceLocation()));
 }
 
 /* Pravljenje binarnog operatora */
 BinaryOperator *MTKContext::napraviBinarni(Expr *lhs, Expr *rhs,
                                            const BinaryOperator::Opcode &op,
-                                           const CanQual<Type> &tip) {
+                                           const CanQual<Type> &tip) const {
     return BinaryOperator::Create(TheASTContext, lhs, rhs, op,
                                   tip, VK_RValue, OK_Ordinary,
                                   SourceLocation(), FPOptionsOverride());
 }
 
 /* Pravljenje izraza dodele */
-BinaryOperator *MTKContext::napraviDodelu(Expr *lhs, Expr *rhs,
-                                          const CanQual<Type> &tip) {
-    return napraviBinarni(lhs, rhs, BO_Assign, tip);
+BinaryOperator *MTKContext::napraviDodelu(Expr *lhs, Expr *rhs) const {
+    return napraviBinarni(lhs, rhs, BO_Assign, CanQual<Type>::CreateUnsafe(rhs->getType()));
 }
 
 /* Pravljenje slozene naredbe */
-CompoundStmt *MTKContext::napraviSlozenu(const std::vector<Stmt *> &naredbe) {
+CompoundStmt *MTKContext::napraviSlozenu(const std::vector<Stmt *> &naredbe) const {
     return CompoundStmt::Create(TheASTContext, naredbe,
                                 SourceLocation(), SourceLocation());
 }
 
 /* Pravljenje uslovne naredbe */
-IfStmt *MTKContext::napraviIf(Expr *ako, Stmt *onda, Stmt *inace) {
+IfStmt *MTKContext::napraviIf(Expr *ako, Stmt *onda, Stmt *inace) const {
     return IfStmt::Create(TheASTContext, SourceLocation(),
                           false, nullptr, nullptr, ako,
                           onda, SourceLocation(), inace);
 }
 
 /* Pravljenje do petlje */
-DoStmt *MTKContext::napraviDo(Stmt *telo, Expr *uslov) {
-    DoStmt petlja(telo, uslov, SourceLocation(),
-                  SourceLocation(), SourceLocation());
-    auto *adresa = static_cast<DoStmt *>(malloc(sizeof(petlja)));
-    memcpy(adresa, &petlja, sizeof(petlja));
-    return adresa;
+DoStmt *MTKContext::napraviDo(Stmt *telo, Expr *uslov) const {
+    return naHip(DoStmt(telo, uslov, SourceLocation(),
+                        SourceLocation(), SourceLocation()));
 }
 
 /* Pravljenje while petlje */
-WhileStmt *MTKContext::napraviWhile(Expr *uslov, Stmt *telo) {
+WhileStmt *MTKContext::napraviWhile(Expr *uslov, Stmt *telo) const {
     return WhileStmt::Create(TheASTContext, nullptr, uslov, telo,
                              SourceLocation(), SourceLocation(), SourceLocation());
 }
 
 /* Pravljenje for petlje */
-ForStmt *MTKContext::napraviFor(Expr *uslov, Expr *korak, Stmt *telo) {
-    ForStmt petlja(TheASTContext, nullptr, uslov, nullptr, korak, telo,
-                   SourceLocation(), SourceLocation(), SourceLocation());
-    auto *adresa = static_cast<ForStmt *>(malloc(sizeof(petlja)));
-    memcpy(adresa, &petlja, sizeof(petlja));
-    return adresa;
+ForStmt *MTKContext::napraviFor(Expr *uslov, Expr *korak, Stmt *telo) const {
+    return naHip(ForStmt(TheASTContext, nullptr, uslov, nullptr, korak, telo,
+                         SourceLocation(), SourceLocation(), SourceLocation()));
 }
 
 /* Pravljenje continue naredbe */
-ContinueStmt *MTKContext::napraviCont() {
-    ContinueStmt cont{SourceLocation()};
-    auto *adresa = static_cast<ContinueStmt *>(malloc(sizeof(cont)));
-    memcpy(adresa, &cont, sizeof(cont));
-    return adresa;
+ContinueStmt *MTKContext::napraviCont() const {
+    return naHip(ContinueStmt(SourceLocation()));
 }
 
 /* Pravljenje break naredbe */
-BreakStmt *MTKContext::napraviBreak() {
-    BreakStmt br{SourceLocation()};
-    auto *adresa = static_cast<BreakStmt *>(malloc(sizeof(br)));
-    memcpy(adresa, &br, sizeof(br));
-    return adresa;
+BreakStmt *MTKContext::napraviBreak() const {
+    return naHip(BreakStmt(SourceLocation()));
 }
