@@ -10,6 +10,9 @@ public:
     If2SwitchVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {}
 
+    /* Provera da li je if pomocni */
+    bool pomocni(IfStmt *s);
+
     /* Pretvaranje if naredbe u switch */
     bool VisitIfStmt(IfStmt *s);
 

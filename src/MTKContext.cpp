@@ -14,9 +14,6 @@ std::string MTKContext::stampaj(const Stmt *const s) const {
     s->printPretty(stream, nullptr, PrintingPolicy(LangOptions()));
     stream.flush();
 
-    /* Uklanjanje suvisnog novog reda */
-    stmt.pop_back();
-
     /* Vracanje rezultata */
     return stmt;
 }
@@ -74,7 +71,7 @@ void MTKContext::dodajIza(const Stmt *const stari, const Stmt *const novi) const
     const auto mesto = odrediMesto(stari);
 
     /* Tekstualna reprezentacija novog iskaza */
-    const auto stmt = stampaj(novi) + "}";
+    const auto stmt = "\n" + stampaj(novi) + "}";
 
     /* Dodavanje teksta na izracunatom mestu */
     TheRewriter.InsertTextBefore(mesto.getEnd(), stmt);
@@ -204,4 +201,22 @@ ContinueStmt *MTKContext::napraviCont() const {
 /* Pravljenje break naredbe */
 BreakStmt *MTKContext::napraviBreak() const {
     return naHip(BreakStmt(SourceLocation()));
+}
+
+/* Pravljenje case klauze */
+CaseStmt *MTKContext::napraviCase(Expr *izraz, Stmt *naredba) const {
+    const auto cas = CaseStmt::Create(TheASTContext, izraz, nullptr,
+                         SourceLocation(), SourceLocation(), SourceLocation());
+    cas->setSubStmt(naredba); return cas;
+}
+
+/* Pravljenje default klauze */
+DefaultStmt *MTKContext::napraviDefault(Stmt *naredba) const {
+    return naHip(DefaultStmt(SourceLocation(), SourceLocation(), naredba));
+}
+
+/* Pravljenje switch naredbe */
+SwitchStmt *MTKContext::napraviSwitch(Expr *uslov, Stmt *telo) const {
+    const auto sw = SwitchStmt::Create(TheASTContext, nullptr, nullptr, uslov);
+    sw->setBody(telo); return sw;
 }

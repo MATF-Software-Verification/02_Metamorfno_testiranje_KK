@@ -1,7 +1,62 @@
 #include "If2SwitchVisitor.hpp"
 
+#include "clang/AST/ParentMapContext.h"
+
+/* Provera da li je if pomocni */
+bool If2SwitchVisitor::pomocni(IfStmt *s) {
+    /* Dohvatanje roditelja */
+    const auto rod = TheASTContext.getParentMapContext()
+                     .getParents(*s).begin()->get<CompoundStmt>();
+
+    /* Odustajanje ako se ne uklapa */
+    if (!rod) return false;
+
+    /* Vektor dece roditelja */
+    std::vector<const Stmt *> deca;
+    for (const auto dete : rod->children()) {
+        deca.push_back(dete);
+    }
+
+    /* Odustajanje ako se ne uklapa */
+    if (deca.size() != 3) return false;
+
+    /* Dohvatanje konkretne dece */
+    const auto dekl = dyn_cast<DeclStmt>(deca[0]);
+    const auto if1 = dyn_cast<IfStmt>(deca[1]);
+    const auto sw = dyn_cast<SwitchStmt>(deca[1]);
+    const auto if2 = dyn_cast<IfStmt>(deca[2]);
+
+    /* Odustajanje ako se ne uklapa */
+    if (!dekl || (!if1 && !sw) || !if2) return false;
+
+    /* Vracanje konacne provere */
+    return s == if2;
+}
+
 /* Pretvaranje if naredbe u switch */
 bool If2SwitchVisitor::VisitIfStmt(IfStmt *s) {
+    /* Odustajanje ako je pomocni */
+    if (pomocni(s)) return true;
+
+    /* Case klauza switcha */
+    const auto cas = napraviCase(napraviInt(1), s->getThen());
+
+    /* Iskakanje iz switcha */
+    const auto br = napraviBreak();
+
+    /* Default klauza switcha */
+    const auto def = napraviDefault(s->getElse());
+
+    /* Slozeno telo switcha */
+    const auto telo = !s->getElse() ? napraviSlozenu({cas}) :
+                                      napraviSlozenu({cas, br, def});
+
+    /* Odgovarajuca switch naredba */
+    const auto sw = napraviSwitch(s->getCond(), telo);
+
+    /* Tekstualna zamena koda */
+    zameni(s, sw);
+
     /* Nastavljanje dalje */
     return true;
 }

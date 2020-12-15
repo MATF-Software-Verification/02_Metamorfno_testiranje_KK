@@ -84,6 +84,15 @@ public:
     /* Pravljenje break naredbe */
     BreakStmt *napraviBreak() const;
 
+    /* Pravljenje case klauze */
+    CaseStmt *napraviCase(Expr *izraz, Stmt *naredba) const;
+
+    /* Pravljenje default klauze */
+    DefaultStmt *napraviDefault(Stmt *naredba) const;
+
+    /* Pravljenje switch naredbe */
+    SwitchStmt *napraviSwitch(Expr *uslov, Stmt *telo) const;
+
     /* Prebacivanje naredbe na hip */
     template <typename Naredba>
     Naredba *naHip(const Naredba &nar) const {
