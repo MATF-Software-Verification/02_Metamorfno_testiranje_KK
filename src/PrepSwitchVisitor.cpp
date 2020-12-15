@@ -2,6 +2,42 @@
 
 #include "clang/AST/ParentMapContext.h"
 
+/* Shema transformacije
+ * ---------------------
+ * switch (uslov) {
+ *   case a:
+ *     teloa1;
+ *     continue;
+ *     teloa2;
+ *
+ *   default:
+ *     telod1;
+ *     continue;
+ *     telod2;
+ * }
+ * ---------------------
+ * int cont = 0;
+ * switch (uslov) {
+ *   case a:
+ *     teloa1;
+ *     {
+ *       cont = 1;
+ *       continue;
+ *     }
+ *     teloa2;
+ *
+ *   default:
+ *     telod1;
+ *     {
+ *       cont = 1;
+ *       continue;
+ *     }
+ *     telod2;
+ * }
+ * if (cont)
+ *   continue;
+ * */
+
 /* Obrada odgovarajuceg switch */
 DeclRefExpr *PrepSwitchVisitor::obradiSwitch(const SwitchStmt *s) {
     /* Odustajanje od pripremljenih */

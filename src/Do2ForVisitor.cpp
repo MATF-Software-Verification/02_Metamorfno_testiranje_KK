@@ -1,7 +1,18 @@
 #include "Do2ForVisitor.hpp"
 
+/* Shema transformacije
+ * --------------------------
+ * do
+ *   telo;
+ * while (uslov);
+ * --------------------------
+ * int cond = 1;
+ * for (; cond; cond = uslov)
+ *   telo;
+ * */
+
 /* Posetilac koji do pretvara u for */
-bool Do2ForVisitor::VisitDoStmt(DoStmt *s) {
+bool Do2ForVisitor::VisitDoStmt(DoStmt *s) const {
     /* Deklaracija uslovne promenljive */
     const auto dekl = napraviUslovnu(tekdek, "cond", true);
 

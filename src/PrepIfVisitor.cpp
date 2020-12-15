@@ -2,6 +2,38 @@
 
 #include "clang/AST/ParentMapContext.h"
 
+/* Shema transformacije
+ * ---------------------
+ * if (ako) {
+ *   onda1;
+ *   break;
+ *   onda2;
+ * } else {
+ *   inace1;
+ *   break;
+ *   inace2;
+ * }
+ * ---------------------
+ * int br = 0;
+ * if (ako) {
+ *   onda1;
+ *   {
+ *     br = 1;
+ *     break;
+ *   }
+ *   onda2;
+ * } else {
+ *   inace1;
+ *   {
+ *     br = 1;
+ *     break;
+ *   }
+ *   inace2;
+ * }
+ * if (br)
+ *   break;
+ * */
+
 /* Obrada odgovarajuceg if */
 DeclRefExpr *PrepIfVisitor::obradiIf(const IfStmt *s) {
     /* Odustajanje od pripremljenih */

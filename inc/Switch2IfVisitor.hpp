@@ -13,13 +13,13 @@ public:
     /* Izracunavanje uslova za default */
     Expr *defUslov(StmtIterator dete,
                    StmtIterator kraj,
-                   DeclRefExpr *uslov);
+                   DeclRefExpr *uslov) const;
 
     /* Provera da li je prazan default */
-    bool prazanDefault(DefaultStmt *s);
+    bool prazanDefault(DefaultStmt *s) const;
 
     /* Pretvaranje switch naredbe u if */
-    bool VisitSwitchStmt(SwitchStmt *s);
+    bool VisitSwitchStmt(SwitchStmt *s) const;
 
     /* Prekid obilaska kod switch naredbe */
     bool TraverseSwitchStmt(SwitchStmt *s);

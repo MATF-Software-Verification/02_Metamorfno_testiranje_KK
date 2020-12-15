@@ -11,10 +11,10 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Provera da li je if pomocni */
-    bool pomocni(IfStmt *s);
+    bool pomocni(IfStmt *s) const;
 
     /* Pretvaranje if naredbe u switch */
-    bool VisitIfStmt(IfStmt *s);
+    bool VisitIfStmt(IfStmt *s) const;
 
     /* Prekid obilaska kod if naredbe */
     bool TraverseIfStmt(IfStmt *s);

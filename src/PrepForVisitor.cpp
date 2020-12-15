@@ -2,8 +2,26 @@
 
 #include "clang/AST/ParentMapContext.h"
 
+/* Shema transformacije
+ * -----------------------
+ * for (init; cond; inc) {
+ *   telo1;
+ *   continue;
+ *   telo2;
+ * }
+ * -----------------------
+ * for (init; cond; inc) {
+ *   telo1;
+ *   {
+ *     inc;
+ *     continue;
+ *   }
+ *   telo2;
+ * }
+ * */
+
 /* Dodavanje koraka for petlje pre continue */
-bool PrepForVisitor::VisitContinueStmt(ContinueStmt *s) {
+bool PrepForVisitor::VisitContinueStmt(ContinueStmt *s) const {
     /* Inicijalizacija nove naredbe */
     Stmt *stmt = s;
 

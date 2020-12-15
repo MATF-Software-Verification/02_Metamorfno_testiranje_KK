@@ -11,7 +11,7 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Pretvaranje for petlji u while */
-    bool VisitForStmt(ForStmt *s);
+    bool VisitForStmt(ForStmt *s) const;
 
     /* Prekid obilaska kod for petlje */
     bool TraverseForStmt(ForStmt *s);

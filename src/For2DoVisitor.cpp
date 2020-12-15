@@ -1,7 +1,20 @@
 #include "For2DoVisitor.hpp"
 
+/* Shema transformacije
+ * ---------------------
+ * for (init; cond; inc)
+ *   telo;
+ * ---------------------
+ * init;
+ * if (cond)
+ *   do {
+ *     telo;
+ *     inc;
+ * } while (cond);
+ * */
+
 /* Posetilac koji for pretvara u do */
-bool For2DoVisitor::VisitForStmt(ForStmt *s) {
+bool For2DoVisitor::VisitForStmt(ForStmt *s) const {
     /* Slozena naredba sa telom i inkrementacijom
      * ili samo telo ako nema inkrementacije */
     Stmt *telo;

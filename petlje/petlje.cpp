@@ -66,11 +66,12 @@ static void obradi(const Akcija &akcija) {
         TheRewriter.setSourceMgr(SourceMgr, TheCompInst.getLangOpts());
 
         /* Citanje prosledjenog fajla */
-        const auto FileIn = FileMgr.getFile(*stari).get();
-        if (!FileIn) {
+        const auto FileInOpt = FileMgr.getFile(*stari);
+        if (!FileInOpt) {
             llvm::errs() << greska;
             exit(EXIT_FAILURE);
         }
+        const auto FileIn = FileInOpt.get();
 
         /* Postavljanje prosledjenog fajla za ulazni */
         SourceMgr.setMainFileID(

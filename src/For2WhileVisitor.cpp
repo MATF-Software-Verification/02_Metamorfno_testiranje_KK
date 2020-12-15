@@ -1,7 +1,19 @@
 #include "For2WhileVisitor.hpp"
+
+/* Shema transformacije
+ * ---------------------
+ * for (init; cond; inc)
+ *   telo;
+ * ---------------------
+ * init;
+ * while (cond) {
+ *   telo;
+ *   inc;
+ * }
+ * */
   
 /* Posetilac koji for pretvara u while */
-bool For2WhileVisitor::VisitForStmt(ForStmt *s) {
+bool For2WhileVisitor::VisitForStmt(ForStmt *s) const {
     /* Slozena naredba sa telom i inkrementacijom
      * ili samo telo ako nema inkrementacije */
     Stmt *telo;

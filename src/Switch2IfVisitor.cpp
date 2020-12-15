@@ -1,9 +1,47 @@
 #include "Switch2IfVisitor.hpp"
 
+/* Shema transformacije
+ * --------------------------------------------------------
+ * switch (uslov) {
+ *   case a:
+ *     teloa;
+ *
+ *   case b:
+ *     telob;
+ *
+ *   default:
+ *     telodef;
+ *
+ *   case c:
+ *     teloc;
+ *
+ *   case d:
+ *     telod;
+ * }
+ * --------------------------------------------------------
+ * int cond = uslov;
+ * do {
+ *   if (cond == a)
+ *     teloa;
+ *
+ *   if (cond == a || cond == b)
+ *     telob;
+ *
+ *   if (cond != c && cond != d)
+ *     telodef;
+ *
+ *   if (cond == a || cond == b || cond == c)
+ *     teloc;
+ *
+ *   if (cond == a || cond == b || cond == c || cond == d)
+ *     telod;
+ * } while (0);
+ * */
+
 /* Izracunavanje uslova za default */
 Expr *Switch2IfVisitor::defUslov(StmtIterator dete,
                                  StmtIterator kraj,
-                                 DeclRefExpr *uslov) {
+                                 DeclRefExpr *uslov) const {
     /* Inicijalizacija uslova */
     Expr *cond = nullptr;
 
@@ -21,12 +59,12 @@ Expr *Switch2IfVisitor::defUslov(StmtIterator dete,
 }
 
 /* Provera da li je prazan default */
-bool Switch2IfVisitor::prazanDefault(DefaultStmt *s) {
+bool Switch2IfVisitor::prazanDefault(DefaultStmt *s) const {
     return !s || isa<BreakStmt>(s->getSubStmt());
 }
 
 /* Pretvaranje switch naredbe u if */
-bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) {
+bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
     /* Uslovna promenljiva switcha */
     const auto dekl = napraviUslovnu(tekdek, "cond", false);
 

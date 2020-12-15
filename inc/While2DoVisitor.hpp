@@ -11,7 +11,7 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Pretvaranje while petlji u do-while */
-    bool VisitWhileStmt(WhileStmt *s);
+    bool VisitWhileStmt(WhileStmt *s) const;
 
     /* Prekid obilaska kod while petlje */
     bool TraverseWhileStmt(WhileStmt *s);

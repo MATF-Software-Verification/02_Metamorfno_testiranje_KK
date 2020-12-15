@@ -1,7 +1,18 @@
 #include "While2DoVisitor.hpp"
 
+/* Shema transformacije
+ * ---------------------
+ * while (cond)
+ *   telo;
+ * ---------------------
+ * if (cond)
+ *   do
+ *     telo;
+ *   while (cond);
+ * */
+
 /* Posetilac koji while pretvara u do */
-bool While2DoVisitor::VisitWhileStmt(WhileStmt *s) {
+bool While2DoVisitor::VisitWhileStmt(WhileStmt *s) const {
     /* Odgovarajuca do-while verzija */
     const auto petlja = napraviDo(s->getBody(), s->getCond());
 

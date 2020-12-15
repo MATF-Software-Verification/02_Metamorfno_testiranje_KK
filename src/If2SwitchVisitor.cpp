@@ -2,8 +2,24 @@
 
 #include "clang/AST/ParentMapContext.h"
 
+/* Shema transformacije
+ * ---------------------
+ * if (ako)
+ *   onda;
+ * else
+ *   inace;
+ * ---------------------
+ * switch ((int)!!ako) {
+ * case 1:
+ *   onda;
+ *   break;
+ * default:
+ *   inace;
+ * }
+ * */
+
 /* Provera da li je if pomocni */
-bool If2SwitchVisitor::pomocni(IfStmt *s) {
+bool If2SwitchVisitor::pomocni(IfStmt *s) const {
     /* Dohvatanje roditelja */
     const auto rod = TheASTContext.getParentMapContext()
                      .getParents(*s).begin()->get<CompoundStmt>();
@@ -34,7 +50,7 @@ bool If2SwitchVisitor::pomocni(IfStmt *s) {
 }
 
 /* Pretvaranje if naredbe u switch */
-bool If2SwitchVisitor::VisitIfStmt(IfStmt *s) {
+bool If2SwitchVisitor::VisitIfStmt(IfStmt *s) const {
     /* Odustajanje ako je pomocni */
     if (pomocni(s)) return true;
 

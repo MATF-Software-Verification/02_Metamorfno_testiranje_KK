@@ -11,7 +11,7 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Dodavanje inkrementa pre continue */
-    bool VisitContinueStmt(ContinueStmt *s);
+    bool VisitContinueStmt(ContinueStmt *s) const;
 };
 
 #endif
