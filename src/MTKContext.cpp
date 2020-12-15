@@ -5,7 +5,7 @@
 #include <climits>
 
 /* Tekstualna reprezentacija naredbe */
-std::string MTKContext::stampaj(const clang::Stmt * const s) const {
+std::string MTKContext::stampaj(const Stmt *const s) const {
     /* Inicijalizacija izlaznog toka */
     std::string stmt;
     llvm::raw_string_ostream stream(stmt);
@@ -22,7 +22,7 @@ std::string MTKContext::stampaj(const clang::Stmt * const s) const {
 }
 
 /* Odredjivanje mesta naredbe u kodu */
-SourceRange MTKContext::odrediMesto(const Stmt * const s) const {
+SourceRange MTKContext::odrediMesto(const Stmt *const s) const {
     /* Granicne oznake u kodu */
     const auto start = s->getSourceRange().getBegin();
     const auto end = s->getSourceRange().getEnd();
@@ -38,14 +38,14 @@ SourceRange MTKContext::odrediMesto(const Stmt * const s) const {
     const auto offset = Lexer::MeasureTokenLength(end,
                                                   TheRewriter.getSourceMgr(),
                                                   TheRewriter.getLangOpts())
-            + (ime != "r_brace" && ime != "semi");
+                        + (ime != "r_brace" && ime != "semi");
 
     /* Vracanje tacno izracunatog mesta */
     return SourceRange(start, end.getLocWithOffset(static_cast<int>(offset)));
 }
 
 /* Tekstualna zamena koda */
-void MTKContext::zameni(const Stmt * const stari, const Stmt * const novi) const {
+void MTKContext::zameni(const Stmt *const stari, const Stmt *const novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
@@ -57,7 +57,7 @@ void MTKContext::zameni(const Stmt * const stari, const Stmt * const novi) const
 }
 
 /* Prednja tekstualna dopuna koda */
-void MTKContext::dodajIspred(const Stmt * const stari, const Stmt * const novi) const {
+void MTKContext::dodajIspred(const Stmt *const stari, const Stmt *const novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
@@ -69,7 +69,7 @@ void MTKContext::dodajIspred(const Stmt * const stari, const Stmt * const novi) 
 }
 
 /* Zadnja tekstualna dopuna koda */
-void MTKContext::dodajIza(const Stmt * const stari, const Stmt * const novi) const {
+void MTKContext::dodajIza(const Stmt *const stari, const Stmt *const novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
@@ -77,7 +77,7 @@ void MTKContext::dodajIza(const Stmt * const stari, const Stmt * const novi) con
     const auto stmt = stampaj(novi) + "}";
 
     /* Dodavanje teksta na izracunatom mestu */
-    TheRewriter.InsertTextAfter(mesto.getEnd(), stmt);
+    TheRewriter.InsertTextBefore(mesto.getEnd(), stmt);
 }
 
 /* Pronalazak prvog slobodnog imena */

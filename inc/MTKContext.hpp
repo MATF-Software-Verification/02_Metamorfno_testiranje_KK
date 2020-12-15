@@ -16,19 +16,19 @@ public:
       : TheRewriter(R), TheASTContext(A) {}
 
     /* Tekstualna reprezentacija naredbe */
-    std::string stampaj(const Stmt * const s) const;
+    std::string stampaj(const Stmt *const s) const;
 
     /* Odredjivanje mesta naredbe u kodu */
-    SourceRange odrediMesto(const Stmt * const s) const;
+    SourceRange odrediMesto(const Stmt *const s) const;
 
     /* Tekstualna zamena koda */
-    void zameni(const Stmt * const stari, const Stmt * const novi) const;
+    void zameni(const Stmt *const stari, const Stmt *const novi) const;
 
     /* Prednja tekstualna dopuna koda */
-    void dodajIspred(const Stmt * const stari, const Stmt * const novi) const;
+    void dodajIspred(const Stmt *const stari, const Stmt *const novi) const;
 
     /* Zadnja tekstualna dopuna koda */
-    void dodajIza(const Stmt * const stari, const Stmt * const novi) const;
+    void dodajIza(const Stmt *const stari, const Stmt *const novi) const;
 
     /* Pronalazak prvog slobodnog imena */
     std::string nadjiIme(const std::string &pocetno) const;

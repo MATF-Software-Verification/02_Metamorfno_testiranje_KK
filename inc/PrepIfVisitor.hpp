@@ -3,7 +3,7 @@
 
 #include "MTKConsumer.hpp"
 
-#include <unordered_set>
+#include <unordered_map>
 
 /* Posetilac koji do pretvara u for */
 class PrepIfVisitor : public MTKVisitor<PrepIfVisitor> {
@@ -13,14 +13,20 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Obrada odgovarajuceg if */
-    bool obradiIf(IfStmt *s);
+    DeclRefExpr *obradiIf(const IfStmt *s);
 
     /* Priprema if naredbe */
     bool VisitBreakStmt(BreakStmt *s);
 
+    /* Nacin obrade deklaracije */
+    bool TraverseDecl(Decl *d);
+
 private:
+    /* Privatno cuvanje tekuce deklaracije */
+    Decl *tekdek;
+
     /* Privatno cuvanje vec pripremljenih naredbi */
-    std::unordered_set<IfStmt *> prip;
+    std::unordered_map<const IfStmt *, DeclRefExpr *> prip;
 };
 
 #endif
