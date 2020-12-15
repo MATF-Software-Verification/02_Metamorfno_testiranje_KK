@@ -6,11 +6,15 @@ int main() {
     scanf("%d", &k);
     {
       int br = 0;
-      if (!k) {
+      switch (!k) {
+      case 1: {
         br = 1;
         break;
-      } else
+      } break;
+      default:
         continue;
+      }
+
       if (br)
         break;
     }
