@@ -10,11 +10,21 @@ public:
     Switch2IfVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {}
 
+    /* Izracunavanje uslova za default */
+    Expr *defUslov(StmtIterator d, SwitchStmt *s, DeclRefExpr *u);
+
     /* Pretvaranje switch naredbe u if */
     bool VisitSwitchStmt(SwitchStmt *s);
 
     /* Prekid obilaska kod switch naredbe */
     bool TraverseSwitchStmt(SwitchStmt *s);
+
+    /* Nacin obrade deklaracije */
+    bool TraverseDecl(Decl *d);
+
+private:
+    /* Privatno cuvanje tekuce deklaracije */
+    Decl *tekdek;
 };
 
 #endif

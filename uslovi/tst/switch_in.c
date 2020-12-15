@@ -9,14 +9,14 @@ int main() {
       return 1;
 
     case 2:
-      return 1;
+      return 2;
       break;
 
     default:
       break;
 
     case 3:
-      return 1;
+      return 3;
       continue;
     }
   } while (1);

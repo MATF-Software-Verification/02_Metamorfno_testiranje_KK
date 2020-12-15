@@ -55,13 +55,33 @@ public:
                              const std::string &ime,
                              const bool pocetna) const;
 
+    /* Pravljenje unarnog operatora */
+    UnaryOperator *napraviUnarni(Expr *input,
+                                 const UnaryOperator::Opcode &op,
+                                 const QualType &tip) const;
+
+    /* Pravljenje logicke negacije */
+    UnaryOperator *napraviNegaciju(Expr *input) const;
+
     /* Pravljenje binarnog operatora */
     BinaryOperator *napraviBinarni(Expr *lhs, Expr *rhs,
                                    const BinaryOperator::Opcode &op,
-                                   const CanQual<Type> &tip) const;
+                                   const QualType &tip) const;
 
     /* Pravljenje izraza dodele */
     BinaryOperator *napraviDodelu(Expr *lhs, Expr *rhs) const;
+
+    /* Pravljenje izraza jednakosti */
+    BinaryOperator *napraviJednakost(Expr *lhs, Expr *rhs) const;
+
+    /* Pravljenje izraza nejednakosti */
+    BinaryOperator *napraviNejednakost(Expr *lhs, Expr *rhs) const;
+
+    /* Pravljenje logicke konjunkcije */
+    BinaryOperator *napraviKonjunkciju(Expr *lhs, Expr *rhs) const;
+
+    /* Pravljenje logicke disjunkcije */
+    BinaryOperator *napraviDisjunkciju(Expr *lhs, Expr *rhs) const;
 
     /* Pravljenje slozene naredbe */
     CompoundStmt *napraviSlozenu(const std::vector<Stmt *> &naredbe) const;

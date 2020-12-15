@@ -148,10 +148,24 @@ DeclStmt *MTKContext::napraviUslovnu(Decl *deklaracija,
     return naHip(DeclStmt(DeclGroupRef(dekl), SourceLocation(), SourceLocation()));
 }
 
+/* Pravljenje unarnog operatora */
+UnaryOperator *MTKContext::napraviUnarni(Expr *input,
+                                         const UnaryOperator::Opcode &op,
+                                         const QualType &tip) const {
+    return UnaryOperator::Create(TheASTContext, input, op,
+                                 tip, VK_RValue, OK_Ordinary,
+                                 SourceLocation(), false, FPOptionsOverride());
+}
+
+/* Pravljenje logicke negacije */
+UnaryOperator *MTKContext::napraviNegaciju(Expr *input) const {
+    return napraviUnarni(input, UO_LNot, input->getType());
+}
+
 /* Pravljenje binarnog operatora */
 BinaryOperator *MTKContext::napraviBinarni(Expr *lhs, Expr *rhs,
                                            const BinaryOperator::Opcode &op,
-                                           const CanQual<Type> &tip) const {
+                                           const QualType &tip) const {
     return BinaryOperator::Create(TheASTContext, lhs, rhs, op,
                                   tip, VK_RValue, OK_Ordinary,
                                   SourceLocation(), FPOptionsOverride());
@@ -159,7 +173,27 @@ BinaryOperator *MTKContext::napraviBinarni(Expr *lhs, Expr *rhs,
 
 /* Pravljenje izraza dodele */
 BinaryOperator *MTKContext::napraviDodelu(Expr *lhs, Expr *rhs) const {
-    return napraviBinarni(lhs, rhs, BO_Assign, CanQual<Type>::CreateUnsafe(rhs->getType()));
+    return napraviBinarni(lhs, rhs, BO_Assign, rhs->getType());
+}
+
+/* Pravljenje izraza jednakosti */
+BinaryOperator *MTKContext::napraviJednakost(Expr *lhs, Expr *rhs) const {
+    return napraviBinarni(lhs, rhs, BO_EQ, rhs->getType());
+}
+
+/* Pravljenje izraza nejednakosti */
+BinaryOperator *MTKContext::napraviNejednakost(Expr *lhs, Expr *rhs) const {
+    return napraviBinarni(lhs, rhs, BO_NE, rhs->getType());
+}
+
+/* Pravljenje logicke konjunkcije */
+BinaryOperator *MTKContext::napraviKonjunkciju(Expr *lhs, Expr *rhs) const {
+    return napraviBinarni(lhs, rhs, BO_LAnd, rhs->getType());
+}
+
+/* Pravljenje logicke disjunkcije */
+BinaryOperator *MTKContext::napraviDisjunkciju(Expr *lhs, Expr *rhs) const {
+    return napraviBinarni(lhs, rhs, BO_LOr, rhs->getType());
 }
 
 /* Pravljenje slozene naredbe */
