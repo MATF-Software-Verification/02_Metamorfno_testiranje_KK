@@ -67,6 +67,9 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
     /* Inicijalizacija deklaracije */
     DeclRefExpr *dekl = nullptr;
 
+    /* Indikator posebne zamene */
+    bool dir = false;
+
     /* Prolazak kroz roditelje tekuceg break */
     auto rod = TheASTContext.getParentMapContext().getParents(*s);
     while (!rod.empty()) {
@@ -81,6 +84,7 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
         /* Uzimanje roditelja koji je if */
         if (const auto rr = dyn_cast<IfStmt>(r)) {
             dekl = obradiIf(rr);
+            dir = s == rr->getElse();
             break;
         }
 
@@ -101,7 +105,7 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
     const auto zamena = napraviSlozenu({dodela, iskoci});
 
     /* Tekstualna zamena koda */
-    zameni(s, zamena);
+    zameni(s, zamena, dir);
 
     /* Nastavljanje dalje */
     return true;

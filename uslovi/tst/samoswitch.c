@@ -11,10 +11,8 @@ int main() {
         pi--;
       } break;
       default: {
-        {
-          br = 1;
-          break;
-        }
+        br = 1;
+        break;
       }
       }
 
@@ -25,18 +23,18 @@ int main() {
 
   putchar('\n');
 
-  switch (1 < 2) {
+  switch ((int)(1 < 2)) {
   case 1:
     putchar('x');
   }
 
   int i = 1, j = 2;
-  switch (i > j) {
+  switch ((int)(i > j)) {
   case 1:
     return 1;
     break;
   default:
-    switch (i == j) {
+    switch (0) {
     case 1: {
       return 1;
     } break;

@@ -19,7 +19,7 @@ std::string MTKContext::stampaj(const Stmt *const s) const {
 }
 
 /* Odredjivanje mesta naredbe u kodu */
-SourceRange MTKContext::odrediMesto(const Stmt *const s) const {
+SourceRange MTKContext::odrediMesto(const Stmt *const s, bool dir) const {
     /* Granicne oznake u kodu */
     const auto start = s->getSourceRange().getBegin();
     const auto end = s->getSourceRange().getEnd();
@@ -35,16 +35,18 @@ SourceRange MTKContext::odrediMesto(const Stmt *const s) const {
     const auto offset = Lexer::MeasureTokenLength(end,
                                                   TheRewriter.getSourceMgr(),
                                                   TheRewriter.getLangOpts())
-                        + (ime != "r_brace" && ime != "semi");
+                        + (!dir && ime != "r_brace" && ime != "semi");
 
     /* Vracanje tacno izracunatog mesta */
     return SourceRange(start, end.getLocWithOffset(static_cast<int>(offset)));
 }
 
 /* Tekstualna zamena koda */
-void MTKContext::zameni(const Stmt *const stari, const Stmt *const novi) const {
+void MTKContext::zameni(const Stmt *const stari,
+                        const Stmt *const novi,
+                        bool dir) const {
     /* Odredjivanje mesta naredbe u kodu */
-    const auto mesto = odrediMesto(stari);
+    const auto mesto = odrediMesto(stari, dir);
 
     /* Tekstualna reprezentacija novog iskaza */
     const auto stmt = stampaj(novi);
@@ -54,7 +56,8 @@ void MTKContext::zameni(const Stmt *const stari, const Stmt *const novi) const {
 }
 
 /* Prednja tekstualna dopuna koda */
-void MTKContext::dodajIspred(const Stmt *const stari, const Stmt *const novi) const {
+void MTKContext::dodajIspred(const Stmt *const stari,
+                             const Stmt *const novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
@@ -66,7 +69,8 @@ void MTKContext::dodajIspred(const Stmt *const stari, const Stmt *const novi) co
 }
 
 /* Zadnja tekstualna dopuna koda */
-void MTKContext::dodajIza(const Stmt *const stari, const Stmt *const novi) const {
+void MTKContext::dodajIza(const Stmt *const stari,
+                          const Stmt *const novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
@@ -148,34 +152,59 @@ DeclStmt *MTKContext::napraviUslovnu(Decl *deklaracija,
     return naHip(DeclStmt(DeclGroupRef(dekl), SourceLocation(), SourceLocation()));
 }
 
+/* Pravljenje izraza u zagradi */
+ParenExpr *MTKContext::napraviParen(Expr *izraz) const {
+    return naHip(ParenExpr(SourceLocation(), SourceLocation(), izraz));
+}
+
 /* Pravljenje unarnog operatora */
-UnaryOperator *MTKContext::napraviUnarni(Expr *input,
+UnaryOperator *MTKContext::napraviUnarni(Expr *izraz,
                                          const UnaryOperator::Opcode &op,
                                          const QualType &tip) const {
-    return UnaryOperator::Create(TheASTContext, input, op,
+    /* Stavljanje binarnih operatora u zagradu */
+    if (isa<BinaryOperator>(izraz))
+        izraz = napraviParen(izraz);
+
+    /* Pravljenje odgovarajuceg unarnog operatora */
+    return UnaryOperator::Create(TheASTContext, izraz, op,
                                  tip, VK_RValue, OK_Ordinary,
                                  SourceLocation(), false,
                                  FPOptionsOverride());
 }
 
 /* Pravljenje logicke negacije */
-UnaryOperator *MTKContext::napraviNegaciju(Expr *input) const {
-    return napraviUnarni(input, UO_LNot, input->getType());
+UnaryOperator *MTKContext::napraviNegaciju(Expr *izraz) const {
+    return napraviUnarni(izraz, UO_LNot, izraz->getType());
 }
 
 /* Dohvatanje celobrojne vrednosti */
-Expr *MTKContext::dohvatiCelobrojnu(Expr *input) const {
+Expr *MTKContext::dohvatiCelobrojnu(Expr *izraz) const {
+    /* Stavljanje binarnih operatora u zagradu */
+    if (isa<BinaryOperator>(izraz))
+        izraz = napraviParen(izraz);
+
+    /* Izdvajanje podataka o celobrojnom tipu */
     const auto tip = TheASTContext.IntTy;
     const auto tsi = TheASTContext.getTrivialTypeSourceInfo(tip, SourceLocation());
+
+    /* Kastovanje u celobrojni klasicni int */
     return CStyleCastExpr::Create(TheASTContext, tip, VK_RValue,
-                                  CK_IntegralCast, input, nullptr, tsi,
+                                  CK_IntegralCast, izraz, nullptr, tsi,
                                   SourceLocation(), SourceLocation());
 }
 
 /* Dohvatanje istinitosne vrednosti */
-Expr *MTKContext::dohvatiIstinitost(Expr *input) const {
-    return input->getType()->isIntegerType() ? input
-        : dohvatiCelobrojnu(napraviNegaciju(napraviNegaciju(input)));
+Expr *MTKContext::dohvatiIstinitost(Expr *izraz) const {
+    /* Dohvatanje podataka o tipu izraza */
+    const auto integer = izraz->getType()->isIntegerType();
+    const auto boolean = izraz->isKnownToHaveBooleanValue(true);
+
+    /* Istinitosni tip se pretvara u ceo broj */
+    if (boolean) return dohvatiCelobrojnu(izraz);
+    /* Celobrojni neistinitosni tip se ne menja */
+    else if (integer) return izraz;
+    /* Necelobrojni tip duplo negira i kastuje */
+    else return dohvatiCelobrojnu(napraviNegaciju(napraviNegaciju(izraz)));
 }
 
 /* Pravljenje binarnog operatora */

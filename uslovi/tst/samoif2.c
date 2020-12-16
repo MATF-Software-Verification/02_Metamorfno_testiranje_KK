@@ -16,10 +16,8 @@ int main() {
             break;
           }
           {
-            {
-              br = 1;
-              break;
-            }
+            br = 1;
+            break;
           }
         } while (0);
       }
@@ -32,7 +30,7 @@ int main() {
   putchar('\n');
 
   {
-    int cond0 = 1 < 2;
+    int cond0 = (int)(1 < 2);
     do {
       if (cond0 == 1)
         putchar('x');
@@ -41,14 +39,14 @@ int main() {
 
   int i = 1, j = 2;
   {
-    int cond1 = i > j;
+    int cond1 = (int)(i > j);
     do {
       if (cond1 == 1) {
         return 1;
         break;
       }
       {
-        int cond3 = i == j;
+        int cond3 = 0;
         do {
           if (cond3 == 1) {
             { return 1; }

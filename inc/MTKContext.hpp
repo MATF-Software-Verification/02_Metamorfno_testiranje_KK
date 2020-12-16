@@ -19,16 +19,21 @@ public:
     std::string stampaj(const Stmt *const s) const;
 
     /* Odredjivanje mesta naredbe u kodu */
-    SourceRange odrediMesto(const Stmt *const s) const;
+    SourceRange odrediMesto(const Stmt *const s,
+                            bool dir = false) const;
 
     /* Tekstualna zamena koda */
-    void zameni(const Stmt *const stari, const Stmt *const novi) const;
+    void zameni(const Stmt *const stari,
+                const Stmt *const novi,
+                bool dir = false) const;
 
     /* Prednja tekstualna dopuna koda */
-    void dodajIspred(const Stmt *const stari, const Stmt *const novi) const;
+    void dodajIspred(const Stmt *const stari,
+                     const Stmt *const novi) const;
 
     /* Zadnja tekstualna dopuna koda */
-    void dodajIza(const Stmt *const stari, const Stmt *const novi) const;
+    void dodajIza(const Stmt *const stari,
+                  const Stmt *const novi) const;
 
     /* Pronalazak prvog slobodnog imena */
     std::string nadjiIme(const std::string &pocetno) const;
@@ -55,19 +60,22 @@ public:
                              const std::string &ime,
                              const bool pocetna) const;
 
+    /* Pravljenje izraza u zagradi */
+    ParenExpr *napraviParen(Expr *izraz) const;
+
     /* Pravljenje unarnog operatora */
-    UnaryOperator *napraviUnarni(Expr *input,
+    UnaryOperator *napraviUnarni(Expr *izraz,
                                  const UnaryOperator::Opcode &op,
                                  const QualType &tip) const;
 
     /* Pravljenje logicke negacije */
-    UnaryOperator *napraviNegaciju(Expr *input) const;
+    UnaryOperator *napraviNegaciju(Expr *izraz) const;
 
     /* Dohvatanje celobrojne vrednosti */
-    Expr *dohvatiCelobrojnu(Expr *input) const;
+    Expr *dohvatiCelobrojnu(Expr *izraz) const;
 
     /* Dohvatanje istinitosne vrednosti */
-    Expr *dohvatiIstinitost(Expr *input) const;
+    Expr *dohvatiIstinitost(Expr *izraz) const;
 
     /* Pravljenje binarnog operatora */
     BinaryOperator *napraviBinarni(Expr *lhs, Expr *rhs,

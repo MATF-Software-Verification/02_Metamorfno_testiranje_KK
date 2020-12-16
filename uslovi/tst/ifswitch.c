@@ -6,9 +6,8 @@ int main() {
     if (pi) {
       putchar((int)pi + '0');
       pi--;
-    } else {
+    } else
       break;
-    }
   } while (1);
 
   putchar('\n');
@@ -19,7 +18,7 @@ int main() {
   int i = 1, j = 2;
   if (i > j)
     return 1;
-  else if (i == j) {
+  else if (0) {
     return 1;
   } else {
     putchar('k');
