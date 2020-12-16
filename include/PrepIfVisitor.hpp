@@ -12,7 +12,7 @@ public:
     PrepIfVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {}
 
-    /* Obrada odgovarajuceg if */
+    /* Obrada odgovarajuceg ifa */
     DeclRefExpr *obradiIf(const IfStmt *s);
 
     /* Priprema if naredbe */

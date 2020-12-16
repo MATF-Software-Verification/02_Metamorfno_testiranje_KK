@@ -4,6 +4,15 @@
 
 #include <climits>
 
+/* Poruka da nema slobodnog imena */
+static const auto nemaImena = "Nije moguce pronaci slobodno ime!";
+
+/* Prijavljivanje greske u radu */
+void MTKContext::greska(const std::string &poruka) {
+    llvm::errs() << poruka << '\n';
+    exit(EXIT_FAILURE);
+}
+
 /* Tekstualna reprezentacija naredbe */
 std::string MTKContext::stampaj(const Stmt *const s) const {
     /* Inicijalizacija izlaznog toka */
@@ -90,7 +99,7 @@ std::string MTKContext::nadjiIme(const std::string &pocetno) const {
     /* Proba svih mogucih kombinacija */
     while (TheASTContext.Idents.find(ime)
            != TheASTContext.Idents.end()) {
-        if (i == ULLONG_MAX) exit(EXIT_FAILURE);
+        if (i == ULLONG_MAX) greska(nemaImena);
         ime = pocetno + std::to_string(i++);
     }
 
@@ -197,7 +206,7 @@ Expr *MTKContext::dohvatiCelobrojnu(Expr *izraz) const {
 Expr *MTKContext::dohvatiIstinitost(Expr *izraz) const {
     /* Dohvatanje podataka o tipu izraza */
     const auto integer = izraz->getType()->isIntegerType();
-    const auto boolean = izraz->isKnownToHaveBooleanValue(true);
+    const auto boolean = izraz->isKnownToHaveBooleanValue();
 
     /* Istinitosni tip se pretvara u ceo broj */
     if (boolean) return dohvatiCelobrojnu(izraz);

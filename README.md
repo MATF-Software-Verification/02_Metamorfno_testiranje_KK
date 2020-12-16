@@ -12,7 +12,7 @@ Ideja za transformaciju petlji: [autorski](https://github.com/matfija/Clang-petl
 ## Podešavanje :memo:
 Primer podešavanja zavisnosti za Ubuntu:
 ```
-sudo apt install libclang-11-dev llvm-11-dev
+sudo apt install clang-11 libclang-11-dev llvm-11-dev
 ```
 Korišćeni sistem izgradnje je CMake.
 

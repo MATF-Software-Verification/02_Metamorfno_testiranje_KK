@@ -26,8 +26,8 @@ enum class Akcija {
 
 /* Nacin upotrebe programa */
 static std::string *stari, *novi, *petlja;
-const auto upotreba = "Upotreba: ./petlje <ulaz> <izlaz> <do|while|for>\n";
-const auto greska = "Neuspelo otvaranje datoteke!\n";
+static const auto upotreba = "Upotreba: ./petlje <ulaz> <izlaz> <do|while|for>";
+static const auto nemaDatoteke = "Neuspelo otvaranje datoteke!";
 
 /* Obrada prema zeljenoj akciji; sustinski
  * boilerplate (sablonski) kod za rad sa AST */
@@ -67,10 +67,7 @@ static void obradi(const Akcija &akcija) {
 
         /* Citanje prosledjenog fajla */
         const auto FileInOpt = FileMgr.getFile(*stari);
-        if (!FileInOpt) {
-            llvm::errs() << greska;
-            exit(EXIT_FAILURE);
-        }
+        if (!FileInOpt) MTKContext::greska(nemaDatoteke);
         const auto FileIn = FileInOpt.get();
 
         /* Postavljanje prosledjenog fajla za ulazni */
@@ -114,10 +111,7 @@ static void obradi(const Akcija &akcija) {
         if (RewriteBuf) {
             /* Otvaranje izlazne datoteke */
             std::ofstream izlaz(*novi);
-            if (!izlaz) {
-                llvm::errs() << greska;
-                exit(EXIT_FAILURE);
-            }
+            if (!izlaz) MTKContext::greska(nemaDatoteke);
 
             /* Upisivanje rezultata */
             izlaz << std::string(RewriteBuf->begin(), RewriteBuf->end());
@@ -127,10 +121,8 @@ static void obradi(const Akcija &akcija) {
             /* Otvaranje ulazne i izlazne datoteke */
             std::ifstream ulaz(*stari);
             std::ofstream izlaz(*novi);
-            if (!ulaz || !izlaz) {
-                llvm::errs() << greska;
-                exit(EXIT_FAILURE);
-            }
+            if (!ulaz || !izlaz)
+                MTKContext::greska(nemaDatoteke);
 
             /* Prepisivanje ulaza na izlaz */
             std::ostringstream buffer;
@@ -151,10 +143,7 @@ static void obradi(const Akcija &akcija) {
 /* Glavna funkcija aplikacije */
 int main(int argc, char *argv[]) {
     /* Prekid pogresno pokrenutog programa */
-    if (argc != 4) {
-        llvm::errs() << upotreba;
-        exit(EXIT_FAILURE);
-    }
+    if (argc != 4) MTKContext::greska(upotreba);
 
     /* Citanje argumenata */
     stari = new std::string(argv[1]);
@@ -164,10 +153,8 @@ int main(int argc, char *argv[]) {
     /* Prekid pogresno pokrenutog programa */
     if (*petlja != "do" &&
         *petlja != "while" &&
-        *petlja != "for") {
-        llvm::errs() << upotreba;
-        exit(EXIT_FAILURE);
-    }
+        *petlja != "for")
+        MTKContext::greska(upotreba);
 
     /* Prvi deo algoritma */
     if (*petlja == "do")

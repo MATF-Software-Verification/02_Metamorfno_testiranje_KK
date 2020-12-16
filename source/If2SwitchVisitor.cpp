@@ -37,9 +37,9 @@ bool If2SwitchVisitor::pomocni(IfStmt *s) const {
     if (deca.size() != 3) return false;
 
     /* Dohvatanje konkretne dece */
-    const auto dekl = dyn_cast<DeclStmt>(deca[0]);
-    const auto if1 = dyn_cast<IfStmt>(deca[1]);
-    const auto sw = dyn_cast<SwitchStmt>(deca[1]);
+    const auto dekl = isa<DeclStmt>(deca[0]);
+    const auto if1 = isa<IfStmt>(deca[1]);
+    const auto sw = isa<SwitchStmt>(deca[1]);
     const auto if2 = dyn_cast<IfStmt>(deca[2]);
 
     /* Odustajanje ako se ne uklapa */

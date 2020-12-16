@@ -38,7 +38,26 @@
  *   continue;
  * */
 
-/* Obrada odgovarajuceg switch */
+/* Poruka o nemogucnosti obrade switcha */
+static const auto dubokeOznake = "Nije moguce obraditi duboke case i default oznake!";
+
+/* Provera ima li dubokih oznaka */
+bool PrepSwitchVisitor::VisitSwitchCase(SwitchCase *s) const {
+    /* Dohvatanje prvog roditelja */
+    const auto telo = TheASTContext.getParentMapContext()
+        .getParents(*s).begin()->get<CompoundStmt>();
+    if (!telo) greska(dubokeOznake);
+
+    /* Dohvatanje drugog roditelja */
+    const auto swch = TheASTContext.getParentMapContext()
+        .getParents(*telo).begin()->get<SwitchStmt>();
+    if (!swch) greska(dubokeOznake);
+
+    /* Nastavljanje dalje */
+    return true;
+}
+
+/* Obrada odgovarajuceg switcha */
 DeclRefExpr *PrepSwitchVisitor::obradiSwitch(const SwitchStmt *s) {
     /* Odustajanje od pripremljenih */
     if (prip.count(s))

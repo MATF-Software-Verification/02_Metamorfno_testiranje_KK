@@ -10,7 +10,7 @@ enum class Akcija {
 
 /* Nacin upotrebe programa */
 static std::string *stari, *novi, *rekurzija;
-const auto upotreba = "Upotreba: ./rekurzija <ulaz> <izlaz> <iter|rek>\n";
+static const auto upotreba = "Upotreba: ./rekurzija <ulaz> <izlaz> <iter|rek>";
 
 /* Obrada prema zeljenoj akciji; sustinski
  * boilerplate (sablonski) kod za rad sa AST */
@@ -19,10 +19,7 @@ static void obradi(const Akcija &) {}
 /* Glavna funkcija aplikacije */
 int main(int argc, char *argv[]) {
     /* Prekid pogresno pokrenutog programa */
-    if (argc != 4) {
-        llvm::errs() << upotreba;
-        exit(EXIT_FAILURE);
-    }
+    if (argc != 4) MTKContext::greska(upotreba);
 
     /* Citanje argumenata */
     stari = new std::string(argv[1]);
@@ -35,10 +32,7 @@ int main(int argc, char *argv[]) {
     } else if (*rekurzija == "rek") {
         obradi(Akcija::Iter2Rek);
     /* Prekid pogresno pokrenutog programa */
-    } else {
-        llvm::errs() << upotreba;
-        exit(EXIT_FAILURE);
-    }
+    } else MTKContext::greska(upotreba);
 
     /* Lepo formatiranje novog koda */
     std::ostringstream buffer;

@@ -34,7 +34,7 @@
  *   break;
  * */
 
-/* Obrada odgovarajuceg if */
+/* Obrada odgovarajuceg ifa */
 DeclRefExpr *PrepIfVisitor::obradiIf(const IfStmt *s) {
     /* Odustajanje od pripremljenih */
     if (prip.count(s))

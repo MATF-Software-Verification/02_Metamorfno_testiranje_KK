@@ -12,7 +12,10 @@ public:
     PrepSwitchVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {}
 
-    /* Obrada odgovarajuceg switch */
+    /* Provera ima li dubokih oznaka */
+    bool VisitSwitchCase(SwitchCase *s) const;
+
+    /* Obrada odgovarajuceg switcha */
     DeclRefExpr *obradiSwitch(const SwitchStmt *s);
 
     /* Priprema switch naredbe */

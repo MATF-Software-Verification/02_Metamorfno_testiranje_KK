@@ -15,6 +15,9 @@ public:
     MTKContext(Rewriter &R, ASTContext &A)
       : TheRewriter(R), TheASTContext(A) {}
 
+    /* Prijavljivanje greske u radu */
+    [[noreturn]] static void greska(const std::string &poruka);
+
     /* Tekstualna reprezentacija naredbe */
     std::string stampaj(const Stmt *const s) const;
 
