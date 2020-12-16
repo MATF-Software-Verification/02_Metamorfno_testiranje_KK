@@ -203,7 +203,7 @@ Expr *MTKContext::dohvatiIstinitost(Expr *izraz) const {
     if (boolean) return dohvatiCelobrojnu(izraz);
     /* Celobrojni neistinitosni tip se ne menja */
     else if (integer) return izraz;
-    /* Necelobrojni tip duplo negira i kastuje */
+    /* Necelobrojni tip se duplo negira i kastuje */
     else return dohvatiCelobrojnu(napraviNegaciju(napraviNegaciju(izraz)));
 }
 

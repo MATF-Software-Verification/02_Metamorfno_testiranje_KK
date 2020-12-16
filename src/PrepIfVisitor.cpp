@@ -67,7 +67,8 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
     /* Inicijalizacija deklaracije */
     DeclRefExpr *dekl = nullptr;
 
-    /* Indikator posebne zamene */
+    /* Indikator posebne zamene ukoliko je
+     * break direktni potomak else grane */
     bool dir = false;
 
     /* Prolazak kroz roditelje tekuceg break */
