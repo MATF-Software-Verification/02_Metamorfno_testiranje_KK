@@ -30,37 +30,40 @@
  *   if (cond != c && cond != d)
  *     telodef;
  *
- *   if (cond == a || cond == b || cond == c)
+ *   if (cond != d)
  *     teloc;
  *
- *   if (cond == a || cond == b || cond == c || cond == d)
- *     telod;
+ *   telod;
  * } while (0);
  * */
 
 /* Izracunavanje uslova za default */
 Expr *Switch2IfVisitor::defUslov(StmtIterator dete,
                                  StmtIterator kraj,
-                                 DeclRefExpr *uslov) const {
+                                 DeclRefExpr *uslov,
+                                 std::deque<Expr *> &u) const {
     /* Inicijalizacija uslova */
     Expr *cond = nullptr;
 
     /* Popunjavanje svim nejednakostima */
     for (; dete != kraj; dete++) {
         const auto cas = dyn_cast<CaseStmt>(*dete);
+        if (!cas) continue; /* mora biti case */
+
+        /* Izracunavanje tekuce nejednakosti */
+        u.push_back(napraviNejednakost(uslov, cas->getLHS()));
 
         /* Konjukcija nejednakosti ako ih ima vise */
-        if (cas) cond = !cond ? napraviNejednakost(uslov, cas->getLHS()) :
-        napraviKonjunkciju(cond, napraviNejednakost(uslov, cas->getLHS()));
+        cond = cond ? napraviKonjunkciju(cond, u.back()) : u.back();
     }
 
     /* Vracanje rezultata */
     return cond;
 }
 
-/* Provera da li je prazan default */
-bool Switch2IfVisitor::prazanDefault(DefaultStmt *s) const {
-    return !s || isa<BreakStmt>(s->getSubStmt());
+/* Provera da li je neprazan case */
+bool Switch2IfVisitor::neprazanSwitchCase(SwitchCase *s) const {
+    return s && !isa<BreakStmt>(s->getSubStmt());
 }
 
 /* Pretvaranje switch naredbe u if */
@@ -75,49 +78,88 @@ bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
     const auto uslov = napraviDeclExpr(dekl);
 
     /* Nizovi uslova i if naredbi */
-    std::vector<Expr *> conds;
-    std::vector<Stmt *> ifovi;
+    std::vector<Expr *> disj;
+    std::deque<Expr *> konj;
+    std::vector<Stmt *> telo;
 
     /* Telo switcha kroz koje se iterira */
     const auto start = std::cbegin(s->getBody()->children());
     const auto kraj = std::cend(s->getBody()->children());
 
-    /* Iteracija kroz telo switcha */
-    for (auto dete = start; dete != kraj; dete++) {
+    /* Prolazak kroz telo switcha */
+    auto dete = start;
+    for (; dete != kraj; dete++) {
         /* Case naredba: dodavanje uslova jednakosti */
-        if (auto cas = dyn_cast<CaseStmt>(*dete)) {
-            conds.push_back(napraviJednakost(uslov, cas->getLHS()));
+        if (const auto cas = dyn_cast<CaseStmt>(*dete)) {
+            disj.push_back(napraviJednakost(uslov, cas->getLHS()));
 
             /* Disjunkcija svih dosadasnjih uslova */
-            Expr *cond = conds[0];
-            for (auto i = 1ul; i < conds.size(); i++) {
-                cond = napraviDisjunkciju(cond, conds[i]);
+            Expr *cond = disj[0];
+            for (auto i = 1ul; i < disj.size(); i++) {
+                cond = napraviDisjunkciju(cond, disj[i]);
             }
 
             /* Pravljenje odgovarajuce if naredbe */
-            ifovi.push_back(napraviIf(cond, cas->getSubStmt()));
+            telo.push_back(napraviIf(cond, cas->getSubStmt()));
         /* Default naredba: posebno sracunat uslov */
-        } else if (auto def = dyn_cast<DefaultStmt>(*dete)) {
-            const auto defUsl = defUslov(dete, kraj, uslov);
+        } else if (const auto def = dyn_cast<DefaultStmt>(*dete)) {
+            const auto defUsl = defUslov(dete, kraj, uslov, konj);
 
             /* Ima uslova -> dodavanje if naredbe */
             if (defUsl)
-                ifovi.push_back(napraviIf(defUsl, def->getSubStmt()));
+                telo.push_back(napraviIf(defUsl, def->getSubStmt()));
             /* Nema uslova -> dodavanje ako nije break */
-            else if (!prazanDefault(def))
-                ifovi.push_back(def->getSubStmt());
+            else if (neprazanSwitchCase(def))
+                telo.push_back(def->getSubStmt());
+
+            /* Iskakanje iz petlje nakon default */
+            break;
         /* Ostale naredbe: dodavanje na kraj prethodnog ifa */
         } else {
-            const auto iff = cast<IfStmt>(ifovi.back());
+            const auto iff = cast<IfStmt>(telo.back());
             iff->setThen(napraviSlozenu({iff->getThen(), *dete}));
         }
     }
 
+    /* Pomeranje iteratora ako moze */
+    if (dete != kraj) dete++;
+
+    /* Prolazak kroz ostatak tela */
+    for (; dete != kraj; dete++) {
+        /* Case naredba: uklanjanje uslova nejednakosti */
+        if (const auto cas = dyn_cast<CaseStmt>(*dete)) {
+            konj.pop_front();
+
+            /* Samo se telo dodaje ako nema dalje
+             * i ako nije prazno (npr. samo break) */
+            if (konj.empty()) {
+                if (neprazanSwitchCase(cas))
+                    telo.push_back(cas->getSubStmt());
+                continue;
+            }
+
+            /* Konjunkcija svih preostalih uslova */
+            Expr *cond = konj[0];
+            for (auto i = 1ul; i < konj.size(); i++) {
+                cond = napraviKonjunkciju(cond, konj[i]);
+            }
+
+            /* Pravljenje odgovarajuce if naredbe */
+            telo.push_back(napraviIf(cond, cas->getSubStmt()));
+        /* Ostale naredbe: dodavanje na kraj prethodnog ifa */
+        } else if (const auto iff = dyn_cast<IfStmt>(telo.back())) {
+            iff->setThen(napraviSlozenu({iff->getThen(), *dete}));
+        /* Ili prosto dodavanje na kraj ako nema ifa */
+        } else {
+            telo.push_back(*dete);
+        }
+    }
+
     /* Transformisano telo */
-    const auto telo = napraviSlozenu(ifovi);
+    const auto ttelo = napraviSlozenu(telo);
 
     /* Do petlja kao omotac svega */
-    const auto petlja = napraviDo(telo, napraviFalse());
+    const auto petlja = napraviDo(ttelo, napraviFalse());
 
     /* Slozena naredba za zamenu */
     const auto zamena = napraviSlozenu({dekl, petlja});

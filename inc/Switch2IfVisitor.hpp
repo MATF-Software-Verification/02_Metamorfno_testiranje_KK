@@ -3,6 +3,8 @@
 
 #include "MTKConsumer.hpp"
 
+#include <deque>
+
 /* Posetilac koji do pretvara u for */
 class Switch2IfVisitor : public MTKVisitor<Switch2IfVisitor> {
 public:
@@ -13,10 +15,11 @@ public:
     /* Izracunavanje uslova za default */
     Expr *defUslov(StmtIterator dete,
                    StmtIterator kraj,
-                   DeclRefExpr *uslov) const;
+                   DeclRefExpr *uslov,
+                   std::deque<Expr *> &u) const;
 
-    /* Provera da li je prazan default */
-    bool prazanDefault(DefaultStmt *s) const;
+    /* Provera da li je neprazan case */
+    bool neprazanSwitchCase(SwitchCase *s) const;
 
     /* Pretvaranje switch naredbe u if */
     bool VisitSwitchStmt(SwitchStmt *s) const;
