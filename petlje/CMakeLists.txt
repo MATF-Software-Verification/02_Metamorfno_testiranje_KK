@@ -31,27 +31,27 @@ add_definitions(${LibClang_DEFINITIONS})
 
 include_directories(
   ${LibClang_INCLUDE_DIR}
-  ../inc
+  ../include
 )
 
 link_directories(${LibClang_LINK_PATH})
 
 add_executable(petlje petlje.cpp
-                      ../inc/MTKConsumer.hpp
-                      ../inc/MTKContext.hpp
-                      ../src/MTKContext.cpp
-                      ../inc/Do2ForVisitor.hpp
-                      ../src/Do2ForVisitor.cpp
-                      ../inc/For2DoVisitor.hpp
-                      ../src/For2DoVisitor.cpp
-                      ../inc/For2WhileVisitor.hpp
-                      ../src/For2WhileVisitor.cpp
-                      ../inc/While2DoVisitor.hpp
-                      ../src/While2DoVisitor.cpp
-                      ../inc/While2ForVisitor.hpp
-                      ../src/While2ForVisitor.cpp
-                      ../inc/PrepForVisitor.hpp
-                      ../src/PrepForVisitor.cpp)
+                      ../include/MTKConsumer.hpp
+                      ../include/MTKContext.hpp
+                      ../source/MTKContext.cpp
+                      ../include/Do2ForVisitor.hpp
+                      ../source/Do2ForVisitor.cpp
+                      ../include/For2DoVisitor.hpp
+                      ../source/For2DoVisitor.cpp
+                      ../include/For2WhileVisitor.hpp
+                      ../source/For2WhileVisitor.cpp
+                      ../include/While2DoVisitor.hpp
+                      ../source/While2DoVisitor.cpp
+                      ../include/While2ForVisitor.hpp
+                      ../source/While2ForVisitor.cpp
+                      ../include/PrepForVisitor.hpp
+                      ../source/PrepForVisitor.cpp)
 
 target_link_libraries(petlje libLLVM-11.so
                              libclangTooling.a
@@ -67,3 +67,4 @@ target_link_libraries(petlje libLLVM-11.so
                              libclangSema.a
                              libclangSerialization.a
                              libclangTooling.a)
+

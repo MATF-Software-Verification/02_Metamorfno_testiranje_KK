@@ -31,23 +31,23 @@ add_definitions(${LibClang_DEFINITIONS})
 
 include_directories(
   ${LibClang_INCLUDE_DIR}
-  ../inc
+  ../include
 )
 
 link_directories(${LibClang_LINK_PATH})
 
 add_executable(uslovi uslovi.cpp
-                      ../inc/MTKConsumer.hpp
-                      ../inc/MTKContext.hpp
-                      ../src/MTKContext.cpp
-                      ../inc/PrepIfVisitor.hpp
-                      ../src/PrepIfVisitor.cpp
-                      ../inc/PrepSwitchVisitor.hpp
-                      ../src/PrepSwitchVisitor.cpp
-                      ../inc/If2SwitchVisitor.hpp
-                      ../src/If2SwitchVisitor.cpp
-                      ../inc/Switch2IfVisitor.hpp
-                      ../src/Switch2IfVisitor.cpp)
+                      ../include/MTKConsumer.hpp
+                      ../include/MTKContext.hpp
+                      ../source/MTKContext.cpp
+                      ../include/PrepIfVisitor.hpp
+                      ../source/PrepIfVisitor.cpp
+                      ../include/PrepSwitchVisitor.hpp
+                      ../source/PrepSwitchVisitor.cpp
+                      ../include/If2SwitchVisitor.hpp
+                      ../source/If2SwitchVisitor.cpp
+                      ../include/Switch2IfVisitor.hpp
+                      ../source/Switch2IfVisitor.cpp)
 
 target_link_libraries(uslovi libLLVM-11.so
                              libclangTooling.a
@@ -63,3 +63,4 @@ target_link_libraries(uslovi libLLVM-11.so
                              libclangSema.a
                              libclangSerialization.a
                              libclangTooling.a)
+

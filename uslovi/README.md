@@ -17,3 +17,4 @@ Primer pokretanja (testiranja) programa:
 ./uslovi <ulaz> <izlaz> <if|switch>
 ./uslovi ulaz.c izlaz.c if
 ```
+

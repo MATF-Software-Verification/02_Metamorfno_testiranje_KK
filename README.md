@@ -20,3 +20,4 @@ Korišćeni sistem izgradnje je CMake.
 * [Momir Adžemović](https://github.com/Robotmurlock), 1005/2020
 * [Lazar Vasović](https://github.com/matfija), 1011/2020
 * [Marko Spasić](https://github.com/spaske00), 1014/2020
+

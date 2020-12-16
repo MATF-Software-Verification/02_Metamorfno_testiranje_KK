@@ -17,3 +17,4 @@ Primer pokretanja (testiranja) programa:
 ./rekurzija <ulaz> <izlaz> <iter|rek>
 ./rekurzija ulaz.c izlaz.c iter
 ```
+

@@ -31,21 +31,21 @@ add_definitions(${LibClang_DEFINITIONS})
 
 include_directories(
   ${LibClang_INCLUDE_DIR}
-  ../inc
+  ../include
 )
 
 link_directories(${LibClang_LINK_PATH})
 
 add_executable(rekurzija rekurzija.cpp
-                         ../inc/MTKConsumer.hpp
-                         ../inc/MTKContext.hpp
-                         ../src/MTKContext.cpp
-                         ../inc/Do2ForVisitor.hpp
-                         ../src/Do2ForVisitor.cpp
-                         ../inc/PrepForVisitor.hpp
-                         ../src/PrepForVisitor.cpp
-                         ../inc/For2WhileVisitor.hpp
-                         ../src/For2WhileVisitor.cpp)
+                         ../include/MTKConsumer.hpp
+                         ../include/MTKContext.hpp
+                         ../source/MTKContext.cpp
+                         ../include/Do2ForVisitor.hpp
+                         ../source/Do2ForVisitor.cpp
+                         ../include/PrepForVisitor.hpp
+                         ../source/PrepForVisitor.cpp
+                         ../include/For2WhileVisitor.hpp
+                         ../source/For2WhileVisitor.cpp)
 
 target_link_libraries(rekurzija libLLVM-11.so
                                 libclangTooling.a
@@ -61,3 +61,4 @@ target_link_libraries(rekurzija libLLVM-11.so
                                 libclangSema.a
                                 libclangSerialization.a
                                 libclangTooling.a)
+
