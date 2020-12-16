@@ -21,8 +21,8 @@
 /* Provera da li je if pomocni */
 bool If2SwitchVisitor::pomocni(IfStmt *s) const {
     /* Dohvatanje roditelja */
-    const auto rod = TheASTContext.getParentMapContext()
-                     .getParents(*s).begin()->get<CompoundStmt>();
+    const auto rod = TheASTContext.getParents(*s)
+                     .begin()->get<CompoundStmt>();
 
     /* Odustajanje ako se ne uklapa */
     if (!rod) return false;

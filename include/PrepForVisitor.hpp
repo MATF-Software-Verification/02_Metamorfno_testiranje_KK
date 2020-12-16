@@ -3,6 +3,9 @@
 
 #include "MTKConsumer.hpp"
 
+#include <unordered_set>
+#include <unordered_map>
+
 /* Posetilac koji dodaje korak petlje */
 class PrepForVisitor : public MTKVisitor<PrepForVisitor> {
 public:
@@ -10,8 +13,26 @@ public:
     PrepForVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {}
 
+    /* Odredjivanje petlje i prethodnog */
+    std::pair<const ForStmt *,
+              const Stmt *> odrediPetlju(Stmt *s) const;
+
+    /* Pronalazak svih imena u koraku */
+    bool VisitDeclRefExpr(DeclRefExpr *s);
+
+    /* Pronalazak svih imena u telu petlje */
+    bool VisitDeclStmt(DeclStmt *s);
+
     /* Dodavanje inkrementa pre continue */
     bool VisitContinueStmt(ContinueStmt *s) const;
+
+private:
+    /* Privatno cuvanje mape imena */
+    std::unordered_map<const ForStmt *,
+                       std::unordered_set<std::string>> imena;
+
+    /* Privatno cuvanje skupa maskiranih */
+    std::unordered_set<const ForStmt *> maskirani;
 };
 
 #endif

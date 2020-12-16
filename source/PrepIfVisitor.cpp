@@ -72,7 +72,7 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
     bool dir = false;
 
     /* Prolazak kroz roditelje tekuceg break */
-    auto rod = TheASTContext.getParentMapContext().getParents(*s);
+    auto rod = TheASTContext.getParents(*s);
     while (!rod.empty()) {
         /* Izdvajanje glavnog roditelja */
         const auto r = rod.begin()->get<Stmt>();

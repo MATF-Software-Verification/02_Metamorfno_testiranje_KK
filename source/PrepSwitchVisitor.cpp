@@ -44,13 +44,13 @@ static const auto dubokeOznake = "Nije moguce obraditi duboke case i default ozn
 /* Provera ima li dubokih oznaka */
 bool PrepSwitchVisitor::VisitSwitchCase(SwitchCase *s) const {
     /* Dohvatanje prvog roditelja */
-    const auto telo = TheASTContext.getParentMapContext()
-        .getParents(*s).begin()->get<CompoundStmt>();
+    const auto telo = TheASTContext.getParents(*s)
+                      .begin()->get<CompoundStmt>();
     if (!telo) greska(dubokeOznake);
 
     /* Dohvatanje drugog roditelja */
-    const auto swch = TheASTContext.getParentMapContext()
-        .getParents(*telo).begin()->get<SwitchStmt>();
+    const auto swch = TheASTContext.getParents(*telo)
+                      .begin()->get<SwitchStmt>();
     if (!swch) greska(dubokeOznake);
 
     /* Nastavljanje dalje */
@@ -91,7 +91,7 @@ bool PrepSwitchVisitor::VisitContinueStmt(ContinueStmt *s) {
     DeclRefExpr *dekl = nullptr;
 
     /* Prolazak kroz roditelje tekuceg continue */
-    auto rod = TheASTContext.getParentMapContext().getParents(*s);
+    auto rod = TheASTContext.getParents(*s);
     while (!rod.empty()) {
         /* Izdvajanje glavnog roditelja */
         const auto r = rod.begin()->get<Stmt>();
