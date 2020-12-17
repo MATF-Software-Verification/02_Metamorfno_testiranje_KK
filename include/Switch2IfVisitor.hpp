@@ -5,7 +5,7 @@
 
 #include <deque>
 
-/* Posetilac koji do pretvara u for */
+/* Posetilac koji swtich pretvara u if */
 class Switch2IfVisitor : public MTKVisitor<Switch2IfVisitor> {
 public:
     /* Inicijalizacija prepisivaca i konteksta */

@@ -97,7 +97,7 @@ bool PrepSwitchVisitor::VisitContinueStmt(ContinueStmt *s) {
         const auto r = rod.begin()->get<Stmt>();
 
         /* Odustajanje ako je neka petlja */
-        if (isa<DoStmt>(r) || isa<WhileStmt>(r) || isa<ForStmt>(r))
+        if (!r || isa<DoStmt>(r) || isa<WhileStmt>(r) || isa<ForStmt>(r))
             return true;
 
         /* Uzimanje roditelja koji je switch */

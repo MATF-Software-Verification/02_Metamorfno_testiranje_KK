@@ -78,8 +78,8 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
         const auto r = rod.begin()->get<Stmt>();
 
         /* Odustajanje ako je neka petlja ili switch */
-        if (isa<DoStmt>(r)  || isa<WhileStmt>(r) ||
-            isa<ForStmt>(r) || isa<SwitchStmt>(r))
+        if (!r || isa<DoStmt>(r)  || isa<WhileStmt>(r)
+               || isa<ForStmt>(r) || isa<SwitchStmt>(r))
             return true;
 
         /* Uzimanje roditelja koji je if */

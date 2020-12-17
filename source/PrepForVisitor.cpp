@@ -37,6 +37,7 @@ std::pair<const ForStmt *,
     while (!rod.empty()) {
         /* Izdvajanje glavnog roditelja */
         const auto r = rod.begin()->get<Stmt>();
+        if (!r) break;
 
         /* Provera da li je for */
         forr = dyn_cast<ForStmt>(r);
@@ -67,7 +68,7 @@ bool PrepForVisitor::VisitDeclRefExpr(DeclRefExpr *s) {
         return true;
 
     /* Dohvatanje tekuce deklaracije */
-    const auto dekl = dyn_cast<VarDecl>(s->getDecl());
+    const auto dekl = dyn_cast<NamedDecl>(s->getDecl());
     if (!dekl) return true;
 
     /* Ime tekuce deklaracije */

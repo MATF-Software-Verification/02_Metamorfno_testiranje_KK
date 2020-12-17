@@ -3,7 +3,7 @@
 
 #include "MTKConsumer.hpp"
 
-/* Posetilac koji do pretvara u for */
+/* Posetilac koji if pretvara u switch */
 class If2SwitchVisitor : public MTKVisitor<If2SwitchVisitor> {
 public:
     /* Inicijalizacija prepisivaca i konteksta */

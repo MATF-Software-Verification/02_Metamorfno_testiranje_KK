@@ -28,6 +28,7 @@ int main() {
   for (; 1;) {
     for (; 1;)
       break;
+
     x = 5;
     break;
   }

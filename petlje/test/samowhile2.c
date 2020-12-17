@@ -11,13 +11,13 @@ int main() {
   }
 
   if (x--) {
-    int cond = 1;
-    while (cond) {
+    int cond0 = 1;
+    while (cond0) {
       {
         printf("%d", x);
         x += 2;
       }
-      cond = x--;
+      cond0 = x--;
     }
   }
 
@@ -27,26 +27,26 @@ int main() {
     {
       x = 10;
       if (x--) {
-        int cond = 1;
-        while (cond) {
+        int cond1 = 1;
+        while (cond1) {
           {
             printf("%d", x);
             x--;
           }
-          cond = x--;
+          cond1 = x--;
         }
       }
     }
   }
 
   if (1) {
-    int cond = 1;
-    while (cond) {
+    int cond2 = 1;
+    while (cond2) {
       {
         x = 10;
         break;
       }
-      cond = 1;
+      cond2 = 1;
     }
   }
 
@@ -54,20 +54,20 @@ int main() {
   putchar('\n');
 
   if (1) {
-    int cond = 1;
-    while (cond) {
+    int cond3 = 1;
+    while (cond3) {
       {
         if (1) {
-          int cond = 1;
-          while (cond) {
+          int cond8 = 1;
+          while (cond8) {
             break;
-            cond = 1;
+            cond8 = 1;
           }
         }
         x = 5;
         break;
       }
-      cond = 1;
+      cond3 = 1;
     }
   }
 
@@ -75,38 +75,37 @@ int main() {
   putchar('\n');
 
   if (0) {
-    int cond = 1;
-    while (cond) {
-      {
-      }
-      cond = 0;
+    int cond4 = 1;
+    while (cond4) {
+      {}
+      cond4 = 0;
     }
   }
 
   if (0) {
-    int cond = 1;
-    while (cond) {
+    int cond5 = 1;
+    while (cond5) {
       ;
-      cond = 0;
+      cond5 = 0;
     }
   }
 
   {
     x = -5;
     if (x) {
-      int cond = 1;
-      while (cond) {
+      int cond6 = 1;
+      while (cond6) {
         {
           {
             x++;
             {
-              cond = x;
+              cond6 = x;
               continue;
             }
           }
           x++;
         }
-        cond = x;
+        cond6 = x;
       }
     }
   }
@@ -114,13 +113,13 @@ int main() {
   {
     x = 0;
     if (x) {
-      int cond = 1;
-      while (cond) {
+      int cond7 = 1;
+      while (cond7) {
         {
-          cond = x;
+          cond7 = x;
           continue;
         }
-        cond = x;
+        cond7 = x;
       }
     }
   }

@@ -80,24 +80,24 @@ static void obradi(const Akcija &akcija) {
         auto &TheASTContext = TheCompInst.getASTContext();
         ASTConsumer* TheConsumer;
         switch (akcija) {
-            case Akcija::While2Do:
-                TheConsumer = new MTKConsumer<While2DoVisitor>(TheRewriter, TheASTContext);
-                break;
-            case Akcija::Do2For:
-                TheConsumer = new MTKConsumer<Do2ForVisitor>(TheRewriter, TheASTContext);
-                break;
-            case Akcija::While2For:
-                TheConsumer = new MTKConsumer<While2ForVisitor>(TheRewriter, TheASTContext);
-                break;
-            case Akcija::PrepFor:
-                TheConsumer = new MTKConsumer<PrepForVisitor>(TheRewriter, TheASTContext);
-                break;
-            case Akcija::For2While:
-                TheConsumer = new MTKConsumer<For2WhileVisitor>(TheRewriter, TheASTContext);
-                break;
-            case Akcija::For2Do:
-                TheConsumer = new MTKConsumer<For2DoVisitor>(TheRewriter, TheASTContext);
-                break;
+        case Akcija::While2Do:
+            TheConsumer = new MTKConsumer<While2DoVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::Do2For:
+            TheConsumer = new MTKConsumer<Do2ForVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::While2For:
+            TheConsumer = new MTKConsumer<While2ForVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::PrepFor:
+            TheConsumer = new MTKConsumer<PrepForVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::For2While:
+            TheConsumer = new MTKConsumer<For2WhileVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::For2Do:
+            TheConsumer = new MTKConsumer<For2DoVisitor>(TheRewriter, TheASTContext);
+            break;
         }
 
         /* Parsiranje i obrada AST stabla */

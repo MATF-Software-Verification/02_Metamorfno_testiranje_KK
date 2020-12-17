@@ -76,18 +76,18 @@ static void obradi(const Akcija &akcija) {
         auto &TheASTContext = TheCompInst.getASTContext();
         ASTConsumer* TheConsumer;
         switch (akcija) {
-            case Akcija::PrepIf:
-                TheConsumer = new MTKConsumer<PrepIfVisitor>(TheRewriter, TheASTContext);
-                break;
-            case Akcija::PrepSwitch:
-                TheConsumer = new MTKConsumer<PrepSwitchVisitor>(TheRewriter, TheASTContext);
-                break;
-            case Akcija::If2Switch:
-                TheConsumer = new MTKConsumer<If2SwitchVisitor>(TheRewriter, TheASTContext);
-                break;
-            case Akcija::Switch2If:
-                TheConsumer = new MTKConsumer<Switch2IfVisitor>(TheRewriter, TheASTContext);
-                break;
+        case Akcija::PrepIf:
+            TheConsumer = new MTKConsumer<PrepIfVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::PrepSwitch:
+            TheConsumer = new MTKConsumer<PrepSwitchVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::If2Switch:
+            TheConsumer = new MTKConsumer<If2SwitchVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::Switch2If:
+            TheConsumer = new MTKConsumer<Switch2IfVisitor>(TheRewriter, TheASTContext);
+            break;
         }
 
         /* Parsiranje i obrada AST stabla */

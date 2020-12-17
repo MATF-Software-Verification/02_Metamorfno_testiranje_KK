@@ -41,6 +41,7 @@ int main() {
         do
           break;
         while (1);
+
       x = 5;
       break;
     } while (1);

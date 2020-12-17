@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 
-/* Posetilac koji do pretvara u for */
+/* Posetilac koji priprema switch */
 class PrepSwitchVisitor : public MTKVisitor<PrepSwitchVisitor> {
 public:
     /* Inicijalizacija prepisivaca i konteksta */

@@ -107,10 +107,10 @@ std::string MTKContext::nadjiIme(const std::string &pocetno) const {
     return ime;
 }
 
-/* Pravljenje nove deklaracije */
-VarDecl *MTKContext::napraviDecl(DeclContext *kontekst,
-                                 const CanQual<Type> &tip,
-                                 const std::string &ime) const {
+/* Pravljenje nove promenljive */
+VarDecl *MTKContext::napraviVar(DeclContext *kontekst,
+                                const CanQual<Type> &tip,
+                                const std::string &ime) const {
     return VarDecl::Create(TheASTContext, kontekst,
                            SourceLocation(), SourceLocation(),
                            &TheASTContext.Idents.getOwn(ime),
@@ -152,13 +152,13 @@ DeclStmt *MTKContext::napraviUslovnu(Decl *deklaracija,
 
     /* Deklaracija uslovne promenljive */
     const auto tip = TheASTContext.IntTy;
-    auto dekl = napraviDecl(deklaracija->getDeclContext(), tip, slobime);
+    auto var = napraviVar(deklaracija->getDeclContext(), tip, slobime);
 
     /* Celobrojna vrednost za inicijalizaciju */
-    dekl->setInit(napraviInt(pocetna));
+    var->setInit(napraviInt(pocetna));
 
     /* Naredba deklaracije uslovne promenljive */
-    return naHip(DeclStmt(DeclGroupRef(dekl), SourceLocation(), SourceLocation()));
+    return naHip(DeclStmt(DeclGroupRef(var), SourceLocation(), SourceLocation()));
 }
 
 /* Pravljenje izraza u zagradi */

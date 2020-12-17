@@ -5,7 +5,7 @@
 
 #include <unordered_map>
 
-/* Posetilac koji do pretvara u for */
+/* Posetilac koji priprema if */
 class PrepIfVisitor : public MTKVisitor<PrepIfVisitor> {
 public:
     /* Inicijalizacija prepisivaca i konteksta */
