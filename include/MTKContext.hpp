@@ -4,6 +4,8 @@
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Rewrite/Core/Rewriter.h"
 
+#include <unordered_set>
+
 /* Upotreba Clangovog imenskog prostora */
 using namespace clang;
 
@@ -14,6 +16,9 @@ public:
      * prepisivacem i kontekstom parsiranja */
     MTKContext(Rewriter &R, ASTContext &A)
       : TheRewriter(R), TheASTContext(A) {}
+
+    /* Staticko cuvanje posecenih funkcija */
+    static std::unordered_set<std::string> *fje;
 
     /* Prijavljivanje greske u radu */
     [[noreturn]] static void greska(const std::string &poruka);

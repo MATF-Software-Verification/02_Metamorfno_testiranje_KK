@@ -7,6 +7,10 @@
 /* Poruka da nema slobodnog imena */
 static const auto nemaImena = "Nije moguce pronaci slobodno ime!";
 
+/* Staticko cuvanje posecenih funkcija */
+std::unordered_set<std::string> *MTKContext::fje
+    = new std::unordered_set<std::string>;
+
 /* Prijavljivanje greske u radu */
 void MTKContext::greska(const std::string &poruka) {
     llvm::errs() << poruka << '\n';
