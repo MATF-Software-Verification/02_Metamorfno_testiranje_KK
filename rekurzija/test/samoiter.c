@@ -6,7 +6,7 @@ void viter() {
   while (broj) {
     printf("%d", broj);
     broj--;
-    { continue; }
+    continue;
   }
   putchar('\n');
 }

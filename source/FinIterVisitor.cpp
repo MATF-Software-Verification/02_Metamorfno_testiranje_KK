@@ -64,10 +64,13 @@ bool FinIterVisitor::VisitReturnStmt(ReturnStmt *s) const {
     }
 
     /* Dodavanje continue za nastavak */
-    naredbe.push_back(napraviCont());
+    Stmt *zamena = napraviCont();
 
-    /* Slozena naredba za zamenu */
-    const auto zamena = napraviSlozenu(naredbe);
+    /* Provera da li ima necega u nizu */
+    if (!naredbe.empty()) {
+        naredbe.push_back(zamena);
+        zamena = napraviSlozenu(naredbe);
+    }
 
     /* Tekstualna zamena koda */
     zameni(s, zamena);
