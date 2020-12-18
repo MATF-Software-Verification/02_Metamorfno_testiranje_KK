@@ -1,18 +1,32 @@
 #include <stdio.h>
 
-int itenr(int a, int rez) {
-  while (!(a <= 0))
-    return itenr(a - 1, rez + 1);
+int itenr(double a, int rez) {
+  while (!(a <= 0)) {
+    double a0 = a - 1;
+    int rez0 = rez + 1;
+    a = a0;
+    rez = rez0;
+    continue;
+  }
+
   return rez;
 }
 
 // duboki polozaj poziva
-int itenr2(int a, int rez) {
+int itenr2(double a, int rez) {
   while (!(a <= 0)) {
     rez--;
     {
       rez++;
-      { return itenr2(a - 1, rez + 1); }
+      {
+        {
+          double a1 = a - 1;
+          int rez1 = rez + 1;
+          a = a1;
+          rez = rez1;
+          continue;
+        }
+      }
     }
   }
   {
@@ -25,8 +39,14 @@ int itenr2(int a, int rez) {
 }
 
 int itern(int a, int rez) {
-  while (a > 0)
-    return itern(a - 1, rez + 1);
+  while (a > 0) {
+    int a2 = a - 1;
+    int rez2 = rez + 1;
+    a = a2;
+    rez = rez2;
+    continue;
+  }
+
   return rez;
 }
 
@@ -42,8 +62,14 @@ int itern2(int a, int rez) {
 }
 
 int ittnr(int a, int rez) {
-  while (!(a <= 0))
-    return ittnr(a - 1, rez + 1);
+  while (!(a <= 0)) {
+    int a3 = a - 1;
+    int rez3 = rez + 1;
+    a = a3;
+    rez = rez3;
+    continue;
+  }
+
   return rez;
 }
 
@@ -52,14 +78,26 @@ int ittnr2(int a, int rez) {
   while (!(a <= 0)) {
     if (a > 5)
       return ittnr(a - 6, rez + 6);
-    return ittnr2(a - 1, rez + 1);
+    {
+      int a4 = a - 1;
+      int rez4 = rez + 1;
+      a = a4;
+      rez = rez4;
+      continue;
+    }
   }
   return rez;
 }
 
 int ittrn(int a, int rez) {
-  while (a > 0)
-    return ittrn(a - 1, rez + 1);
+  while (a > 0) {
+    int a5 = a - 1;
+    int rez5 = rez + 1;
+    a = a5;
+    rez = rez5;
+    continue;
+  }
+
   return rez;
 }
 

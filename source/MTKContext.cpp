@@ -113,7 +113,7 @@ std::string MTKContext::nadjiIme(const std::string &pocetno) const {
 
 /* Pravljenje nove promenljive */
 VarDecl *MTKContext::napraviVar(DeclContext *kontekst,
-                                const CanQual<Type> &tip,
+                                const QualType &tip,
                                 const std::string &ime) const {
     return VarDecl::Create(TheASTContext, kontekst,
                            SourceLocation(), SourceLocation(),
@@ -122,11 +122,15 @@ VarDecl *MTKContext::napraviVar(DeclContext *kontekst,
 }
 
 /* Pravljenje izraza deklaracije */
-DeclRefExpr *MTKContext::napraviDeclExpr(DeclStmt *deknar) const {
-    const auto dekl = cast<VarDecl>(deknar->getSingleDecl());
+DeclRefExpr *MTKContext::napraviDeclExpr(VarDecl *dekl) const {
     return DeclRefExpr::Create(TheASTContext, NestedNameSpecifierLoc(),
                                SourceLocation(), dekl, true,
                                SourceLocation(), dekl->getType(), VK_LValue);
+}
+
+/* Pravljenje izraza deklaracije */
+DeclRefExpr *MTKContext::napraviDeclExpr(DeclStmt *deknar) const {
+    return napraviDeclExpr(cast<VarDecl>(deknar->getSingleDecl()));
 }
 
 /* Pravljenje celobrojne vrednosti */
@@ -147,22 +151,36 @@ IntegerLiteral *MTKContext::napraviFalse() const {
     return napraviInt(0);
 }
 
+/* Pravljenje naredbe deklaracije */
+DeclStmt *MTKContext::napraviDeclStmt(VarDecl *var) const {
+    return naHip(DeclStmt(DeclGroupRef(var), SourceLocation(), SourceLocation()));
+}
+
+/* Pravljenje naredbe deklaracije */
+DeclStmt *MTKContext::napraviDeclStmt(Decl *deklaracija,
+                                      const std::string &ime,
+                                      const QualType &tip,
+                                      Expr *pocetna) const {
+    /* Pronalazak slobodnog imena */
+    const auto slobime = nadjiIme(ime);
+
+    /* Deklaracija nove promenljive */
+    auto var = napraviVar(deklaracija->getDeclContext(), tip, slobime);
+
+    /* Celobrojna vrednost za inicijalizaciju */
+    var->setInit(pocetna);
+
+    /* Naredba deklaracije uslovne promenljive */
+    return napraviDeclStmt(var);
+}
+
 /* Pravljenje deklaracije uslovne promenljive */
 DeclStmt *MTKContext::napraviUslovnu(Decl *deklaracija,
                                      const std::string &ime,
                                      const bool pocetna) const {
-    /* Pronalazak prvog slobodnog imena */
-    const auto slobime = nadjiIme(ime);
-
-    /* Deklaracija uslovne promenljive */
-    const auto tip = TheASTContext.IntTy;
-    auto var = napraviVar(deklaracija->getDeclContext(), tip, slobime);
-
-    /* Celobrojna vrednost za inicijalizaciju */
-    var->setInit(napraviInt(pocetna));
-
-    /* Naredba deklaracije uslovne promenljive */
-    return naHip(DeclStmt(DeclGroupRef(var), SourceLocation(), SourceLocation()));
+    return napraviDeclStmt(deklaracija, ime,
+                           TheASTContext.IntTy,
+                           napraviInt(pocetna));
 }
 
 /* Pravljenje izraza u zagradi */

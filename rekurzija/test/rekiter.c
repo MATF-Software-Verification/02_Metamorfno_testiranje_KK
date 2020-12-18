@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-int itenr(int a, int rez) {
+int itenr(double a, int rez) {
   if (a <= 0)
     return rez;
   else
@@ -8,7 +8,7 @@ int itenr(int a, int rez) {
 }
 
 // duboki polozaj poziva
-int itenr2(int a, int rez) {
+int itenr2(double a, int rez) {
   if (a <= 0) {
     rez--;
     {

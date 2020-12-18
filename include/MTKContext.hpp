@@ -48,8 +48,11 @@ public:
 
     /* Pravljenje nove promenljive */
     VarDecl *napraviVar(DeclContext *kontekst,
-                        const CanQual<Type> &tip,
+                        const QualType &tip,
                         const std::string &ime) const;
+
+    /* Pravljenje izraza deklaracije */
+    DeclRefExpr *napraviDeclExpr(VarDecl *dekl) const;
 
     /* Pravljenje izraza deklaracije */
     DeclRefExpr *napraviDeclExpr(DeclStmt *deknar) const;
@@ -62,6 +65,15 @@ public:
 
     /* Pravljenje netacne istinitosne vrednosti */
     IntegerLiteral *napraviFalse() const;
+
+    /* Pravljenje naredbe deklaracije */
+    DeclStmt *napraviDeclStmt(VarDecl *var) const;
+
+    /* Pravljenje naredbe deklaracije */
+    DeclStmt *napraviDeclStmt(Decl *deklaracija,
+                              const std::string &ime,
+                              const QualType &tip,
+                              Expr *pocetna = nullptr) const;
 
     /* Pravljenje deklaracije uslovne promenljive */
     DeclStmt *napraviUslovnu(Decl *deklaracija,

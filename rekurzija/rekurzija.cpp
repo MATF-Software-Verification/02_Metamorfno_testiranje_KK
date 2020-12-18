@@ -150,6 +150,7 @@ int main(int argc, char *argv[]) {
     /* Obrada zeljene transformacije */
     if (*rekurzija == "iter") {
         obradi(Akcija::Rek2Iter);
+        obradi(Akcija::FinIter);
     } else if (*rekurzija == "rek") {
         obradi(Akcija::Do2For);
         obradi(Akcija::PrepFor);
