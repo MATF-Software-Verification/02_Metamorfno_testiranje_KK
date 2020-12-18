@@ -47,6 +47,10 @@ add_executable(rekurzija rekurzija.cpp
                          ../source/Rek2IterVisitor.cpp
                          ../include/FinIterVisitor.hpp
                          ../source/FinIterVisitor.cpp
+                         ../include/Iter2RekVisitor.hpp
+                         ../source/Iter2RekVisitor.cpp
+                         ../include/FinRekVisitor.hpp
+                         ../source/FinRekVisitor.cpp
                          ../include/Do2ForVisitor.hpp
                          ../source/Do2ForVisitor.cpp
                          ../include/PrepForVisitor.hpp

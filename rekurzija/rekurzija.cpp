@@ -3,6 +3,8 @@
 #include "For2WhileVisitor.hpp"
 #include "Rek2IterVisitor.hpp"
 #include "FinIterVisitor.hpp"
+#include "Iter2RekVisitor.hpp"
+#include "FinRekVisitor.hpp"
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/TargetInfo.h"
@@ -19,7 +21,9 @@ enum class Akcija {
     PrepFor,
     For2While,
     Rek2Iter,
-    FinIter
+    FinIter,
+    Iter2Rek,
+    FinRek
 };
 
 /* Nacin upotrebe programa */
@@ -93,6 +97,12 @@ static void obradi(const Akcija &akcija) {
         case Akcija::FinIter:
             TheConsumer = new MTKConsumer<FinIterVisitor>(TheRewriter, TheASTContext);
             break;
+        case Akcija::Iter2Rek:
+            TheConsumer = new MTKConsumer<Iter2RekVisitor>(TheRewriter, TheASTContext);
+            break;
+        case Akcija::FinRek:
+            TheConsumer = new MTKConsumer<FinRekVisitor>(TheRewriter, TheASTContext);
+            break;
         }
 
         /* Parsiranje i obrada AST stabla */
@@ -129,10 +139,11 @@ static void obradi(const Akcija &akcija) {
         /* Zamena starog fajla */
         *stari = *novi;
 
-        /* Iteracije i priprema su jednoprolazni */
+        /* Iteracije i pripreme su jednoprolazni */
         if (akcija == Akcija::PrepFor ||
             akcija == Akcija::Rek2Iter ||
-            akcija == Akcija::FinIter)
+            akcija == Akcija::FinIter ||
+            akcija == Akcija::FinRek)
             break;
     }
 }
@@ -155,6 +166,8 @@ int main(int argc, char *argv[]) {
         obradi(Akcija::Do2For);
         obradi(Akcija::PrepFor);
         obradi(Akcija::For2While);
+        obradi(Akcija::Iter2Rek);
+        obradi(Akcija::FinRek);
     /* Prekid pogresno pokrenutog programa */
     } else MTKContext::greska(upotreba);
 
