@@ -1,6 +1,7 @@
 #include "Do2ForVisitor.hpp"
 
-/* Shema transformacije
+/****************************
+ * Shema transformacije
  * --------------------------
  * do
  *   telo;
@@ -9,7 +10,7 @@
  * int cond = 1;
  * for (; cond; cond = uslov)
  *   telo;
- * */
+ ****************************/
 
 /* Posetilac koji do pretvara u for */
 bool Do2ForVisitor::VisitDoStmt(DoStmt *s) const {

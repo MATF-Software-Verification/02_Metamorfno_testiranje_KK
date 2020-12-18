@@ -1,6 +1,7 @@
 #include "For2WhileVisitor.hpp"
 
-/* Shema transformacije
+/***********************
+ * Shema transformacije
  * ---------------------
  * for (init; cond; inc)
  *   telo;
@@ -10,7 +11,7 @@
  *   telo;
  *   inc;
  * }
- * */
+ ***********************/
   
 /* Posetilac koji for pretvara u while */
 bool For2WhileVisitor::VisitForStmt(ForStmt *s) const {

@@ -1,6 +1,7 @@
 #include "Switch2IfVisitor.hpp"
 
-/* Shema transformacije
+/*******************************
+ * Shema transformacije
  * -----------------------------
  * switch (uslov) {
  *   case a:
@@ -35,7 +36,7 @@
  *
  *   telod;
  * } while (0);
- * */
+ *******************************/
 
 /* Izracunavanje uslova za default */
 Expr *Switch2IfVisitor::defUslov(StmtIterator dete,
@@ -106,8 +107,7 @@ bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
             const auto defUsl = defUslov(dete, kraj, uslov, konj);
 
             /* Ima uslova -> dodavanje if naredbe */
-            if (defUsl)
-                telo.push_back(napraviIf(defUsl, def->getSubStmt()));
+            if (defUsl) telo.push_back(napraviIf(defUsl, def->getSubStmt()));
             /* Nema uslova -> dodavanje ako nije break */
             else if (neprazanSwitchCase(def))
                 telo.push_back(def->getSubStmt());
@@ -150,9 +150,7 @@ bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
         } else if (const auto iff = dyn_cast<IfStmt>(telo.back())) {
             iff->setThen(napraviSlozenu({iff->getThen(), *dete}));
         /* Ili prosto dodavanje na kraj ako nema ifa */
-        } else {
-            telo.push_back(*dete);
-        }
+        } else telo.push_back(*dete);
     }
 
     /* Transformisano telo */

@@ -1,6 +1,7 @@
 #include "While2DoVisitor.hpp"
 
-/* Shema transformacije
+/***********************
+ * Shema transformacije
  * ---------------------
  * while (cond)
  *   telo;
@@ -9,7 +10,7 @@
  *   do
  *     telo;
  *   while (cond);
- * */
+ ***********************/
 
 /* Posetilac koji while pretvara u do */
 bool While2DoVisitor::VisitWhileStmt(WhileStmt *s) const {

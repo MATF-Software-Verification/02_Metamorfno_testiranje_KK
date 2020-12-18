@@ -1,13 +1,14 @@
 #include "While2ForVisitor.hpp"
 
-/* Shema transformacije
+/***********************
+ * Shema transformacije
  * ---------------------
  * while (cond)
  *   telo;
  * ---------------------
  * for (; cond;)
  *   telo;
- * */
+ ***********************/
 
 /* Posetilac koji while pretvara u for */
 bool While2ForVisitor::VisitWhileStmt(WhileStmt *s) const {

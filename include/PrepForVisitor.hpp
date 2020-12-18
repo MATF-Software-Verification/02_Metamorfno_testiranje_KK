@@ -3,7 +3,6 @@
 
 #include "MTKConsumer.hpp"
 
-#include <unordered_set>
 #include <unordered_map>
 
 /* Posetilac koji dodaje korak petlje */

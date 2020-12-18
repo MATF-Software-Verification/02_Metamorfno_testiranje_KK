@@ -3,7 +3,7 @@
 
 #include "MTKConsumer.hpp"
 
-/* Posetilac koji repunu rekurziju svodi na iteraciju */
+/* Posetilac koji repnu rekurziju svodi na iteraciju */
 class Rek2IterVisitor : public MTKVisitor<Rek2IterVisitor> {
 public:
     /* Inicijalizacija prepisivaca i konteksta */

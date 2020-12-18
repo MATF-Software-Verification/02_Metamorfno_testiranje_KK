@@ -1,6 +1,7 @@
 #include "Rek2IterVisitor.hpp"
 
-/* Shema transformacije
+/******************************
+ * Shema transformacije
  * ----------------------------
  * fja(a, ..., b) {
  *   if (uslov) {
@@ -15,13 +16,12 @@
  * fja(a, ..., b) {
  *   while (!uslov) {
  *     telo2;
- *     a0 = ...; b0 = ...;
- *     a = a0; b = b0;
+ *     return rek(a0, ..., b0);
  *   }
  *   telo1;
  *   return baza;
  * }
- * */
+ ******************************/
 
 /* Odredjivanje return statusa */
 Rek2IterVisitor::Status Rek2IterVisitor::retStatus(Stmt *s) const {
@@ -31,7 +31,7 @@ Rek2IterVisitor::Status Rek2IterVisitor::retStatus(Stmt *s) const {
     /* Obrada bas return naredbe */
     if (const auto ret = dyn_cast<ReturnStmt>(s)) {
         /* Obrada izraza poziva */
-        if (const auto call = dyn_cast<CallExpr>(ret->getRetValue())) {
+        if (const auto call = dyn_cast_or_null<CallExpr>(ret->getRetValue())) {
             if (call->getDirectCallee() == tekf)
                 return Status::REK_RETURN;
             else return Status::NEREK_RETURN;
@@ -173,12 +173,9 @@ bool Rek2IterVisitor::VisitFunctionDecl(FunctionDecl *f) {
     iff = dyn_cast<IfStmt>(telo->body_front());
     if (!iff) return true;
 
-    /* Izracunavanje zamene */
-    Stmt *zamena = (iff == telo->body_back()) ?
-                    obradiIfThenElse() : obradiIfThenTelo();
-
     /* Tekstualna zamena koda */
-    if (zamena) {
+    if (const auto zamena = (iff == telo->body_back()) ?
+                             obradiIfThenElse() : obradiIfThenTelo()) {
         zameni(telo, zamena);
 
         /* Dodavanje u spisak obradjenih */

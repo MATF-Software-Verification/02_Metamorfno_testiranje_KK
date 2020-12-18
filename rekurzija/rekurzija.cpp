@@ -2,6 +2,7 @@
 #include "PrepForVisitor.hpp"
 #include "For2WhileVisitor.hpp"
 #include "Rek2IterVisitor.hpp"
+#include "FinIterVisitor.hpp"
 
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/TargetInfo.h"
@@ -17,7 +18,8 @@ enum class Akcija {
     Do2For,
     PrepFor,
     For2While,
-    Rek2Iter
+    Rek2Iter,
+    FinIter
 };
 
 /* Nacin upotrebe programa */
@@ -88,6 +90,9 @@ static void obradi(const Akcija &akcija) {
         case Akcija::Rek2Iter:
             TheConsumer = new MTKConsumer<Rek2IterVisitor>(TheRewriter, TheASTContext);
             break;
+        case Akcija::FinIter:
+            TheConsumer = new MTKConsumer<FinIterVisitor>(TheRewriter, TheASTContext);
+            break;
         }
 
         /* Parsiranje i obrada AST stabla */
@@ -125,7 +130,9 @@ static void obradi(const Akcija &akcija) {
         *stari = *novi;
 
         /* Iteracije i priprema su jednoprolazni */
-        if (akcija == Akcija::PrepFor || akcija == Akcija::Rek2Iter)
+        if (akcija == Akcija::PrepFor ||
+            akcija == Akcija::Rek2Iter ||
+            akcija == Akcija::FinIter)
             break;
     }
 }

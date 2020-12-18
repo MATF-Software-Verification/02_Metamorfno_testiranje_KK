@@ -1,6 +1,7 @@
 #include "For2DoVisitor.hpp"
 
-/* Shema transformacije
+/***********************
+ * Shema transformacije
  * ---------------------
  * for (init; cond; inc)
  *   telo;
@@ -11,7 +12,7 @@
  *     telo;
  *     inc;
  * } while (cond);
- * */
+ ***********************/
 
 /* Posetilac koji for pretvara u do */
 bool For2DoVisitor::VisitForStmt(ForStmt *s) const {

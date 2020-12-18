@@ -45,6 +45,8 @@ add_executable(rekurzija rekurzija.cpp
                          ../source/MTKContext.cpp
                          ../include/Rek2IterVisitor.hpp
                          ../source/Rek2IterVisitor.cpp
+                         ../include/FinIterVisitor.hpp
+                         ../source/FinIterVisitor.cpp
                          ../include/Do2ForVisitor.hpp
                          ../source/Do2ForVisitor.cpp
                          ../include/PrepForVisitor.hpp

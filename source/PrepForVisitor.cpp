@@ -2,7 +2,8 @@
 
 #include "clang/AST/ParentMapContext.h"
 
-/* Shema transformacije
+/*************************
+ * Shema transformacije
  * -----------------------
  * for (init; cond; inc) {
  *   telo1;
@@ -18,7 +19,7 @@
  *   }
  *   telo2;
  * }
- * */
+ *************************/
 
 /* Poruka da maskiranje koraka pravi problem */
 static const auto maskiranje = "Telo petlje maskira korak!";

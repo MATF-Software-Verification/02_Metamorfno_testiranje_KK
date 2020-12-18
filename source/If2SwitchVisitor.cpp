@@ -2,7 +2,8 @@
 
 #include "clang/AST/ParentMapContext.h"
 
-/* Shema transformacije
+/***********************
+ * Shema transformacije
  * ---------------------
  * if (ako)
  *   onda;
@@ -16,7 +17,7 @@
  * default:
  *   inace;
  * }
- * */
+ ***********************/
 
 /* Provera da li je if pomocni */
 bool If2SwitchVisitor::pomocni(IfStmt *s) const {

@@ -2,7 +2,8 @@
 
 #include "clang/AST/ParentMapContext.h"
 
-/* Shema transformacije
+/***********************
+ * Shema transformacije
  * ---------------------
  * switch (uslov) {
  *   case a:
@@ -36,7 +37,7 @@
  * }
  * if (cont)
  *   continue;
- * */
+ ***********************/
 
 /* Poruka o nemogucnosti obrade switcha */
 static const auto dubokeOznake = "Nije moguce obraditi duboke case i default oznake!";

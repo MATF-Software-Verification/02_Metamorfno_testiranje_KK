@@ -2,7 +2,8 @@
 
 #include "clang/AST/ParentMapContext.h"
 
-/* Shema transformacije
+/***********************
+ * Shema transformacije
  * ---------------------
  * if (ako) {
  *   onda1;
@@ -32,7 +33,7 @@
  * }
  * if (br)
  *   break;
- * */
+ ***********************/
 
 /* Obrada odgovarajuceg ifa */
 DeclRefExpr *PrepIfVisitor::obradiIf(const IfStmt *s) {
