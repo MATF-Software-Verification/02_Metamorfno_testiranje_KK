@@ -105,6 +105,14 @@ Stmt *Rek2IterVisitor::obradiIfThenElse() const {
         return obradiITENR();
     else if (thens == Status::REK_RETURN && elses == Status::NEREK_RETURN)
         return obradiITERN();
+    /* Posebna obrada void funkcija */
+    else if (!tekf->getReturnType()->isVoidType()) return nullptr;
+
+    /* Grananje na tri podslucaja */
+    if (thens == Status::NIJE_RETURN && elses == Status::REK_RETURN)
+        return obradiITENR();
+    else if (thens == Status::REK_RETURN && elses == Status::NIJE_RETURN)
+        return obradiITERN();
     else return nullptr;
 }
 
@@ -156,6 +164,12 @@ Stmt *Rek2IterVisitor::obradiIfThenTelo() const {
     if (thens == Status::NEREK_RETURN && telos == Status::REK_RETURN)
         return obradiITTNR();
     else if (thens == Status::REK_RETURN && telos == Status::NEREK_RETURN)
+        return obradiITTRN();
+    /* Posebna obrada void funkcija */
+    else if (!tekf->getReturnType()->isVoidType()) return nullptr;
+
+    /* Grananje na dva podslucaja */
+    if (thens == Status::REK_RETURN && telos == Status::NIJE_RETURN)
         return obradiITTRN();
     else return nullptr;
 }

@@ -183,6 +183,7 @@ int main(int argc, char *argv[]) {
     delete stari;
     delete novi;
     delete petlja;
+    delete MTKContext::fje;
 
     /* Normalno zavrsavanje programa */
     exit(EXIT_SUCCESS);

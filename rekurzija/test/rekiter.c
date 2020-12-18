@@ -1,5 +1,16 @@
 #include <stdio.h>
 
+static int broj = 5;
+
+void viter() {
+  if (broj) {
+    printf("%d", broj);
+    broj--;
+    return viter();
+  }
+  putchar('\n');
+}
+
 int itenr(double a, int rez) {
   if (a <= 0)
     return rez;
@@ -73,6 +84,7 @@ int ittrn2(int a, int rez) {
 }
 
 int main() {
+  viter();
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
   printf("%d%d\n", itern(3, 3), itern2(4, 4));
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));

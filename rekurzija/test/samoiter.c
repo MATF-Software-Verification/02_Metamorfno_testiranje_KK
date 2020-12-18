@@ -1,5 +1,16 @@
 #include <stdio.h>
 
+static int broj = 5;
+
+void viter() {
+  while (broj) {
+    printf("%d", broj);
+    broj--;
+    { continue; }
+  }
+  putchar('\n');
+}
+
 int itenr(double a, int rez) {
   while (!(a <= 0)) {
     double a0 = a - 1;
@@ -109,6 +120,7 @@ int ittrn2(int a, int rez) {
 }
 
 int main() {
+  viter();
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
   printf("%d%d\n", itern(3, 3), itern2(4, 4));
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));
