@@ -61,7 +61,7 @@ void MTKContext::zameni(const Stmt *const stari,
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari, dir);
 
-    /* Tekstualna reprezentacija novog iskaza */
+    /* Tekstualna reprezentacija nove naredbe */
     const auto stmt = stampaj(novi);
 
     /* Promena teksta na izracunatom mestu */
@@ -74,7 +74,7 @@ void MTKContext::dodajIspred(const Stmt *const stari,
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
-    /* Tekstualna reprezentacija novog iskaza */
+    /* Tekstualna reprezentacija nove naredbe */
     const auto stmt = "{" + stampaj(novi);
 
     /* Dodavanje teksta na izracunatom mestu */
@@ -87,11 +87,30 @@ void MTKContext::dodajIza(const Stmt *const stari,
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
-    /* Tekstualna reprezentacija novog iskaza */
+    /* Tekstualna reprezentacija nove naredbe */
     const auto stmt = "\n" + stampaj(novi) + "}";
 
     /* Dodavanje teksta na izracunatom mestu */
     TheRewriter.InsertTextBefore(mesto.getEnd(), stmt);
+}
+
+/* Tekstualna dopuna koda funkcijom */
+void MTKContext::dodajFunkciju(const FunctionDecl *const stara,
+                               const FunctionDecl *const nova) const {
+    /* Odredjivanje mesta stare funkcije */
+    const auto mesto = stara->getSourceRange().getBegin();
+
+    /* Inicijalizacija izlaznog toka */
+    std::string fja;
+    llvm::raw_string_ostream stream(fja);
+
+    /* Stampanje naredbe u tok */
+    nova->print(stream);
+    stream.write('\n');
+    stream.flush();
+
+    /* Dodavanje teksta na izracunatom mestu */
+    TheRewriter.InsertTextBefore(mesto, fja);
 }
 
 /* Pronalazak prvog slobodnog imena */
@@ -117,12 +136,12 @@ VarDecl *MTKContext::napraviVar(DeclContext *kontekst,
                                 const std::string &ime) const {
     return VarDecl::Create(TheASTContext, kontekst,
                            SourceLocation(), SourceLocation(),
-                           &TheASTContext.Idents.getOwn(ime),
+                           &TheASTContext.Idents.getOwn(nadjiIme(ime)),
                            tip, nullptr, SC_None);
 }
 
 /* Pravljenje izraza deklaracije */
-DeclRefExpr *MTKContext::napraviDeclExpr(VarDecl *dekl) const {
+DeclRefExpr *MTKContext::napraviDeclExpr(ValueDecl *dekl) const {
     return DeclRefExpr::Create(TheASTContext, NestedNameSpecifierLoc(),
                                SourceLocation(), dekl, true,
                                SourceLocation(), dekl->getType(), VK_LValue);
@@ -161,11 +180,8 @@ DeclStmt *MTKContext::napraviDeclStmt(Decl *deklaracija,
                                       const std::string &ime,
                                       const QualType &tip,
                                       Expr *pocetna) const {
-    /* Pronalazak slobodnog imena */
-    const auto slobime = nadjiIme(ime);
-
     /* Deklaracija nove promenljive */
-    auto var = napraviVar(deklaracija->getDeclContext(), tip, slobime);
+    auto var = napraviVar(deklaracija->getDeclContext(), tip, ime);
 
     /* Celobrojna vrednost za inicijalizaciju */
     var->setInit(pocetna);
@@ -206,6 +222,16 @@ UnaryOperator *MTKContext::napraviUnarni(Expr *izraz,
 /* Pravljenje logicke negacije */
 UnaryOperator *MTKContext::napraviNegaciju(Expr *izraz) const {
     return napraviUnarni(izraz, UO_LNot, izraz->getType());
+}
+
+/* Pravljenje referenciranja */
+UnaryOperator *MTKContext::napraviRef(DeclRefExpr *var) const {
+    return napraviUnarni(var, UO_AddrOf, TheASTContext.getPointerType(var->getType()));
+}
+
+/* Pravljenje dereferenciranja */
+ParenExpr *MTKContext::napraviDeref(DeclRefExpr *var) const {
+    return napraviParen(napraviUnarni(var, UO_Deref, var->getType()->getPointeeType()));
 }
 
 /* Dohvatanje celobrojne vrednosti */
@@ -329,4 +355,124 @@ DefaultStmt *MTKContext::napraviDefault(Stmt *naredba) const {
 SwitchStmt *MTKContext::napraviSwitch(Expr *uslov, Stmt *telo) const {
     const auto sw = SwitchStmt::Create(TheASTContext, nullptr, nullptr, uslov);
     sw->setBody(telo); return sw;
+}
+
+/* Pravljenje funkcije */
+FunctionDecl *MTKContext::napraviFunkciju(DeclContext *kontekst,
+                                          const QualType &tip,
+                                          const std::string &ime) const {
+    return FunctionDecl::Create(TheASTContext, kontekst,
+                                SourceLocation(), SourceLocation(),
+                                &TheASTContext.Idents.getOwn(nadjiIme(ime)),
+                                tip, nullptr, SC_None);
+}
+
+/* Pravljenje parametra */
+ParmVarDecl *MTKContext::napraviParam(VarDecl *var) const {
+    return ParmVarDecl::Create(TheASTContext, var->getDeclContext(),
+                           SourceLocation(), SourceLocation(),
+                           var->getIdentifier(), var->getType(),
+                           nullptr, SC_None, nullptr);
+}
+
+/* Pravljenje funkcije */
+FunctionDecl *MTKContext::napraviFunkciju(DeclContext *kontekst,
+                                          const QualType &tipRet,
+                                          const std::string &ime,
+                                          const std::vector<VarDecl *> &parms,
+                                          Stmt *telo) const {
+    /* Izracunavanje parametara */
+    std::vector<ParmVarDecl *> params;
+    std::transform(std::cbegin(parms),
+                   std::cend(parms),
+                   std::back_inserter(params),
+                   [this](VarDecl *const var) {
+                       return napraviParam(var);
+                   });
+
+    /* Izracunavanje tipa parametara */
+    std::vector<QualType> tipParams;
+    std::transform(std::cbegin(params),
+                   std::cend(params),
+                   std::back_inserter(tipParams),
+                   [](ParmVarDecl *const var) {
+                       return var->getType();
+                   });
+
+    /* Izracunavanje tipa funkcije */
+    const auto tip = TheASTContext.getFunctionType(
+                         tipRet, tipParams,
+                         FunctionProtoType::ExtProtoInfo()
+                     );
+
+    /* Popunjavanje zeljene funkcije */
+    const auto fja = napraviFunkciju(kontekst, tip, ime);
+    fja->setParams(params); fja->setBody(telo); return fja;
+}
+
+/* Pravljenje ref funkcije */
+FunctionDecl *MTKContext::napraviRefFunkciju(DeclContext *kontekst,
+                                             const QualType &tipRet,
+                                             const std::string &ime,
+                                             const std::vector<VarDecl *> &parms,
+                                             Stmt *telo) const {
+    /* Izracunavanje parametara */
+    std::for_each(std::cbegin(parms),
+                  std::cend(parms),
+                  [this](VarDecl *const var) {
+                      var->setType(TheASTContext.getPointerType(var->getType()));
+                  });
+
+    /* Popunjavanje zeljene funkcije */
+    return napraviFunkciju(kontekst, tipRet, ime, parms, telo);
+}
+
+/* Pravljenje poziva */
+CallExpr *MTKContext::napraviPoziv(FunctionDecl *funkcija,
+                                   const std::vector<Expr *> &args) const {
+    return CallExpr::Create(TheASTContext, napraviDeclExpr(funkcija),
+                            args, funkcija->getReturnType(),
+                            VK_RValue, SourceLocation());
+}
+
+/* Pravljenje ref poziva */
+CallExpr *MTKContext::napraviRefPoziv(FunctionDecl *funkcija,
+                                      const std::vector<DeclRefExpr *> &args) const {
+    /* Izracunavanje parametara */
+    std::vector<Expr *> argums;
+    std::transform(std::cbegin(args),
+                   std::cend(args),
+                   std::back_inserter(argums),
+                   [this](DeclRefExpr *const var) {
+                       return napraviRef(var);
+                   });
+
+    /* Popunjavanje zeljene funkcije */
+    return napraviPoziv(funkcija, argums);
+}
+
+/* Pravljenje ref poziva */
+CallExpr *MTKContext::napraviRefPoziv(FunctionDecl *funkcija,
+                                      const std::vector<VarDecl *> &args) const {
+    /* Izracunavanje parametara */
+    std::vector<DeclRefExpr *> argums;
+    std::transform(std::cbegin(args),
+                   std::cend(args),
+                   std::back_inserter(argums),
+                   [this](VarDecl *const var) {
+                       return napraviDeclExpr(var);
+                   });
+
+    /* Popunjavanje zeljene funkcije */
+    return napraviRefPoziv(funkcija, argums);
+}
+
+/* Pravljenje return naredbe */
+ReturnStmt *MTKContext::napraviReturn(Expr *izraz) const {
+    return ReturnStmt::Create(TheASTContext, SourceLocation(), izraz, nullptr);
+}
+
+/* Pravljenje return naredbe */
+ReturnStmt *MTKContext::napraviReturn(bool vrednost) const {
+    return napraviReturn(napraviInt(vrednost));
 }

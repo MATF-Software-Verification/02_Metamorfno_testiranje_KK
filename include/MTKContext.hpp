@@ -43,6 +43,10 @@ public:
     void dodajIza(const Stmt *const stari,
                   const Stmt *const novi) const;
 
+    /* Tekstualna dopuna koda funkcijom */
+    void dodajFunkciju(const FunctionDecl *const stara,
+                       const FunctionDecl *const nova) const;
+
     /* Pronalazak prvog slobodnog imena */
     std::string nadjiIme(const std::string &pocetno) const;
 
@@ -52,7 +56,7 @@ public:
                         const std::string &ime) const;
 
     /* Pravljenje izraza deklaracije */
-    DeclRefExpr *napraviDeclExpr(VarDecl *dekl) const;
+    DeclRefExpr *napraviDeclExpr(ValueDecl *dekl) const;
 
     /* Pravljenje izraza deklaracije */
     DeclRefExpr *napraviDeclExpr(DeclStmt *deknar) const;
@@ -90,6 +94,12 @@ public:
 
     /* Pravljenje logicke negacije */
     UnaryOperator *napraviNegaciju(Expr *izraz) const;
+
+    /* Pravljenje referenciranja */
+    UnaryOperator *napraviRef(DeclRefExpr *var) const;
+
+    /* Pravljenje dereferenciranja */
+    ParenExpr *napraviDeref(DeclRefExpr *var) const;
 
     /* Dohvatanje celobrojne vrednosti */
     Expr *dohvatiCelobrojnu(Expr *izraz) const;
@@ -146,6 +156,46 @@ public:
 
     /* Pravljenje switch naredbe */
     SwitchStmt *napraviSwitch(Expr *uslov, Stmt *telo) const;
+
+    /* Pravljenje funkcije */
+    FunctionDecl *napraviFunkciju(DeclContext *kontekst,
+                                  const QualType &tip,
+                                  const std::string &ime) const;
+
+    /* Pravljenje parametra */
+    ParmVarDecl *napraviParam(VarDecl *var) const;
+
+    /* Pravljenje funkcije */
+    FunctionDecl *napraviFunkciju(DeclContext *kontekst,
+                                  const QualType &tipRet,
+                                  const std::string &ime,
+                                  const std::vector<VarDecl *> &parms,
+                                  Stmt *telo = nullptr) const;
+
+    /* Pravljenje ref funkcije */
+    FunctionDecl *napraviRefFunkciju(DeclContext *kontekst,
+                                     const QualType &tipRet,
+                                     const std::string &ime,
+                                     const std::vector<VarDecl *> &parms,
+                                     Stmt *telo = nullptr) const;
+
+    /* Pravljenje poziva */
+    CallExpr *napraviPoziv(FunctionDecl *funkcija,
+                           const std::vector<Expr *> &args) const;
+
+    /* Pravljenje ref poziva */
+    CallExpr *napraviRefPoziv(FunctionDecl *funkcija,
+                              const std::vector<DeclRefExpr *> &args) const;
+
+    /* Pravljenje ref poziva */
+    CallExpr *napraviRefPoziv(FunctionDecl *funkcija,
+                              const std::vector<VarDecl *> &args) const;
+
+    /* Pravljenje return naredbe */
+    ReturnStmt *napraviReturn(Expr *izraz = nullptr) const;
+
+    /* Pravljenje return naredbe */
+    ReturnStmt *napraviReturn(bool vrednost) const;
 
     /* Prebacivanje naredbe na hip */
     template <typename Naredba>

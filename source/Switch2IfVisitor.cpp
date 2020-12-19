@@ -95,7 +95,7 @@ bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
             disj.push_back(napraviJednakost(uslov, cas->getLHS()));
 
             /* Disjunkcija svih dosadasnjih uslova */
-            Expr *cond = disj[0];
+            auto cond = disj.front();
             for (auto i = 1ul; i < disj.size(); i++) {
                 cond = napraviDisjunkciju(cond, disj[i]);
             }
@@ -139,7 +139,7 @@ bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
             }
 
             /* Konjunkcija svih preostalih uslova */
-            Expr *cond = konj[0];
+            auto cond = konj.front();
             for (auto i = 1ul; i < konj.size(); i++) {
                 cond = napraviKonjunkciju(cond, konj[i]);
             }

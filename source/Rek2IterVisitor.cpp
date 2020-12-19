@@ -121,7 +121,7 @@ Stmt *Rek2IterVisitor::sakupiDecu(StmtIterator start, StmtIterator end) const {
     std::vector<Stmt *> deca;
     for (auto dete = start; dete != end; dete ++)
         deca.push_back(*dete);
-    return deca.size() == 1 ? deca[0] : napraviSlozenu(deca);
+    return deca.size() == 1 ? deca.front() : napraviSlozenu(deca);
 }
 
 /* Obrada nerek-then i rek-tela */

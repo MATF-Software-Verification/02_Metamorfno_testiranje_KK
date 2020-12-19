@@ -17,7 +17,7 @@ public:
     bool VisitContinueStmt(ContinueStmt *s) const;
 
     /* Dereferenciranje svakog izraza iz petlje */
-    bool VisitDeclRefExpr(DeclRefExpr *e) const;
+    bool VisitDeclRefExpr(DeclRefExpr *s) const;
 
     /* Obrada deklaracije funkcije */
     bool TraverseFunctionDecl(FunctionDecl *f);

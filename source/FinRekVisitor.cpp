@@ -3,9 +3,34 @@
 /***********************
  * Shema transformacije
  * ---------------------
- *
+ * int petlja(int *x, int *y, int *ret) {
+ *   if (x > 2) {
+ *     y++;
+ *     break;
+ *     x = y;
+ *     continue;
+ *     int z;
+ *     return 5;
+ *     continue;
+ *   }
+ *   return 0;
+ * }
  * ---------------------
- *
+ * int petlja(int *x, int *y, int *ret) {
+ *   if (*x > 2) {
+ *     (*y)++;
+ *     return 0;
+ *     *x = *y;
+ *     return petlja(x, y);
+ *     int z;
+ *     {
+ *       *ret = 5;
+ *       return 1;
+ *     }
+ *     return petlja(x, y);
+ *   }
+ *   return 0;
+ * }
  ***********************/
 
 /* Zamena svakog iskakanja returnom */
@@ -19,8 +44,8 @@ bool FinRekVisitor::VisitContinueStmt(ContinueStmt *s) const {
 }
 
 /* Dereferenciranje svakog izraza iz petlje */
-bool FinRekVisitor::VisitDeclRefExpr(DeclRefExpr *e) const {
-    return e;
+bool FinRekVisitor::VisitDeclRefExpr(DeclRefExpr *s) const {
+    return s;
 }
 
 /* Obrada deklaracije funkcije */

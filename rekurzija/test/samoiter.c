@@ -119,11 +119,45 @@ int ittrn2(int a, int rez) {
   return rez;
 }
 
+void hello(int i) {
+  while (i--)
+    printf("hello\n");
+}
+
 int main() {
   viter();
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
   printf("%d%d\n", itern(3, 3), itern2(4, 4));
+
+  int x, y;
+  void (*f)(int) = &hello;
+  while (x > 2) {
+    y++;
+    break;
+
+    int z = 3;
+    x = y - z;
+    continue;
+
+    // rad sa fjama
+    f(z);
+    hello(z);
+    return 5;
+  }
+
+  // ugnezdjene petlje
+  do
+    while (1)
+      break;
+  while (0);
+
+  // labela i goto
+  for (; 1;)
+  labela:
+    break;
+
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));
   printf("%d%d\n", ittrn(7, 0), ittrn2(8, 0));
+
   return 0;
 }
