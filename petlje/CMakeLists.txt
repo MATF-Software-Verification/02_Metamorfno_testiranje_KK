@@ -43,6 +43,8 @@ add_executable(petlje petlje.cpp
                       ../include/MTKConsumer.hpp
                       ../include/MTKContext.hpp
                       ../source/MTKContext.cpp
+                      ../include/MTKTransformer.hpp
+                      ../source/MTKTransformer.cpp
                       ../include/Do2ForVisitor.hpp
                       ../source/Do2ForVisitor.cpp
                       ../include/For2DoVisitor.hpp

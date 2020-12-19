@@ -43,6 +43,8 @@ add_executable(uslovi uslovi.cpp
                       ../include/MTKConsumer.hpp
                       ../include/MTKContext.hpp
                       ../source/MTKContext.cpp
+                      ../include/MTKTransformer.hpp
+                      ../source/MTKTransformer.cpp
                       ../include/PrepIfVisitor.hpp
                       ../source/PrepIfVisitor.cpp
                       ../include/PrepSwitchVisitor.hpp

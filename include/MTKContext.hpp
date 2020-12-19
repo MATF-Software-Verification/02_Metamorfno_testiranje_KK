@@ -20,6 +20,9 @@ public:
     /* Staticko cuvanje posecenih funkcija */
     static std::unordered_set<std::string> *fje;
 
+    /* Staticko oslobadjanje memorije */
+    static void oslobodi();
+
     /* Prijavljivanje greske u radu */
     [[noreturn]] static void greska(const std::string &poruka);
 

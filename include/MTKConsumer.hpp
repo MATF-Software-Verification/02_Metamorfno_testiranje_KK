@@ -1,5 +1,5 @@
-#ifndef MTKVISITOR_H
-#define MTKVISITOR_H
+#ifndef MTKCONS_H
+#define MTKCONS_H
 
 #include "MTKContext.hpp"
 

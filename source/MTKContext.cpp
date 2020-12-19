@@ -11,6 +11,11 @@ static const auto nemaImena = "Nije moguce pronaci slobodno ime!";
 std::unordered_set<std::string> *MTKContext::fje
     = new std::unordered_set<std::string>;
 
+/* Staticko oslobadjanje memorije */
+void MTKContext::oslobodi() {
+    delete fje;
+}
+
 /* Prijavljivanje greske u radu */
 void MTKContext::greska(const std::string &poruka) {
     llvm::errs() << poruka << '\n';

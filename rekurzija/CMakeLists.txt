@@ -43,6 +43,8 @@ add_executable(rekurzija rekurzija.cpp
                          ../include/MTKConsumer.hpp
                          ../include/MTKContext.hpp
                          ../source/MTKContext.cpp
+                         ../include/MTKTransformer.hpp
+                         ../source/MTKTransformer.cpp
                          ../include/Rek2IterVisitor.hpp
                          ../source/Rek2IterVisitor.cpp
                          ../include/FinIterVisitor.hpp
