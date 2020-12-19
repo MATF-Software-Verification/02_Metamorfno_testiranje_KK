@@ -40,7 +40,7 @@
  ***********************/
 
 /* Poruka o nemogucnosti obrade switcha */
-static const auto dubokeOznake = "Nije moguce obraditi duboke case i default oznake!";
+static constexpr auto dubokeOznake = "Nije moguce obraditi duboke case i default oznake!";
 
 /* Provera ima li dubokih oznaka */
 bool PrepSwitchVisitor::VisitSwitchCase(SwitchCase *s) const {

@@ -5,15 +5,14 @@
 #include <climits>
 
 /* Poruka da nema slobodnog imena */
-static const auto nemaImena = "Nije moguce pronaci slobodno ime!";
+static constexpr auto nemaImena = "Nije moguce pronaci slobodno ime!";
 
 /* Staticko cuvanje posecenih funkcija */
-std::unordered_set<std::string> *MTKContext::fje
-    = new std::unordered_set<std::string>;
+std::unordered_set<std::string> *MTKContext::fje = nullptr;
 
-/* Staticko oslobadjanje memorije */
-void MTKContext::oslobodi() {
-    delete fje;
+/* Staticka inicijalizacija posecenih funkcija */
+void MTKContext::postavi(std::unordered_set<std::string> &f) {
+    fje = &f;
 }
 
 /* Prijavljivanje greske u radu */

@@ -3,9 +3,9 @@
 #include <sstream>
 
 /* Nacin upotrebe programa */
-static const auto upotreba = "Upotreba 1: ./trans <ulaz> <izlaz> <do|while|for>\n"
-                             "Upotreba 2: ./trans <ulaz> <izlaz> <if|switch>\n"
-                             "Upotreba 3: ./trans <ulaz> <izlaz> <iter|rek>";
+static constexpr auto upotreba = "Upotreba 1: ./trans <ulaz> <izlaz> <do|while|for>\n"
+                                 "Upotreba 2: ./trans <ulaz> <izlaz> <if|switch>\n"
+                                 "Upotreba 3: ./trans <ulaz> <izlaz> <iter|rek>";
 
 /* Glavna funkcija aplikacije */
 int main(int argc, char *argv[]) {
@@ -22,31 +22,31 @@ int main(int argc, char *argv[]) {
 
     /* Prvi deo algoritma */
     if (radnja == "do") {
-        trans.obradi(MTKTransformer::While2Do);
-        trans.obradi(MTKTransformer::PrepFor);
-        trans.obradi(MTKTransformer::For2Do);
+        trans.primeni(MTKTransformer::While2Do);
+        trans.primeni(MTKTransformer::PrepFor);
+        trans.primeni(MTKTransformer::For2Do);
     } else if (radnja == "for") {
-        trans.obradi(MTKTransformer::Do2For);
-        trans.obradi(MTKTransformer::While2For);
+        trans.primeni(MTKTransformer::Do2For);
+        trans.primeni(MTKTransformer::While2For);
     } else if (radnja == "while") {
-        trans.obradi(MTKTransformer::Do2For);
-        trans.obradi(MTKTransformer::PrepFor);
-        trans.obradi(MTKTransformer::For2While);
+        trans.primeni(MTKTransformer::Do2For);
+        trans.primeni(MTKTransformer::PrepFor);
+        trans.primeni(MTKTransformer::For2While);
     } else if (radnja == "if") {
-        trans.obradi(MTKTransformer::PrepSwitch);
-        trans.obradi(MTKTransformer::Switch2If);
+        trans.primeni(MTKTransformer::PrepSwitch);
+        trans.primeni(MTKTransformer::Switch2If);
     } else if (radnja == "switch") {
-        trans.obradi(MTKTransformer::PrepIf);
-        trans.obradi(MTKTransformer::If2Switch);
+        trans.primeni(MTKTransformer::PrepIf);
+        trans.primeni(MTKTransformer::If2Switch);
     } else if (radnja == "iter") {
-        trans.obradi(MTKTransformer::Rek2Iter);
-        trans.obradi(MTKTransformer::FinIter);
+        trans.primeni(MTKTransformer::Rek2Iter);
+        trans.primeni(MTKTransformer::FinIter);
     } else if (radnja == "rek") {
-        trans.obradi(MTKTransformer::Do2For);
-        trans.obradi(MTKTransformer::PrepFor);
-        trans.obradi(MTKTransformer::For2While);
-        trans.obradi(MTKTransformer::Iter2Rek);
-        trans.obradi(MTKTransformer::FinRek);
+        trans.primeni(MTKTransformer::Do2For);
+        trans.primeni(MTKTransformer::PrepFor);
+        trans.primeni(MTKTransformer::For2While);
+        trans.primeni(MTKTransformer::Iter2Rek);
+        trans.primeni(MTKTransformer::FinRek);
     /* Prekid pogresno pokrenutog programa */
     } else MTKTransformer::greska(upotreba);
 
@@ -54,9 +54,6 @@ int main(int argc, char *argv[]) {
     std::ostringstream buffer;
     buffer << "clang-format -i " << nova;
     std::system(buffer.str().c_str());
-
-    /* Oslobadjanje memorije */
-    MTKTransformer::oslobodi();
 
     /* Normalno zavrsavanje programa */
     exit(EXIT_SUCCESS);

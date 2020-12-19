@@ -25,12 +25,10 @@
 #include <sstream>
 
 /* Postavljanje datoteka */
-MTKTransformer::MTKTransformer(std::string &s, std::string &n)
-    : stara(s), nova(n) {}
-
-/* Staticko oslobadjanje memorije */
-void MTKTransformer::oslobodi() {
-    MTKContext::oslobodi();
+MTKTransformer::MTKTransformer(const std::string &s,
+                               const std::string &n)
+    : stara(s), nova(n) {
+    MTKContext::postavi(fje);
 }
 
 /* Prijavljivanje greske u radu */
@@ -38,9 +36,9 @@ void MTKTransformer::greska(const std::string &poruka) {
     MTKContext::greska(poruka);
 }
 
-/* Obrada prema zeljenoj akciji; sustinski
+/* Primena zeljene izmene koda; sustinski je
  * boilerplate (sablonski) kod za rad sa AST */
-void MTKTransformer::obradi(Akcija akcija) {
+void MTKTransformer::primeni(Izmena izmena) {
     /* Parsiranje dokle god ima promena */
     for(;;) {
         /* Pravljenje i inicijalizacija prevodioca */
@@ -85,50 +83,50 @@ void MTKTransformer::obradi(Akcija akcija) {
         TheCompInst.getDiagnosticClient().BeginSourceFile(
                     TheCompInst.getLangOpts(), &ThePreprocessor);
 
-        /* Odabir petlje u koju se ostale menjaju */
+        /* Odabir transformatora prema izmeni */
         auto &TheASTContext = TheCompInst.getASTContext();
         ASTConsumer* TheConsumer;
-        switch (akcija) {
-        case Akcija::While2Do:
+        switch (izmena) {
+        case Izmena::While2Do:
             TheConsumer = new MTKConsumer<While2DoVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::Do2For:
+        case Izmena::Do2For:
             TheConsumer = new MTKConsumer<Do2ForVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::While2For:
+        case Izmena::While2For:
             TheConsumer = new MTKConsumer<While2ForVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::PrepFor:
+        case Izmena::PrepFor:
             TheConsumer = new MTKConsumer<PrepForVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::For2While:
+        case Izmena::For2While:
             TheConsumer = new MTKConsumer<For2WhileVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::For2Do:
+        case Izmena::For2Do:
             TheConsumer = new MTKConsumer<For2DoVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::Rek2Iter:
+        case Izmena::Rek2Iter:
             TheConsumer = new MTKConsumer<Rek2IterVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::FinIter:
+        case Izmena::FinIter:
             TheConsumer = new MTKConsumer<FinIterVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::Iter2Rek:
+        case Izmena::Iter2Rek:
             TheConsumer = new MTKConsumer<Iter2RekVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::FinRek:
+        case Izmena::FinRek:
             TheConsumer = new MTKConsumer<FinRekVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::PrepIf:
+        case Izmena::PrepIf:
             TheConsumer = new MTKConsumer<PrepIfVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::PrepSwitch:
+        case Izmena::PrepSwitch:
             TheConsumer = new MTKConsumer<PrepSwitchVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::If2Switch:
+        case Izmena::If2Switch:
             TheConsumer = new MTKConsumer<If2SwitchVisitor>(TheRewriter, TheASTContext);
             break;
-        case Akcija::Switch2If:
+        case Izmena::Switch2If:
             TheConsumer = new MTKConsumer<Switch2IfVisitor>(TheRewriter, TheASTContext);
             break;
         }
@@ -138,7 +136,7 @@ void MTKTransformer::obradi(Akcija akcija) {
         delete TheConsumer;
 
         /* Upisivanje novog koda iz bafera; u slucaju da nema
-             * izmena, prosto prepisivanje starog koda kao novog */
+         * izmena, prosto prepisivanje starog koda kao novog */
         const auto *RewriteBuf =
                 TheRewriter.getRewriteBufferFor(SourceMgr.getMainFileID());
         if (RewriteBuf) {
@@ -168,12 +166,12 @@ void MTKTransformer::obradi(Akcija akcija) {
         stara = nova;
 
         /* Iteracije i pripreme su jednoprolazni */
-        if (akcija == Akcija::PrepFor ||
-            akcija == Akcija::PrepIf ||
-            akcija == Akcija::PrepSwitch ||
-            akcija == Akcija::Rek2Iter ||
-            akcija == Akcija::FinIter ||
-            akcija == Akcija::FinRek)
+        if (izmena == Izmena::PrepFor ||
+            izmena == Izmena::PrepIf ||
+            izmena == Izmena::PrepSwitch ||
+            izmena == Izmena::Rek2Iter ||
+            izmena == Izmena::FinIter ||
+            izmena == Izmena::FinRek)
             break;
     }
 }

@@ -2,21 +2,20 @@
 #define MTKTRANS_H
 
 #include <string>
+#include <unordered_set>
 
 /* Klasa koja predstavlja transformator */
 class MTKTransformer {
 public:
     /* Postavljanje datoteka */
-    MTKTransformer(std::string &s, std::string &n);
-
-    /* Staticko oslobadjanje memorije */
-    static void oslobodi();
+    MTKTransformer(const std::string &s,
+                   const std::string &n);
 
     /* Prijavljivanje greske u radu */
     [[noreturn]] static void greska(const std::string &poruka);
 
-    /* Enumeracija akcija */
-    enum Akcija {
+    /* Enumeracija izmena */
+    enum Izmena {
         While2Do,
         Do2For,
         While2For,
@@ -33,16 +32,19 @@ public:
         Switch2If
     };
 
-    /* Obrada prema zeljenoj akciji; sustinski
+    /* Primena zeljene izmene koda; sustinski je
      * boilerplate (sablonski) kod za rad sa AST */
-    void obradi(Akcija akcija);
+    void primeni(Izmena izmena);
 
 private:
     /* Datoteke koje se obradjuju */
-    std::string &stara, &nova;
+    std::string stara, nova;
+
+    /* Skup obradjenih funkcija */
+    std::unordered_set<std::string> fje;
 
     /* Informacija o cestoj gresci */
-    constexpr static auto nemaDatoteke = "Neuspelo otvaranje datoteke!";
+    static constexpr auto nemaDatoteke = "Neuspelo otvaranje datoteke!";
 };
 
 #endif

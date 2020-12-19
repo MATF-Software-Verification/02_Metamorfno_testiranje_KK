@@ -22,7 +22,7 @@
  *************************/
 
 /* Poruka da maskiranje koraka pravi problem */
-static const auto maskiranje = "Telo petlje maskira korak!";
+static constexpr auto maskiranje = "Telo petlje maskira korak!";
 
 /* Odredjivanje petlje i prethodnog */
 std::pair<const ForStmt *,

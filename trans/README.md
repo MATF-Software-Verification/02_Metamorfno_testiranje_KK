@@ -6,7 +6,7 @@ Program transformiše sve petlje u C kodu u željeni tip – for, while, do-whil
 Primer pokretanja (testiranja) transformatora:
 ```
 ./trans <ulaz> <izlaz> <do|while|for>
-./trans ulaz.c izlaz.c do
+./trans whilefor.c samodo.c do
 ```
 
 ## Transformacija uslova :grey_question:
@@ -15,7 +15,7 @@ Program transformiše sve uslove u C kodu u željeni tip – if-then-else, switc
 Primer pokretanja (testiranja) programa:
 ```
 ./trans <ulaz> <izlaz> <if|switch>
-./trans ulaz.c izlaz.c if
+./trans ifswitch.c samoif.c if
 ```
 
 ## Transformacija rekurzije :repeat:
@@ -24,7 +24,7 @@ Program transformiše svu kontrolu toka sa repnim ponavljanjem u C kodu u želje
 Primer pokretanja (testiranja) programa:
 ```
 ./trans <ulaz> <izlaz> <iter|rek>
-./trans ulaz.c izlaz.c iter
+./trans rekiter.c samoiter.c iter
 ```
 
 ## Podešavanje :memo:

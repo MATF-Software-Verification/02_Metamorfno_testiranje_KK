@@ -1,5 +1,5 @@
-#ifndef MTKCONTEXT_H
-#define MTKCONTEXT_H
+#ifndef MTKCONT_H
+#define MTKCONT_H
 
 #include "clang/AST/RecursiveASTVisitor.h"
 #include "clang/Rewrite/Core/Rewriter.h"
@@ -20,8 +20,8 @@ public:
     /* Staticko cuvanje posecenih funkcija */
     static std::unordered_set<std::string> *fje;
 
-    /* Staticko oslobadjanje memorije */
-    static void oslobodi();
+    /* Staticka inicijalizacija posecenih funkcija */
+    static void postavi(std::unordered_set<std::string> &f);
 
     /* Prijavljivanje greske u radu */
     [[noreturn]] static void greska(const std::string &poruka);
