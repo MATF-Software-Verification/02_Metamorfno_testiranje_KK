@@ -3,7 +3,7 @@
 ## Metamorfno testiranje :loop:
 Praktični seminarski rad na kursu Verifikacija softvera. Implementiran je algoritam i infrastruktura za generisanje metamorfnih test primera za proveru ispravnosti programskih prevodilaca.
 
-Konstruisano je nekoliko smislenih semantičkih transformacija izvornog koda, za koje je zatim provereno da li se izvršivi kod isto ponaša.
+Konstruisano je nekoliko smislenih semantičkih transformacija izvornog koda, koristeći Кlangov aplikativni programski interfejs prema apstraktnom sintaksnom stablu, za koje je zatim provereno da li se izvršivi kod isto ponaša.
 
 Teorijska podloga: [autorski](http://www.verifikacijasoftvera.matf.bg.ac.rs/vs/predavanja/02_testiranje/32_LazarVasovic_EMI.pdf) teorijski seminarski rad sa istog kursa.
 

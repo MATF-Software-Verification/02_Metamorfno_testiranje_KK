@@ -1,7 +1,7 @@
 #### clang-trans
 
 ## Transformacija petlji :loop:
-Program transformiše sve petlje u C kodu u željeni tip (for, while, do-while), koristeći Кlangov aplikativni programski interfejs prema apstraktnom sintaksnom stablu. U najvećoj meri je održana semantička jednakost polaznog i izmenjenog koda.
+Program transformiše sve petlje u C kodu u željeni tip – for, while, do-while.
 
 Primer pokretanja (testiranja) transformatora:
 ```
@@ -10,7 +10,7 @@ Primer pokretanja (testiranja) transformatora:
 ```
 
 ## Transformacija uslova :grey_question:
-Program transformiše sve uslove u C kodu u željeni tip (if-then-else, switch-case-default), koristeći Кlangov aplikativni programski interfejs prema apstraktnom sintaksnom stablu. U najvećoj meri je održana semantička jednakost polaznog i izmenjenog koda.
+Program transformiše sve uslove u C kodu u željeni tip – if-then-else, switch-case-default.
 
 Primer pokretanja (testiranja) programa:
 ```
@@ -19,7 +19,7 @@ Primer pokretanja (testiranja) programa:
 ```
 
 ## Transformacija rekurzije :repeat:
-Program transformiše svu kontrolu toka sa repnim ponavljanjem u C kodu u željeni tip (iteracija, rekurzija), koristeći Кlangov aplikativni programski interfejs prema apstraktnom sintaksnom stablu. U najvećoj meri je održana semantička jednakost polaznog i izmenjenog koda.
+Program transformiše svu kontrolu toka sa repnim ponavljanjem u C kodu u željeni tip – iteracija, rekurzija.
 
 Primer pokretanja (testiranja) programa:
 ```
