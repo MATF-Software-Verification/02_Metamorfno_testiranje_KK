@@ -1,8 +1,8 @@
 #include "FinRekVisitor.hpp"
 
-/***********************
+/****************************************
  * Shema transformacije
- * ---------------------
+ * --------------------------------------
  * int petlja(int *x, int *y, int *ret) {
  *   for (; x > 2;) {
  *     y++;
@@ -15,7 +15,7 @@
  *   }
  *   return 0;
  * }
- * ---------------------
+ * --------------------------------------
  * int petlja(int *x, int *y, int *ret) {
  *   if (*x > 2) {
  *     (*y)++;
@@ -31,7 +31,7 @@
  *   }
  *   return 0;
  * }
- ***********************/
+ ****************************************/
 
 /* Staticki podatak da li je prvi prolaz */
 bool FinRekVisitor::prviProlaz = true;

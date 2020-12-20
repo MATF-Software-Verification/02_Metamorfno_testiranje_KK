@@ -39,9 +39,6 @@
  *   continue;
  ***********************/
 
-/* Poruka o nemogucnosti obrade switcha */
-static constexpr auto dubokeOznake = "Nije moguce obraditi duboke case i default oznake!";
-
 /* Provera ima li dubokih oznaka */
 bool PrepSwitchVisitor::VisitSwitchCase(SwitchCase *s) const {
     /* Dohvatanje prvog roditelja */

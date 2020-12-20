@@ -21,9 +21,6 @@
  * }
  *************************/
 
-/* Poruka da maskiranje koraka pravi problem */
-static constexpr auto maskiranje = "Telo petlje maskira korak!";
-
 /* Odredjivanje petlje i prethodnog */
 std::pair<const ForStmt *,
           const Stmt *> PrepForVisitor::odrediPetlju(Stmt *s) const {

@@ -4,9 +4,6 @@
 
 #include <climits>
 
-/* Poruka da nema slobodnog imena */
-static constexpr auto nemaImena = "Nije moguce pronaci slobodno ime!";
-
 /* Staticko cuvanje posecenih funkcija */
 std::unordered_set<std::string> *MTKContext::fje = nullptr;
 

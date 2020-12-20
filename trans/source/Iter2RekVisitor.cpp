@@ -80,6 +80,10 @@ void Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
             if (const auto var = dyn_cast<VarDecl>(dekl)) {
                 tabu.insert(var);
 
+                /* Greska ukoliko je ime vec korisceno */
+                if (dekli.count(var->getName().str()))
+                    MTKContext::greska(maskiranje);
+
                 /* Dohvatanje dodatnih deklaracija */
                 dohvatiDeklaracije(var->getInit());
             }
@@ -92,9 +96,15 @@ void Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
     if (const auto deklex = dyn_cast<DeclRefExpr>(s)) {
         /* Dodavanje svih deklaracija */
         if (const auto var = dyn_cast<VarDecl>(deklex->getDecl()))
+            /* Obrada onih koji dosad nisu obradjeni */
             if (!tabu.count(var) && !deklm.count(var)) {
-                deklm.insert(var);
-                dekls.push_back(var);
+                dekli.insert(var->getName().str());
+
+                /* Ne skladiste se globalne promenljive */
+                if (var->isLocalVarDeclOrParm()) {
+                    deklm.insert(var);
+                    dekls.push_back(var);
+                }
             }
 
         /* Nastavljanje dalje */

@@ -30,6 +30,9 @@ private:
 
     /* Privatno cuvanje vec pripremljenih naredbi */
     std::unordered_map<const SwitchStmt *, DeclRefExpr *> prip;
+
+    /* Poruka o nemogucnosti obrade switcha */
+    static constexpr auto dubokeOznake = "Duboke case i default oznake!";
 };
 
 #endif

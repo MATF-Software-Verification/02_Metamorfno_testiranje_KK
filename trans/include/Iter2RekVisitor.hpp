@@ -39,6 +39,10 @@ private:
     std::vector<VarDecl *> dekls;
     std::unordered_set<VarDecl *> deklm;
     std::unordered_set<VarDecl *> tabu;
+    std::unordered_set<std::string> dekli;
+
+    /* Poruka da maskiranje vrednosti pravi problem */
+    static constexpr auto maskiranje = "Deklaracija maskira telo!";
 };
 
 #endif

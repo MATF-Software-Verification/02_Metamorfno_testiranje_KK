@@ -130,3 +130,21 @@ rm a.out
 diff output.txt output2.txt -q
 rm output2.txt
 
+$trans samoiter.c samorek2.c rek
+
+clang samorek2.c
+./a.out > output2.txt
+rm a.out
+
+diff output.txt output2.txt -q
+rm output2.txt
+
+$trans samorek.c samoiter2.c iter
+
+clang samoiter2.c
+./a.out > output2.txt
+rm a.out
+
+diff output.txt output2.txt -q
+rm output2.txt
+

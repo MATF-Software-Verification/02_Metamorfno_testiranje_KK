@@ -218,6 +218,10 @@ protected:
     /* Zasticeno cuvanje prepisivaca i konteksta */
     Rewriter &TheRewriter;
     ASTContext &TheASTContext;
+
+private:
+    /* Poruka da nema slobodnog imena */
+    static constexpr auto nemaImena = "Nije moguce pronaci slobodno ime!";
 };
 
 #endif

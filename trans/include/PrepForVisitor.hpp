@@ -32,6 +32,9 @@ private:
 
     /* Privatno cuvanje skupa maskiranih */
     std::unordered_set<const ForStmt *> maskirani;
+
+    /* Poruka da maskiranje koraka pravi problem */
+    static constexpr auto maskiranje = "Telo petlje maskira korak!";
 };
 
 #endif
