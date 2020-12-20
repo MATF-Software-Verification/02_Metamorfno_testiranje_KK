@@ -10,14 +10,14 @@ public:
     FinRekVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {}
 
+    /* Virtuelni dekstruktor za brojanje prolaza */
+    virtual ~FinRekVisitor();
+
     /* Zamena svakog iskakanja returnom */
     bool VisitBreakStmt(BreakStmt *s) const;
 
     /* Zamena svakog preskakanja returnom */
     bool VisitContinueStmt(ContinueStmt *s) const;
-
-    /* Zamena svakog return slozenom verzijom */
-    bool VisitReturnStmt(ReturnStmt *s) const;
 
     /* Obrada izraza na odgovarajuci nacin */
     ParenExpr *obradiIzraz(DeclRefExpr *s);
@@ -34,6 +34,12 @@ public:
     /* Obrada svake (for) petlje ili ne */
     bool TraverseForStmt(ForStmt *s);
 
+    /* Zamena svakog return slozenom verzijom */
+    bool obradiReturn(ReturnStmt *s) const;
+
+    /* Zamena svakog return slozenom verzijom */
+    bool obradiReturn(Stmt *s) const;
+
     /* Obrada deklaracije funkcije */
     bool TraverseFunctionDecl(FunctionDecl *f);
 
@@ -43,6 +49,9 @@ private:
 
     /* Privatno cuvanje posecenih izraza */
     std::unordered_set<DeclRefExpr *> izr;
+
+    /* Staticki podatak da li je prvi prolaz */
+    static bool prviProlaz;
 };
 
 #endif

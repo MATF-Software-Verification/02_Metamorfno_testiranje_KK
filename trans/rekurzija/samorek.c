@@ -97,6 +97,15 @@ void hello(int i) {
     return;
 }
 
+int petlja1(int *ret0) {
+  if (1) {
+    return 0;
+    return petlja1(ret0);
+  }
+
+  return 0;
+}
+
 int petlja0(int *x, int *y, void (**f)(int), int *ret) {
   if ((*x) > 2) {
     {
@@ -107,11 +116,29 @@ int petlja0(int *x, int *y, void (**f)(int), int *ret) {
       return petlja0(x, y, f, ret);
       hello(z);
       {
-        (*ret) = 5;
+        (*ret) = (*x) + 1;
         return 1;
       }
     }
     return petlja0(x, y, f, ret);
+  }
+
+  return 0;
+}
+
+int petlja2(int *cond, int *ret1) {
+  if ((*cond)) {
+    {
+      {
+        int ret0;
+        if (petlja1(&ret0)) {
+          (*ret1) = ret0;
+          return 1;
+        }
+      }
+      (*cond) = 0;
+    }
+    return petlja2(cond, ret1);
   }
 
   return 0;
@@ -131,10 +158,14 @@ int main() {
   }
 
   // ugnezdjene petlje
-  /*do
-    while (1)
-      break;
-  while (0);*/
+  {
+    int cond = 1;
+    {
+      int ret1;
+      if (petlja2(&cond, &ret1))
+        return ret1;
+    }
+  }
 
   // labela i goto
   while (1)

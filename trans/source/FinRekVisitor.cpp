@@ -33,6 +33,14 @@
  * }
  ***********************/
 
+/* Staticki podatak da li je prvi prolaz */
+bool FinRekVisitor::prviProlaz = true;
+
+/* Virtuelni dekstruktor za brojanje prolaza */
+FinRekVisitor::~FinRekVisitor() {
+    prviProlaz = false;
+}
+
 /* Zamena svakog iskakanja returnom */
 bool FinRekVisitor::VisitBreakStmt(BreakStmt *s) const {
     /* Potrebno je vratiti nulu */
@@ -55,43 +63,6 @@ bool FinRekVisitor::VisitContinueStmt(ContinueStmt *s) const {
 
     /* Tekstualna zamena koda */
     zameni(s, ret, true);
-
-    /* Nastavljanje dalje */
-    return true;
-}
-
-/* Zamena svakog return slozenom verzijom */
-bool FinRekVisitor::VisitReturnStmt(ReturnStmt *s) const {
-    /* Odustajanje ako je umetnuti return */
-    const auto telo = dyn_cast<CompoundStmt>(tekf->getBody());
-    if (s == telo->body_back()) return true;
-
-    /* Deklaracija eventualne dodele */
-    BinaryOperator *dodela = nullptr;
-
-    /* Pravljenje ako ima povratne vrednosti */
-    if (const auto pov = s->getRetValue()) {
-        /* Deklaracija za povratnu vrednost */
-        const auto dekl = tekf->parameters().back();
-
-        /* Promenljiva za povratnu vrednost */
-        const auto prom = napraviDeclExpr(dekl);
-
-        /* Dereferencirana promenljiva */
-        const auto deref = napraviDeref(prom);
-
-        /* Dodela vrednosti promenljivoj */
-        dodela = napraviDodelu(deref, pov);
-    }
-
-    /* Potrebno je vratiti jedinicu */
-    Stmt *zamena = napraviReturn(true);
-
-    /* Slozena naredba za spajanje */
-    if (dodela) zamena = napraviSlozenu({dodela, zamena});
-
-    /* Tekstualna zamena koda */
-    zameni(s, zamena, true);
 
     /* Nastavljanje dalje */
     return true;
@@ -163,7 +134,7 @@ bool FinRekVisitor::VisitForStmt(ForStmt *s) {
     /* Tekstualna zamena koda */
     zameni(s, iff);
 
-    /* Izbacivanje glavne funkcije skupa */
+    /* Izbacivanje glavne funkcije iz skupa */
     fje->erase(tekf->getName().str());
 
     /* Nastavljanje dalje */
@@ -176,13 +147,66 @@ bool FinRekVisitor::TraverseForStmt(ForStmt *s) {
            RecursiveASTVisitor<FinRekVisitor>::TraverseForStmt(s);
 }
 
+/* Zamena svakog return slozenom verzijom */
+bool FinRekVisitor::obradiReturn(ReturnStmt *s) const {
+    /* Deklaracija eventualne dodele */
+    BinaryOperator *dodela = nullptr;
+
+    /* Pravljenje ako ima povratne vrednosti */
+    if (const auto pov = s->getRetValue()) {
+        /* Deklaracija za povratnu vrednost */
+        const auto dekl = tekf->parameters().back();
+
+        /* Promenljiva za povratnu vrednost */
+        const auto prom = napraviDeclExpr(dekl);
+
+        /* Dodela vrednosti promenljivoj */
+        dodela = napraviDodelu(prom, pov);
+    }
+
+    /* Potrebno je vratiti jedinicu */
+    Stmt *zamena = napraviReturn(true);
+
+    /* Slozena naredba za spajanje */
+    if (dodela) zamena = napraviSlozenu({dodela, zamena});
+
+    /* Tekstualna zamena koda */
+    zameni(s, zamena, true);
+
+    /* Nastavljanje dalje */
+    return true;
+}
+
+/* Zamena svakog return slozenom verzijom */
+bool FinRekVisitor::obradiReturn(Stmt *s) const {
+    /* Nema posla ako je prazna naredba */
+    if (!s) return true;
+
+    /* Pokusaj obrade naredbe kao return */
+    if (const auto ret = dyn_cast<ReturnStmt>(s))
+        return obradiReturn(ret);
+
+    /* Prolazak kroz svu decu */
+    for (const auto dete : s->children())
+        obradiReturn(dete);
+
+    /* Nastavljanje dalje */
+    return true;
+}
+
 /* Obrada deklaracije funkcije */
 bool FinRekVisitor::TraverseFunctionDecl(FunctionDecl *f) {
     /* Privatno cuvanje tekuce funkcije */
     tekf = f;
 
+    /* Provera da li je funkcija na spisku */
+    const auto naSpisku = fje->count(f->getName().str());
+
+    /* Obrada return ako je prvi prolaz */
+    if (prviProlaz && naSpisku) {
+        return obradiReturn(*f->getBody()->child_begin());
     /* Nastavljanje dalje ako je funkcija na spisku */
-    if (fje->count(f->getName().str())) {
+    } else if (naSpisku) {
         const auto ret =
             RecursiveASTVisitor<FinRekVisitor>::TraverseFunctionDecl(f);
 

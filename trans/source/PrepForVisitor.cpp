@@ -95,16 +95,17 @@ bool PrepForVisitor::VisitDeclStmt(DeclStmt *s) {
     if (!forr || pret == forr->getInit())
         return true;
 
-    /* Dohvatanje tekuce deklaracije */
-    const auto dekl = dyn_cast<VarDecl>(s->getSingleDecl());
-    if (!dekl) return true;
+    /* Prolazak kroz sve deklaracije */
+    for (const auto dekl : s->getDeclGroup())
+        /* Dohvatanje deklaracije promenljive */
+        if (const auto var = dyn_cast<VarDecl>(dekl)) {
+            /* Ime tekuce deklaracije promenljive */
+            const auto ime = var->getName().str();
 
-    /* Ime tekuce deklaracije */
-    const auto ime = dekl->getName().str();
-
-    /* Azuriranje podatka o maskiranosti */
-    if (imena[forr].count(ime))
-        maskirani.insert(forr);
+            /* Azuriranje podatka o maskiranosti */
+            if (imena[forr].count(ime))
+                maskirani.insert(forr);
+        }
 
     /* Nastavljanje dalje */
     return true;

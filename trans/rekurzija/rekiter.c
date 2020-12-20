@@ -106,14 +106,14 @@ int main() {
     // rad sa fjama
     f(z);
     hello(z);
-    return 5;
+    return x + 1;
   }
 
   // ugnezdjene petlje
-  /*do
+  do
     while (1)
       break;
-  while (0);*/
+  while (0);
 
   // labela i goto
   for (; 1;)

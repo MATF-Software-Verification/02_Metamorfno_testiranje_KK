@@ -142,7 +142,7 @@ int main() {
     // rad sa fjama
     f(z);
     hello(z);
-    return 5;
+    return x + 1;
   }
 
   // ugnezdjene petlje
