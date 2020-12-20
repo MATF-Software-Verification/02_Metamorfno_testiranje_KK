@@ -13,7 +13,7 @@
 /* Posetilac koji while pretvara u for */
 bool While2ForVisitor::VisitWhileStmt(WhileStmt *s) const {
     /* Formiranje nove for petlje */
-    const auto petlja = napraviFor(s->getCond(), nullptr, s->getBody());
+    const auto petlja = napraviFor(s->getCond(), s->getBody());
 
     /* Tekstualna zamena koda */
     zameni(s, petlja);

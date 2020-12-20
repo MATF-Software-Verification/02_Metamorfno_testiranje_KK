@@ -110,10 +110,10 @@ int main() {
   }
 
   // ugnezdjene petlje
-  do
+  /*do
     while (1)
       break;
-  while (0);
+  while (0);*/
 
   // labela i goto
   for (; 1;)

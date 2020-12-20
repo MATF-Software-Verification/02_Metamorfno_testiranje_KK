@@ -13,7 +13,7 @@
  * }
  * --------------------------------------
  * int petlja(int *x, int *y, int *ret) {
- *   if (x > 2) {
+ *   for (; x > 2;) {
  *     y++;
  *     break;
  *     x = y;
@@ -115,14 +115,14 @@ FunctionDecl *Iter2RekVisitor::napraviRekFunkciju(WhileStmt *s) const {
     const auto tip = TheASTContext.IntTy;
 
     /* Svodjenje petlje na uslovnu naredbu */
-    const auto iff = napraviIf(s->getCond(), s->getBody());
-    iff->setThen(napraviSlozenu({iff->getThen(), napraviCont()}));
+    const auto forr = napraviFor(s->getCond(), s->getBody());
+    forr->setBody(napraviSlozenu({forr->getBody(), napraviCont()}));
 
     /* Pravljenje naredbe za vracanje iz fje */
     const auto ret = napraviReturn(false);
 
     /* Pravljenje tela zeljene funkcije */
-    const auto telo = napraviSlozenu({iff, ret});
+    const auto telo = napraviSlozenu({forr, ret});
 
     /* Pravljenje ref verzije funkcije */
     return napraviRefFunkciju(dekl, tip, "petlja", dekls, telo);

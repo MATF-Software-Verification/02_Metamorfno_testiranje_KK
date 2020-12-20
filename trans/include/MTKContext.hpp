@@ -34,6 +34,10 @@ public:
                             bool dir = false) const;
 
     /* Tekstualna zamena koda */
+    void zameni(const SourceRange &mesto,
+                const Stmt *const novi) const;
+
+    /* Tekstualna zamena koda */
     void zameni(const Stmt *const stari,
                 const Stmt *const novi,
                 bool dir = false) const;
@@ -143,7 +147,7 @@ public:
     WhileStmt *napraviWhile(Expr *uslov, Stmt *telo) const;
 
     /* Pravljenje for petlje */
-    ForStmt *napraviFor(Expr *uslov, Expr *korak, Stmt *telo) const;
+    ForStmt *napraviFor(Expr *uslov, Stmt *telo, Expr *korak = nullptr) const;
 
     /* Pravljenje continue naredbe */
     ContinueStmt *napraviCont() const;
@@ -193,6 +197,9 @@ public:
     /* Pravljenje ref poziva */
     CallExpr *napraviRefPoziv(FunctionDecl *funkcija,
                               const std::vector<VarDecl *> &args) const;
+
+    /* Pravljenje rekurzivnog poziva */
+    CallExpr *napraviRekPoziv(FunctionDecl *funkcija) const;
 
     /* Pravljenje return naredbe */
     ReturnStmt *napraviReturn(Expr *izraz = nullptr) const;

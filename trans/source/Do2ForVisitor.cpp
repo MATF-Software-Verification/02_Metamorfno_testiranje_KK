@@ -24,7 +24,7 @@ bool Do2ForVisitor::VisitDoStmt(DoStmt *s) const {
     const auto korak = napraviDodelu(uslov, s->getCond());
 
     /* Formiranje nove for petlje */
-    const auto petlja = napraviFor(uslov, korak, s->getBody());
+    const auto petlja = napraviFor(uslov, s->getBody(), korak);
 
     /* Slozena naredba kao resenje */
     const auto resenje = napraviSlozenu({dekl, petlja});

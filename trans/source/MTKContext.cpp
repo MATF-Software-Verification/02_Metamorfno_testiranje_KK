@@ -59,17 +59,24 @@ SourceRange MTKContext::odrediMesto(const Stmt *const s, bool dir) const {
 }
 
 /* Tekstualna zamena koda */
+void MTKContext::zameni(const SourceRange &mesto,
+                        const Stmt *const novi) const {
+    /* Tekstualna reprezentacija nove naredbe */
+    const auto stmt = stampaj(novi);
+
+    /* Promena teksta na izracunatom mestu */
+    TheRewriter.ReplaceText(mesto, stmt);
+}
+
+/* Tekstualna zamena koda */
 void MTKContext::zameni(const Stmt *const stari,
                         const Stmt *const novi,
                         bool dir) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari, dir);
 
-    /* Tekstualna reprezentacija nove naredbe */
-    const auto stmt = stampaj(novi);
-
-    /* Promena teksta na izracunatom mestu */
-    TheRewriter.ReplaceText(mesto, stmt);
+    /* Tekstualna zamena koda */
+    zameni(mesto, novi);
 }
 
 /* Prednja tekstualna dopuna koda */
@@ -328,7 +335,7 @@ WhileStmt *MTKContext::napraviWhile(Expr *uslov, Stmt *telo) const {
 }
 
 /* Pravljenje for petlje */
-ForStmt *MTKContext::napraviFor(Expr *uslov, Expr *korak, Stmt *telo) const {
+ForStmt *MTKContext::napraviFor(Expr *uslov, Stmt *telo, Expr *korak) const {
     return naHip(ForStmt(TheASTContext, nullptr, uslov, nullptr, korak, telo,
                          SourceLocation(), SourceLocation(), SourceLocation()));
 }
@@ -469,6 +476,24 @@ CallExpr *MTKContext::napraviRefPoziv(FunctionDecl *funkcija,
 
     /* Popunjavanje zeljene funkcije */
     return napraviRefPoziv(funkcija, argums);
+}
+
+/* Pravljenje rekurzivnog poziva */
+CallExpr *MTKContext::napraviRekPoziv(FunctionDecl *funkcija) const {
+    /* Parametri funkcije */
+    const auto parms = funkcija->parameters();
+
+    /* Argumenti kao izrazi */
+    std::vector<Expr *> args;
+    std::transform(std::cbegin(parms),
+                   std::cend(parms),
+                   std::back_inserter(args),
+                   [this](ParmVarDecl *const var) {
+                       return napraviDeclExpr(var);
+                   });
+
+    /* Rekurzivno pozivanje funkcije */
+    return napraviPoziv(funkcija, args);
 }
 
 /* Pravljenje return naredbe */

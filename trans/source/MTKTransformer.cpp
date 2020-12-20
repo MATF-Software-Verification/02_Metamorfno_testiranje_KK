@@ -170,8 +170,7 @@ void MTKTransformer::primeni(Izmena izmena) {
             izmena == Izmena::PrepIf ||
             izmena == Izmena::PrepSwitch ||
             izmena == Izmena::Rek2Iter ||
-            izmena == Izmena::FinIter ||
-            izmena == Izmena::FinRek)
+            izmena == Izmena::FinIter)
             break;
     }
 }

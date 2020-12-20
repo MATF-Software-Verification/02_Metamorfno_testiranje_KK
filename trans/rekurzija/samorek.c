@@ -84,10 +84,11 @@ int ittrn2(int a, int rez) {
 }
 
 int petlja(int *i) {
-  if (i--) {
+  if ((*i)--) {
     printf("hello\n");
-    continue;
+    return petlja(i);
   }
+
   return 0;
 }
 
@@ -96,43 +97,23 @@ void hello(int i) {
     return;
 }
 
-int petlja1(int *ret0) {
-  if (1) {
-    break;
-    continue;
-  }
-  return 0;
-}
-
 int petlja0(int *x, int *y, void (**f)(int), int *ret) {
-  if (x > 2) {
+  if ((*x) > 2) {
     {
-      y++;
-      break;
+      (*y)++;
+      return 0;
       int z = 3;
-      x = y - z;
-      continue;
-      f(z);
+      (*x) = (*y) - z;
+      return petlja0(x, y, f, ret);
       hello(z);
-      return 5;
-    }
-    continue;
-  }
-  return 0;
-}
-
-int petlja2(int *cond, int *ret1) {
-  if (cond) {
-    {
       {
-        int ret0;
-        if (petlja1(&ret0))
-          return ret0;
+        (*ret) = 5;
+        return 1;
       }
-      cond = 0;
     }
-    continue;
+    return petlja0(x, y, f, ret);
   }
+
   return 0;
 }
 
@@ -150,14 +131,10 @@ int main() {
   }
 
   // ugnezdjene petlje
-  {
-    int cond = 1;
-    {
-      int ret1;
-      if (petlja2(&cond, &ret1))
-        return ret1;
-    }
-  }
+  /*do
+    while (1)
+      break;
+  while (0);*/
 
   // labela i goto
   while (1)
