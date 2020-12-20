@@ -43,8 +43,9 @@ private:
     /* Skup obradjenih funkcija */
     std::unordered_set<std::string> fje;
 
-    /* Informacija o cestoj gresci */
+    /* Informacije o cestim greskama */
     static constexpr auto nemaDatoteke = "Neuspelo otvaranje datoteke!";
+    static constexpr auto losiTipovi = "Nepremostivi problem sa tipovima!";
 };
 
 #endif

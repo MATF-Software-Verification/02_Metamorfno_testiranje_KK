@@ -111,6 +111,21 @@ void Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
         return;
     }
 
+    /* Obrada poziva funkcije preko promenljive */
+    if (const auto call = dyn_cast<CallExpr>(s)) {
+        /* Inicijalizacija izraza deklaracije */
+        DeclRefExpr *fja = nullptr;
+
+        /* Dohvatanje pozivaoca kao kastovanja */
+        if (const auto poz = dyn_cast<ImplicitCastExpr>(call->getCallee()))
+            fja = dyn_cast<DeclRefExpr>(poz->getSubExprAsWritten());
+        else fja = dyn_cast<DeclRefExpr>(call->getCallee());
+
+        /* Dereferenciranje pozivaoca */
+        if (fja && isa<VarDecl>(fja->getDecl()))
+            call->setCallee(napraviDeref(fja));
+    }
+
     /* Prolazak kroz svu decu */
     for (const auto dete : s->children())
         dohvatiDeklaracije(dete);

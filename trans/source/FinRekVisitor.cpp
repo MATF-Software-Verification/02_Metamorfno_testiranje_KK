@@ -76,11 +76,15 @@ ParenExpr *FinRekVisitor::obradiIzraz(DeclRefExpr *s) {
     /* Dodavanje u spisak obradjenih */
     izr.insert(s);
 
-    /* Deklaracija od koje potice izraz */
-    const auto dekl = s->getDecl();
+    /* Deklaracija parametra funkcije */
+    const auto dekl = dyn_cast<ParmVarDecl>(s->getDecl());
+    if (!dekl) return nullptr;
 
-    /* Odustajanje ako nije iz funkcije */
-    if (!isa<ParmVarDecl>(dekl)) return nullptr;
+    /* Odustajanje ako je funkcija */
+    for (auto tip = dekl->getType()->getAs<PointerType>();
+         tip; tip = tip->getPointeeType()->getAs<PointerType>()) {
+        if (tip->isFunctionPointerType()) return nullptr;
+    }
 
     /* Dereferencirani izraz u zagradi */
     return napraviDeref(s);

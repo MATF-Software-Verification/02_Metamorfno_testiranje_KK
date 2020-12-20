@@ -74,7 +74,7 @@ void MTKTransformer::primeni(Izmena izmena) {
 
         /* Citanje prosledjenog fajla */
         const auto FileInOpt = FileMgr.getFile(stara);
-        if (!FileInOpt) MTKContext::greska(nemaDatoteke);
+        if (!FileInOpt) greska(nemaDatoteke);
         const auto FileIn = FileInOpt.get();
 
         /* Postavljanje prosledjenog fajla za ulazni */
@@ -142,7 +142,7 @@ void MTKTransformer::primeni(Izmena izmena) {
         if (RewriteBuf) {
             /* Otvaranje izlazne datoteke */
             std::ofstream izlaz(nova);
-            if (!izlaz) MTKContext::greska(nemaDatoteke);
+            if (!izlaz) greska(nemaDatoteke);
 
             /* Upisivanje rezultata */
             izlaz << std::string(RewriteBuf->begin(), RewriteBuf->end());
@@ -153,7 +153,7 @@ void MTKTransformer::primeni(Izmena izmena) {
             std::ifstream ulaz(stara);
             std::ofstream izlaz(nova);
             if (!ulaz || !izlaz)
-                MTKContext::greska(nemaDatoteke);
+                greska(nemaDatoteke);
 
             /* Prepisivanje ulaza na izlaz */
             std::ostringstream buffer;
@@ -164,6 +164,23 @@ void MTKTransformer::primeni(Izmena izmena) {
 
         /* Zamena starog fajla */
         stara = nova;
+
+        /* Provera da li je sve u redu */
+        if (izmena == Izmena::Iter2Rek) {
+            std::ostringstream buffer;
+
+            /* Pokusaj prevodjenja rezultata */
+            buffer << "clang-11 " << nova << " 2>/dev/null";
+            const auto ret
+                = std::system(buffer.str().c_str());
+
+            /* Ciscenje za sobom */
+            std::system("rm a.out 2>/dev/null");
+
+            /* Prijava greske ako nesto nije u redu */
+            if (!WIFEXITED(ret) || WEXITSTATUS(ret))
+                greska(losiTipovi);
+        }
 
         /* Iteracije i pripreme su jednoprolazni */
         if (izmena == Izmena::PrepFor ||

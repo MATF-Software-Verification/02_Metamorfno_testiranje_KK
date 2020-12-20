@@ -22,11 +22,12 @@ void viter() {
   putchar('\n');
 }
 
-int petlja0(double *a, int *rez, int *ret) {
+int petlja0(long *a, int *rez, int *ret) {
   if (!((*a) <= 0)) {
     {
-      double a0;
+      long a0 = (*a) - 1;
       int rez0 = (*rez) + 1;
+      (*a) = a0;
       (*rez) = rez0;
       return petlja0(a, rez, ret);
     }
@@ -36,7 +37,7 @@ int petlja0(double *a, int *rez, int *ret) {
   return 0;
 }
 
-int itenr(double a, int rez) {
+int itenr(long a, int rez) {
   {
     int ret;
     if (petlja0(&a, &rez, &ret))
@@ -47,7 +48,7 @@ int itenr(double a, int rez) {
 }
 
 // duboki polozaj poziva
-int petlja1(double *a, int *rez, int *ret0) {
+int petlja1(long *a, int *rez, int *ret0) {
   if (!((*a) <= 0)) {
     {
       (*rez)--;
@@ -55,8 +56,9 @@ int petlja1(double *a, int *rez, int *ret0) {
         (*rez)++;
         {
           {
-            double a1;
+            long a1 = (*a) - 1;
             int rez1 = (*rez) + 1;
+            (*a) = a1;
             (*rez) = rez1;
             return petlja1(a, rez, ret0);
           }
@@ -69,7 +71,7 @@ int petlja1(double *a, int *rez, int *ret0) {
   return 0;
 }
 
-int itenr2(double a, int rez) {
+int itenr2(long a, int rez) {
   {
     int ret0;
     if (petlja1(&a, &rez, &ret0))
@@ -241,6 +243,7 @@ int petlja7(int *x, int *y, void (**f)(int), int *ret5) {
       int z = 3;
       (*x) = (*y) - z;
       return petlja7(x, y, f, ret5);
+      (*f)(z);
       hello(z);
       {
         (*ret5) = (*x) + 1;

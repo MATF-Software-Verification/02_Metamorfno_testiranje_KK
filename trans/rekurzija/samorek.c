@@ -11,7 +11,7 @@ void viter() {
   putchar('\n');
 }
 
-int itenr(double a, int rez) {
+int itenr(long a, int rez) {
   if (a <= 0)
     return rez;
   else
@@ -19,7 +19,7 @@ int itenr(double a, int rez) {
 }
 
 // duboki polozaj poziva
-int itenr2(double a, int rez) {
+int itenr2(long a, int rez) {
   if (a <= 0) {
     rez--;
     {
@@ -114,6 +114,7 @@ int petlja0(int *x, int *y, void (**f)(int), int *ret) {
       int z = 3;
       (*x) = (*y) - z;
       return petlja0(x, y, f, ret);
+      (*f)(z);
       hello(z);
       {
         (*ret) = (*x) + 1;

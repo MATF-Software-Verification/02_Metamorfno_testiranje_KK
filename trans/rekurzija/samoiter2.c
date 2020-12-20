@@ -11,9 +11,9 @@ void viter() {
   putchar('\n');
 }
 
-int itenr(double a, int rez) {
+int itenr(long a, int rez) {
   while (!(a <= 0)) {
-    double a0 = a - 1;
+    long a0 = a - 1;
     int rez0 = rez + 1;
     a = a0;
     rez = rez0;
@@ -24,14 +24,14 @@ int itenr(double a, int rez) {
 }
 
 // duboki polozaj poziva
-int itenr2(double a, int rez) {
+int itenr2(long a, int rez) {
   while (!(a <= 0)) {
     rez--;
     {
       rez++;
       {
         {
-          double a1 = a - 1;
+          long a1 = a - 1;
           int rez1 = rez + 1;
           a = a1;
           rez = rez1;
@@ -167,6 +167,7 @@ int petlja0(int *x, int *y, void (**f)(int), int *ret) {
         continue;
       }
 
+      (*f)(z);
       hello(z);
       {
         (*ret) = (*x) + 1;
