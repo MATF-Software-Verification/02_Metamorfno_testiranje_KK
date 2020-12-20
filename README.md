@@ -5,9 +5,9 @@ Praktični seminarski rad na kursu [Verifikacija softvera](http://www.verifikaci
 
 Konstruisano je nekoliko smislenih semantičkih transformacija izvornog koda, koristeći [Clangov](https://clang.llvm.org/) aplikativni programski interfejs prema apstraktnom sintaksnom stablu, za koje je zatim provereno da li se izvršivi kod isto ponaša.
 
-Teorijska podloga: [autorski](http://www.verifikacijasoftvera.matf.bg.ac.rs/vs/predavanja/02_testiranje/32_LazarVasovic_EMI.pdf) teorijski seminarski rad sa istog kursa.
+Teorijska podloga o metamorfnom testiranju kompilatora: [autorski](http://www.verifikacijasoftvera.matf.bg.ac.rs/vs/predavanja/02_testiranje/32_LazarVasovic_EMI.pdf) teorijski seminarski rad sa istog kursa.
 
-Ideja za transformaciju petlji: [autorski](https://github.com/matfija/Clang-petlje) seminarski rad sa Konstrukcije kompilatora.
+Polazna tačja za transformaciju petlji: [autorski](https://github.com/matfija/Clang-petlje) seminarski rad sa Konstrukcije kompilatora.
 
 ## Podešavanje :memo:
 Primer podešavanja zavisnosti za Ubuntu:
