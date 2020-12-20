@@ -226,49 +226,71 @@ void hello(int i) {
     return;
 }
 
-int petlja8(int *ret6) {
-  if (1) {
-    return 0;
-    return petlja8(ret6);
-  }
-
-  return 0;
-}
-
-int petlja7(int *x, int *y, void (**f)(int), int *ret5) {
+int petlja7(int *x, int *y, int *ret5) {
   if ((*x) > 2) {
     {
       (*y)++;
+      putchar((*y) + '0');
       return 0;
-      int z = 3;
-      (*x) = (*y) - z;
-      return petlja7(x, y, f, ret5);
-      (*f)(z);
-      hello(z);
-      {
-        (*ret5) = (*x) + 1;
-        return 1;
-      }
+      putchar('x');
     }
-    return petlja7(x, y, f, ret5);
+    return petlja7(x, y, ret5);
   }
 
   return 0;
 }
 
-int petlja9(int *cond, int *ret7) {
+int petlja8(int *x, int *y, int *ret6) {
+  if ((*x) > 2) {
+    {
+      int z = 3;
+      (*x) = (*y) - z;
+      putchar((*x) + '0');
+      return petlja8(x, y, ret6);
+      putchar('y');
+    }
+    return petlja8(x, y, ret6);
+  }
+
+  return 0;
+}
+
+int petlja9(int *ret7) {
+  if (1) {
+    return 0;
+    return petlja9(ret7);
+  }
+
+  return 0;
+}
+
+int petlja10(int *cond, int *ret8) {
   if ((*cond)) {
     {
       {
-        int ret6;
-        if (petlja8(&ret6)) {
-          (*ret7) = ret6;
+        int ret7;
+        if (petlja9(&ret7)) {
+          (*ret8) = ret7;
           return 1;
         }
       }
       (*cond) = 0;
     }
-    return petlja9(cond, ret7);
+    return petlja10(cond, ret8);
+  }
+
+  return 0;
+}
+
+int petlja11(int *x, void (**f)(int), int *ret9) {
+  if ((*x) < 2) {
+    {
+      (*f)((*x) + 5);
+      putchar('\n');
+      hello((*x) + 3);
+      return 0;
+    }
+    return petlja11(x, f, ret9);
   }
 
   return 0;
@@ -279,21 +301,26 @@ int main() {
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
   printf("%d%d\n", itern(3, 3), itern2(4, 4));
 
-  int x, y;
-  void (*f)(int) = &hello;
+  int x = 3, y = x;
   {
     int ret5;
-    if (petlja7(&x, &y, &f, &ret5))
+    if (petlja7(&x, &y, &ret5))
       return ret5;
+  }
+
+  {
+    int ret6;
+    if (petlja8(&x, &y, &ret6))
+      return ret6;
   }
 
   // ugnezdjene petlje
   {
     int cond = 1;
     {
-      int ret7;
-      if (petlja9(&cond, &ret7))
-        return ret7;
+      int ret8;
+      if (petlja10(&cond, &ret8))
+        return ret8;
     }
   }
 
@@ -301,6 +328,14 @@ int main() {
   while (1)
   labela:
     break;
+
+  // rad sa funkcijama
+  void (*f)(int) = &hello;
+  {
+    int ret9;
+    if (petlja11(&x, &f, &ret9))
+      return ret9;
+  }
 
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));
   printf("%d%d\n", ittrn(7, 0), ittrn2(8, 0));

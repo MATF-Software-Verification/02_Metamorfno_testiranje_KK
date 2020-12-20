@@ -43,9 +43,14 @@ private:
     /* Skup obradjenih funkcija */
     std::unordered_set<std::string> fje;
 
+    /* Provera validnosti ulaza */
+    void proveri() const;
+
     /* Informacije o cestim greskama */
+    static constexpr auto istaDatoteka = "Datoteke su istog imena!";
+    static constexpr auto postojiDatoteka = "Nova datoteka vec postoji!";
     static constexpr auto nemaDatoteke = "Neuspelo otvaranje datoteke!";
-    static constexpr auto losiTipovi = "Nepremostivi problem sa tipovima!";
+    static constexpr auto losUlaz = "Nepremostivi problem sa ulazom!";
 };
 
 #endif

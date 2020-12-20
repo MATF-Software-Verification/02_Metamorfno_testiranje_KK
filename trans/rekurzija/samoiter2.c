@@ -136,66 +136,77 @@ void hello(int i) {
     return;
 }
 
-int petlja1(int *ret0) {
-  while (1) {
-    return 0;
-    {
-      int *ret00 = ret0;
-      ret0 = ret00;
-      continue;
-    }
-  }
-  return 0;
-}
-
-int petlja0(int *x, int *y, void (**f)(int), int *ret) {
+int petlja0(int *x, int *y, int *ret) {
   while ((*x) > 2) {
     {
       (*y)++;
+      putchar((*y) + '0');
       return 0;
-      int z = 3;
-      (*x) = (*y) - z;
-      {
-        int *x0 = x;
-        int *y0 = y;
-        void (**f0)(int) = f;
-        int *ret1 = ret;
-        x = x0;
-        y = y0;
-        f = f0;
-        ret = ret1;
-        continue;
-      }
-
-      (*f)(z);
-      hello(z);
-      {
-        (*ret) = (*x) + 1;
-        return 1;
-      }
+      putchar('x');
     }
     {
-      int *x1 = x;
-      int *y1 = y;
-      void (**f1)(int) = f;
-      int *ret2 = ret;
-      x = x1;
-      y = y1;
-      f = f1;
-      ret = ret2;
+      int *x0 = x;
+      int *y0 = y;
+      int *ret0 = ret;
+      x = x0;
+      y = y0;
+      ret = ret0;
       continue;
     }
   }
   return 0;
 }
 
-int petlja2(int *cond, int *ret1) {
+int petlja1(int *x, int *y, int *ret0) {
+  while ((*x) > 2) {
+    {
+      int z = 3;
+      (*x) = (*y) - z;
+      putchar((*x) + '0');
+      {
+        int *x1 = x;
+        int *y1 = y;
+        int *ret00 = ret0;
+        x = x1;
+        y = y1;
+        ret0 = ret00;
+        continue;
+      }
+
+      putchar('y');
+    }
+    {
+      int *x2 = x;
+      int *y2 = y;
+      int *ret01 = ret0;
+      x = x2;
+      y = y2;
+      ret0 = ret01;
+      continue;
+    }
+  }
+  return 0;
+}
+
+int petlja2(int *ret1) {
+  while (1) {
+    return 0;
+    {
+      int *ret10 = ret1;
+      ret1 = ret10;
+      continue;
+    }
+  }
+  return 0;
+}
+
+int petlja3(int *cond, int *ret2) {
   while ((*cond)) {
     {
       {
-        int ret0;
-        if (petlja1(&ret0)) {
-          (*ret1) = ret0;
+        int ret1;
+        if (petlja2(&ret1)) {
+          (*ret2) = ret1;
           return 1;
         }
       }
@@ -203,9 +214,30 @@ int petlja2(int *cond, int *ret1) {
     }
     {
       int *cond0 = cond;
-      int *ret10 = ret1;
+      int *ret20 = ret2;
       cond = cond0;
-      ret1 = ret10;
+      ret2 = ret20;
+      continue;
+    }
+  }
+  return 0;
+}
+
+int petlja4(int *x, void (**f)(int), int *ret3) {
+  while ((*x) < 2) {
+    {
+      (*f)((*x) + 5);
+      putchar('\n');
+      hello((*x) + 3);
+      return 0;
+    }
+    {
+      int *x3 = x;
+      void (**f0)(int) = f;
+      int *ret30 = ret3;
+      x = x3;
+      f = f0;
+      ret3 = ret30;
       continue;
     }
   }
@@ -217,21 +249,26 @@ int main() {
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
   printf("%d%d\n", itern(3, 3), itern2(4, 4));
 
-  int x, y;
-  void (*f)(int) = &hello;
+  int x = 3, y = x;
   {
     int ret;
-    if (petlja0(&x, &y, &f, &ret))
+    if (petlja0(&x, &y, &ret))
       return ret;
+  }
+
+  {
+    int ret0;
+    if (petlja1(&x, &y, &ret0))
+      return ret0;
   }
 
   // ugnezdjene petlje
   {
     int cond = 1;
     {
-      int ret1;
-      if (petlja2(&cond, &ret1))
-        return ret1;
+      int ret2;
+      if (petlja3(&cond, &ret2))
+        return ret2;
     }
   }
 
@@ -239,6 +276,14 @@ int main() {
   while (1)
   labela:
     break;
+
+  // rad sa funkcijama
+  void (*f)(int) = &hello;
+  {
+    int ret3;
+    if (petlja4(&x, &f, &ret3))
+      return ret3;
+  }
 
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));
   printf("%d%d\n", ittrn(7, 0), ittrn2(8, 0));

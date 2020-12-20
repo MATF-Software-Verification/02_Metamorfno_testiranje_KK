@@ -3,18 +3,36 @@
 #include "clang/Lex/Preprocessor.h"
 
 #include <climits>
+#include <sstream>
 
 /* Staticko cuvanje posecenih funkcija */
 std::unordered_set<std::string> *MTKContext::fje = nullptr;
 
+/* Staticko cuvanje izlazne datoteke */
+const std::string *MTKContext::dat = nullptr;
+
 /* Staticka inicijalizacija posecenih funkcija */
-void MTKContext::postavi(std::unordered_set<std::string> &f) {
+void MTKContext::postaviFje(std::unordered_set<std::string> &f) {
     fje = &f;
+}
+
+/* Staticka inicijalizacija izlazne datoteke */
+void MTKContext::postaviDat(const std::string &d) {
+    dat = &d;
 }
 
 /* Prijavljivanje greske u radu */
 void MTKContext::greska(const std::string &poruka) {
     llvm::errs() << poruka << '\n';
+
+    /* Brisanje izlazne datoteke */
+    if (dat) {
+        std::ostringstream buffer;
+        buffer << "rm " << *dat << " 2>/dev/null";
+        std::system(buffer.str().c_str());
+    }
+
+    /* Izlazak iz programa sa kodom greske */
     exit(EXIT_FAILURE);
 }
 

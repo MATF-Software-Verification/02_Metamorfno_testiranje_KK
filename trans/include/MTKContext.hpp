@@ -17,11 +17,11 @@ public:
     MTKContext(Rewriter &R, ASTContext &A)
       : TheRewriter(R), TheASTContext(A) {}
 
-    /* Staticko cuvanje posecenih funkcija */
-    static std::unordered_set<std::string> *fje;
-
     /* Staticka inicijalizacija posecenih funkcija */
-    static void postavi(std::unordered_set<std::string> &f);
+    static void postaviFje(std::unordered_set<std::string> &f);
+
+    /* Staticka inicijalizacija izlazne datoteke */
+    static void postaviDat(const std::string &d);
 
     /* Prijavljivanje greske u radu */
     [[noreturn]] static void greska(const std::string &poruka);
@@ -218,6 +218,12 @@ protected:
     /* Zasticeno cuvanje prepisivaca i konteksta */
     Rewriter &TheRewriter;
     ASTContext &TheASTContext;
+
+    /* Staticko cuvanje posecenih funkcija */
+    static std::unordered_set<std::string> *fje;
+
+    /* Staticko cuvanje izlazne datoteke */
+    static const std::string *dat;
 
 private:
     /* Poruka da nema slobodnog imena */

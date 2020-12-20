@@ -93,20 +93,20 @@ int main() {
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
   printf("%d%d\n", itern(3, 3), itern2(4, 4));
 
-  int x, y;
-  void (*f)(int) = &hello;
+  int x = 3, y = x;
   while (x > 2) {
     y++;
+    putchar(y + '0');
     break;
+    putchar('x');
+  }
 
+  while (x > 2) {
     int z = 3;
     x = y - z;
+    putchar(x + '0');
     continue;
-
-    // rad sa fjama
-    f(z);
-    hello(z);
-    return x + 1;
+    putchar('y');
   }
 
   // ugnezdjene petlje
@@ -119,6 +119,15 @@ int main() {
   for (; 1;)
   labela:
     break;
+
+  // rad sa funkcijama
+  void (*f)(int) = &hello;
+  while (x < 2) {
+    f(x + 5);
+    putchar('\n');
+    hello(x + 3);
+    break;
+  }
 
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));
   printf("%d%d\n", ittrn(7, 0), ittrn2(8, 0));

@@ -24,11 +24,25 @@
 #include <fstream>
 #include <sstream>
 
-/* Postavljanje datoteka */
+/* Inicijalizacija transformatora */
 MTKTransformer::MTKTransformer(const std::string &s,
                                const std::string &n)
     : stara(s), nova(n) {
-    MTKContext::postavi(fje);
+    /* Nije sigurno da bude ista datoteka */
+    if (stara == nova) greska(istaDatoteka);
+
+    /* Stara mora da bude validan kod */
+    proveri();
+
+    /* Nova ne sme da postoji vec */
+    std::ifstream ulaz(nova);
+    if (ulaz) greska(postojiDatoteka);
+
+    /* Postavljanje skupa funkcija */
+    MTKContext::postaviFje(fje);
+
+    /* Postavljanje izlazne datoteke */
+    MTKContext::postaviDat(nova);
 }
 
 /* Prijavljivanje greske u radu */
@@ -166,21 +180,8 @@ void MTKTransformer::primeni(Izmena izmena) {
         stara = nova;
 
         /* Provera da li je sve u redu */
-        if (izmena == Izmena::Iter2Rek) {
-            std::ostringstream buffer;
-
-            /* Pokusaj prevodjenja rezultata */
-            buffer << "clang-11 " << nova << " 2>/dev/null";
-            const auto ret
-                = std::system(buffer.str().c_str());
-
-            /* Ciscenje za sobom */
-            std::system("rm a.out 2>/dev/null");
-
-            /* Prijava greske ako nesto nije u redu */
-            if (!WIFEXITED(ret) || WEXITSTATUS(ret))
-                greska(losiTipovi);
-        }
+        if (izmena == Izmena::Iter2Rek)
+            proveri();
 
         /* Iteracije i pripreme su jednoprolazni */
         if (izmena == Izmena::PrepFor ||
@@ -190,4 +191,20 @@ void MTKTransformer::primeni(Izmena izmena) {
             izmena == Izmena::FinIter)
             break;
     }
+}
+
+/* Provera validnosti ulaza */
+void MTKTransformer::proveri() const {
+    /* Pokusaj prevodjenja ulaza */
+    std::ostringstream buffer;
+    buffer << "clang-11 " << stara << " 2>/dev/null";
+    const auto ret
+        = std::system(buffer.str().c_str());
+
+    /* Ciscenje za sobom */
+    std::system("rm a.out 2>/dev/null");
+
+    /* Prijava greske ako nesto nije u redu */
+    if (!WIFEXITED(ret) || WEXITSTATUS(ret))
+        greska(losUlaz);
 }

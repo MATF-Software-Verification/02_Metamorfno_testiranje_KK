@@ -203,8 +203,8 @@ bool Iter2RekVisitor::VisitWhileStmt(WhileStmt *s) {
     deklm.clear();
     tabu.clear();
 
-    /* Nastavljanje dalje */
-    return true;
+    /* Prekid rada, gleda se jedna po jedna petlja */
+    return false;
 }
 
 /* Pamcenje tekuce funkcije */
