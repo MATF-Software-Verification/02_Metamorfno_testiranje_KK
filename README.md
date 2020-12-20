@@ -7,7 +7,7 @@ Konstruisano je nekoliko smislenih semantičkih transformacija izvornog koda, ko
 
 Teorijska podloga o metamorfnom testiranju kompilatora: [autorski](http://www.verifikacijasoftvera.matf.bg.ac.rs/vs/predavanja/02_testiranje/32_LazarVasovic_EMI.pdf) teorijski seminarski rad sa istog kursa.
 
-Polazna tačja za transformaciju petlji: [autorski](https://github.com/matfija/Clang-petlje) seminarski rad sa Konstrukcije kompilatora.
+Polazna tačka za način transformacije petlji: [autorski](https://github.com/matfija/Clang-petlje) seminarski rad sa Konstrukcije kompilatora.
 
 ## Podešavanje :memo:
 Primer podešavanja zavisnosti za Ubuntu:
