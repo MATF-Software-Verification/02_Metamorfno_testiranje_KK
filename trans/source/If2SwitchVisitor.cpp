@@ -30,9 +30,8 @@ bool If2SwitchVisitor::pomocni(IfStmt *s) const {
 
     /* Vektor dece roditelja */
     std::vector<const Stmt *> deca;
-    for (const auto dete : rod->children()) {
+    for (const auto dete : rod->children())
         deca.push_back(dete);
-    }
 
     /* Odustajanje ako se ne uklapa */
     if (deca.size() != 3) return false;

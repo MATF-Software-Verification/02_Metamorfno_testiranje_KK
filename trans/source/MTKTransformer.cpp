@@ -151,7 +151,7 @@ void MTKTransformer::primeni(Izmena izmena) {
 
         /* Upisivanje novog koda iz bafera; u slucaju da nema
          * izmena, prosto prepisivanje starog koda kao novog */
-        const auto *RewriteBuf =
+        const auto RewriteBuf =
                 TheRewriter.getRewriteBufferFor(SourceMgr.getMainFileID());
         if (RewriteBuf) {
             /* Otvaranje izlazne datoteke */
@@ -161,7 +161,8 @@ void MTKTransformer::primeni(Izmena izmena) {
             /* Upisivanje rezultata */
             izlaz << std::string(RewriteBuf->begin(), RewriteBuf->end());
         } else if (stara == nova) {
-            break;
+            if (izmena != Izmena::FinRek ||
+                FinRekVisitor::imaloPosla()) break;
         } else {
             /* Otvaranje ulazne i izlazne datoteke */
             std::ifstream ulaz(stara);

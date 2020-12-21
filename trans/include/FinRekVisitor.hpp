@@ -43,6 +43,9 @@ public:
     /* Obrada deklaracije funkcije */
     bool TraverseFunctionDecl(FunctionDecl *f);
 
+    /* Podatak o tome da li je bilo vise prolaza */
+    static bool imaloPosla();
+
 private:
     /* Privatno cuvanje tekuce funkcije */
     FunctionDecl *tekf;

@@ -222,3 +222,9 @@ bool FinRekVisitor::TraverseFunctionDecl(FunctionDecl *f) {
     /* Povlacenje nazad ako funkcija nije na spisku */
     } else return WalkUpFromFunctionDecl(f);
 }
+
+/* Podatak o tome da li je bilo vise prolaza */
+bool FinRekVisitor::imaloPosla() {
+    static auto pozivi = 0;
+    return pozivi++;
+}
