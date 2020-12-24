@@ -1,8 +1,15 @@
 #ifndef MTKTRANS_H
 #define MTKTRANS_H
 
+#include "clang/Frontend/CompilerInstance.h"
+
 #include <string>
 #include <unordered_set>
+
+using namespace clang;
+namespace clang {
+class Rewriter;
+}
 
 /* Klasa koja predstavlja transformator */
 class MTKTransformer {
@@ -42,6 +49,17 @@ private:
 
     /* Skup obradjenih funkcija */
     std::unordered_set<std::string> fje;
+
+    /* Instanca prevodioca */
+    CompilerInstance TheCompInst;
+    Rewriter *TheRewriter;
+    ASTContext *TheASTContext;
+
+    /* Odabir odgovarajuceg transformatora */
+    ASTConsumer *odaberiTransformator(Izmena izmena);
+
+    /* Potencijalne izmene koda */
+    bool izmeniKod(Izmena izmena);
 
     /* Provera validnosti ulaza */
     void proveri() const;
