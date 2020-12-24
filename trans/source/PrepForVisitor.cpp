@@ -1,7 +1,5 @@
 #include "PrepForVisitor.hpp"
 
-#include "clang/AST/ParentMapContext.h"
-
 /*************************
  * Shema transformacije
  * -----------------------
@@ -21,134 +19,152 @@
  * }
  *************************/
 
-/* Odredjivanje petlje i prethodnog */
-std::pair<const ForStmt *,
-          const Stmt *> PrepForVisitor::odrediPetlju(Stmt *s) const {
-    /* Inicijalizacija for petlje */
-    const ForStmt *forr = nullptr;
+/* Staticki podatak da li je prvi prolaz */
+bool PrepForVisitor::prviProlaz = true;
 
-    /* Cuvanje prethodnog roditelja */
-    const Stmt *pret = s;
-
-    /* Pronalazak roditelja koji je for */
-    auto rod = TheASTContext.getParents(*s);
-    while (!rod.empty()) {
-        /* Izdvajanje glavnog roditelja */
-        const auto r = rod.begin()->get<Stmt>();
-        if (!r) break;
-
-        /* Provera da li je for */
-        forr = dyn_cast<ForStmt>(r);
-        if (forr) break;
-
-        /* Cuvanje prethodnog roditelja */
-        pret = r;
-
-        /* Nastavljanje dalje */
-        rod = TheASTContext.getParents(*r);
-    }
-
-    /* Vracanje rezultata */
-    return std::make_pair(forr, pret);
-}
-
-/* Pronalazak svih imena u koraku */
-bool PrepForVisitor::VisitDeclRefExpr(DeclRefExpr *s) {
-    /* Deklaracija petlje */
-    const ForStmt *forr;
-    const Stmt *pret;
-
-    /* Dohvatanje petlje */
-    std::tie(forr, pret) = odrediPetlju(s);
-
-    /* Odustajanje ako nije for i inc */
-    if (!forr || pret != forr->getInc())
-        return true;
-
-    /* Dohvatanje tekuce deklaracije */
-    const auto dekl = dyn_cast<NamedDecl>(s->getDecl());
-    if (!dekl) return true;
-
-    /* Ime tekuce deklaracije */
-    const auto ime = dekl->getName().str();
-
-    /* Dodavanje imena u spisak */
-    imena[forr].insert(ime);
-
-    /* Nastavljanje dalje */
-    return true;
-}
-
-/* Pronalazak svih imena u telu petlje */
-bool PrepForVisitor::VisitDeclStmt(DeclStmt *s) {
-    /* Deklaracija petlje */
-    const ForStmt *forr;
-    const Stmt *pret;
-
-    /* Dohvatanje petlje */
-    std::tie(forr, pret) = odrediPetlju(s);
-
-    /* Odustajanje ako nije for ili je init */
-    if (!forr || pret == forr->getInit())
-        return true;
-
-    /* Prolazak kroz sve deklaracije */
-    for (const auto dekl : s->getDeclGroup())
-        /* Dohvatanje deklaracije promenljive */
-        if (const auto var = dyn_cast<VarDecl>(dekl)) {
-            /* Ime tekuce deklaracije promenljive */
-            const auto ime = var->getName().str();
-
-            /* Azuriranje podatka o maskiranosti */
-            if (imena[forr].count(ime))
-                maskirani.insert(forr);
-        }
-
-    /* Nastavljanje dalje */
-    return true;
+/* Virtuelni dekstruktor za brojanje prolaza */
+PrepForVisitor::~PrepForVisitor() {
+    prviProlaz = false;
 }
 
 /* Dodavanje koraka for petlje pre continue */
 bool PrepForVisitor::VisitContinueStmt(ContinueStmt *s) const {
-    /* Deklaracija petlje */
-    const ForStmt *forr = nullptr;
+    /* Dohvatanje for roditelja */
+    const auto forr = dyn_cast<ForStmt>(petlje.top());
+    if (!forr) return true;
 
-    /* Inicijalizacija nove naredbe */
-    Stmt *stmt = s;
+    /* Dohvatanje koraka petlje */
+    const auto korak = forr->getInc();
+    if (!korak) return true;
 
-    /* Prolazak kroz roditelje tekuceg continue */
-    auto rod = TheASTContext.getParents(*s);
-    while (!rod.empty()) {
-        /* Izdvajanje glavnog roditelja */
-        const auto r = rod.begin()->get<Stmt>();
-
-        /* Odustajanje ako je do ili while */
-        if (isa<DoStmt>(r) || isa<WhileStmt>(r))
-            return true;
-
-        /* Uzimanje roditelja koji je for */
-        if ((forr = dyn_cast<ForStmt>(r))) {
-            /* Odustajanje ako nema korak */
-            if (!forr->getInc())
-                return true;
-
-            /* Pravljenje nove naredbe */
-            auto inc = const_cast<Stmt *>(cast<Stmt>(forr->getInc()));
-            stmt = napraviSlozenu({inc, s});
-            break;
-        }
-
-        /* Nastavljanje dalje */
-        rod = TheASTContext.getParents(*r);
-    }
-
-    /* Greska ukoliko petlja maskira korak */
-    if (maskirani.count(forr))
-        greska(maskiranje);
+    /* Pravljenje nove naredbe */
+    const auto zamena = napraviSlozenu({korak, s});
 
     /* Tekstualna zamena koda */
-    zameni(s, stmt);
+    zameni(s, zamena);
 
     /* Nastavljanje dalje */
     return true;
+}
+
+/* Dohvatanje deklaracija */
+void PrepForVisitor::dohvatiDeklaracije(Stmt *s) {
+    /* Nulta naredba nema deklaracije */
+    if (!s) return;
+
+    /* Provera naredbe kao izraza deklaracije */
+    if (const auto deklex = dyn_cast<DeclRefExpr>(s)) {
+        /* Dodavanje tekuce imenovane deklaracije */
+        dekls.insert(deklex->getDecl()->getDeclName().getAsString());
+
+        /* Nastavljanje dalje */
+        return;
+    }
+
+    /* Prolazak kroz svu decu */
+    for (const auto dete : s->children())
+        dohvatiDeklaracije(dete);
+}
+
+/* Odmaskiranje deklaracija */
+void PrepForVisitor::odmaskirajDeklaracije(Stmt *s) {
+    /* Nulta naredba nema deklaracije */
+    if (!s) return;
+
+    /* Provera naredbe i svih deklaracija u njoj */
+    if (const auto deklst = dyn_cast<DeclStmt>(s)) {
+        for (const auto dekl : deklst->getDeclGroup())
+            /* Odmaskiranje deklaracije sa ponovljenim imenom */
+            if (const auto val = dyn_cast<ValueDecl>(dekl)) {
+                const auto ime = val->getDeclName().getAsString();
+
+                /* Pronalazak novog imena i zamena starog */
+                if (dekls.count(ime)) {
+                    val->setDeclName(nadjiIdent(ime));
+                }
+
+                /* Ubacivanje novog imena u spisak koriscenih */
+                dekls.insert(val->getDeclName().getAsString());
+            }
+
+        /* Nastavljanje dalje */
+        return;
+    }
+
+    /* Prolazak kroz svu decu */
+    for (const auto dete : s->children())
+        odmaskirajDeklaracije(dete);
+}
+
+/* Odmaskiranje tela svake for petlje */
+bool PrepForVisitor::VisitForStmt(ForStmt *s) {
+    /* Odustajanje ako nije prvi prolaz */
+    if (!prviProlaz) return true;
+
+    /* Dohvatanje deklaracija u koraku */
+    dohvatiDeklaracije(s->getInc());
+
+    /* Odmaskiranje deklaracija u telu */
+    if (!dekls.empty())
+        odmaskirajDeklaracije(s->getBody());
+
+    /* Zamena petlje odmaskiranom verzijom */
+    zameni(s, s);
+
+    /* Praznjenje niza deklaracija */
+    dekls.clear();
+
+    /* Nastavljanje dalje */
+    return true;
+}
+
+/* Pamcenje tekuce while petlje */
+bool PrepForVisitor::TraverseWhileStmt(WhileStmt *s) {
+    petlje.push(s);
+
+    /* Obilazak petlje i dece */
+    const auto rez =
+        RecursiveASTVisitor<PrepForVisitor>::TraverseWhileStmt(s);
+
+    /* Skidanje gotove petlje sa steka */
+    petlje.pop();
+
+    /* Nastavljanje dalje */
+    return rez;
+}
+
+/* Pamcenje tekuce do petlje */
+bool PrepForVisitor::TraverseDoStmt(DoStmt *s) {
+    petlje.push(s);
+
+    /* Obilazak petlje i dece */
+    const auto rez =
+        RecursiveASTVisitor<PrepForVisitor>::TraverseDoStmt(s);
+
+    /* Skidanje gotove petlje sa steka */
+    petlje.pop();
+
+    /* Nastavljanje dalje */
+    return rez;
+}
+
+/* Obilazak for petlje u zavisnosti od faze */
+bool PrepForVisitor::TraverseForStmt(ForStmt *s) {
+    petlje.push(s);
+
+    /* Obilazak petlje i dece ako nije prvi prolaz */
+    const auto rez = prviProlaz ? WalkUpFromForStmt(s) :
+        RecursiveASTVisitor<PrepForVisitor>::TraverseForStmt(s);
+
+    /* Skidanje gotove petlje sa steka */
+    petlje.pop();
+
+    /* Nastavljanje dalje */
+    return rez;
+}
+
+/* Podatak o tome da li je bilo vise prolaza */
+bool PrepForVisitor::imaloPosla() {
+    static auto pozivi = 0;
+    return pozivi++;
 }

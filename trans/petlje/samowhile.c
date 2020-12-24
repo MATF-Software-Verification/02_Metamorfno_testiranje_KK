@@ -63,5 +63,31 @@ int main() {
       continue;
   }
 
+  // ime je maskirano u staroj verziji
+  int cond = 10;
+  {
+    int cond0 = 1;
+    while (cond0) {
+      cond--;
+      cond0 = cond > 5;
+    }
+  }
+
+  // ime je maskirano u staroj verziji;
+  // posledica je beskonacna petlja
+  {
+    int i = 0;
+    while (i < 3) {
+      {
+        double i0 = 3.1415926535897931;
+        {
+          i++;
+          continue;
+        }
+      }
+      i++;
+    }
+  }
+
   return 0;
 }

@@ -3,7 +3,7 @@
 
 #include "MTKConsumer.hpp"
 
-#include <unordered_map>
+#include <stack>
 
 /* Posetilac koji dodaje korak petlje */
 class PrepForVisitor : public MTKVisitor<PrepForVisitor> {
@@ -12,29 +12,42 @@ public:
     PrepForVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {}
 
-    /* Odredjivanje petlje i prethodnog */
-    std::pair<const ForStmt *,
-              const Stmt *> odrediPetlju(Stmt *s) const;
-
-    /* Pronalazak svih imena u koraku */
-    bool VisitDeclRefExpr(DeclRefExpr *s);
-
-    /* Pronalazak svih imena u telu petlje */
-    bool VisitDeclStmt(DeclStmt *s);
+    /* Virtuelni dekstruktor za brojanje prolaza */
+    virtual ~PrepForVisitor();
 
     /* Dodavanje inkrementa pre continue */
     bool VisitContinueStmt(ContinueStmt *s) const;
 
+    /* Dohvatanje deklaracija */
+    void dohvatiDeklaracije(Stmt *s);
+
+    /* Odmaskiranje deklaracija */
+    void odmaskirajDeklaracije(Stmt *s);
+
+    /* Odmaskiranje tela svake for petlje */
+    bool VisitForStmt(ForStmt* s);
+
+    /* Pamcenje tekuce while petlje */
+    bool TraverseWhileStmt(WhileStmt *s);
+
+    /* Pamcenje tekuce do petlje */
+    bool TraverseDoStmt(DoStmt *s);
+
+    /* Obilazak for petlje u zavisnosti od faze */
+    bool TraverseForStmt(ForStmt *s);
+
+    /* Podatak o tome da li je bilo vise prolaza */
+    static bool imaloPosla();
+
 private:
-    /* Privatno cuvanje mape imena */
-    std::unordered_map<const ForStmt *,
-                       std::unordered_set<std::string>> imena;
+    /* Privatno cuvanje steka petlji */
+    std::stack<Stmt *> petlje;
 
-    /* Privatno cuvanje skupa maskiranih */
-    std::unordered_set<const ForStmt *> maskirani;
+    /* Privatno cuvanje sadrzanih deklaracija */
+    std::unordered_set<std::string> dekls;
 
-    /* Poruka da maskiranje koraka pravi problem */
-    static constexpr auto maskiranje = "Telo petlje maskira korak!";
+    /* Staticki podatak da li je prvi prolaz */
+    static bool prviProlaz;
 };
 
 #endif

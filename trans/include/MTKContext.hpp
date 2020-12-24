@@ -57,6 +57,9 @@ public:
     /* Pronalazak prvog slobodnog imena */
     std::string nadjiIme(const std::string &pocetno) const;
 
+    /* Pronalazak prvog slobodnog identifikatora */
+    IdentifierInfo *nadjiIdent(const std::string &ime) const;
+
     /* Pravljenje nove promenljive */
     VarDecl *napraviVar(DeclContext *kontekst,
                         const QualType &tip,

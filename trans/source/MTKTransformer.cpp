@@ -161,8 +161,9 @@ void MTKTransformer::primeni(Izmena izmena) {
             /* Upisivanje rezultata */
             izlaz << std::string(RewriteBuf->begin(), RewriteBuf->end());
         } else if (stara == nova) {
-            if (izmena != Izmena::FinRek ||
-                FinRekVisitor::imaloPosla()) break;
+            if ((izmena != Izmena::FinRek ||
+                 FinRekVisitor::imaloPosla()) &&
+                 izmena != Izmena::PrepFor) break;
         } else {
             /* Otvaranje ulazne i izlazne datoteke */
             std::ifstream ulaz(stara);
@@ -174,7 +175,11 @@ void MTKTransformer::primeni(Izmena izmena) {
             std::ostringstream buffer;
             buffer << ulaz.rdbuf();
             izlaz << buffer.str();
-            break;
+
+            /* Iskakanje ako treba */
+            if ((izmena != Izmena::FinRek ||
+                 FinRekVisitor::imaloPosla()) &&
+                 izmena != Izmena::PrepFor) break;
         }
 
         /* Zamena starog fajla */
@@ -185,7 +190,8 @@ void MTKTransformer::primeni(Izmena izmena) {
             proveri();
 
         /* Iteracije i pripreme su jednoprolazni */
-        if (izmena == Izmena::PrepFor ||
+        if ((izmena == Izmena::PrepFor &&
+             PrepForVisitor::imaloPosla()) ||
             izmena == Izmena::PrepIf ||
             izmena == Izmena::PrepSwitch ||
             izmena == Izmena::Rek2Iter ||

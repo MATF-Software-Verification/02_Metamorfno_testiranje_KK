@@ -48,5 +48,20 @@ int main() {
   for (x = 0; x;)
     continue;
 
+  // ime je maskirano u staroj verziji
+  int cond = 10;
+  {
+    int cond0 = 1;
+    for (; cond0; cond0 = cond > 5)
+      cond--;
+  }
+
+  // ime je maskirano u staroj verziji;
+  // posledica je beskonacna petlja
+  for (int i = 0; i < 3; i++) {
+    double i = 3.1415926535897931;
+    continue;
+  }
+
   return 0;
 }

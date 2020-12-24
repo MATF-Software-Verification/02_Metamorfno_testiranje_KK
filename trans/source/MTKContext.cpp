@@ -156,14 +156,18 @@ std::string MTKContext::nadjiIme(const std::string &pocetno) const {
     return ime;
 }
 
+/* Pronalazak prvog slobodnog identifikatora */
+IdentifierInfo *MTKContext::nadjiIdent(const std::string &ime) const {
+    return &TheASTContext.Idents.getOwn(nadjiIme(ime));
+}
+
 /* Pravljenje nove promenljive */
 VarDecl *MTKContext::napraviVar(DeclContext *kontekst,
                                 const QualType &tip,
                                 const std::string &ime) const {
     return VarDecl::Create(TheASTContext, kontekst,
                            SourceLocation(), SourceLocation(),
-                           &TheASTContext.Idents.getOwn(nadjiIme(ime)),
-                           tip, nullptr, SC_None);
+                           nadjiIdent(ime), tip, nullptr, SC_None);
 }
 
 /* Pravljenje izraza deklaracije */
@@ -389,8 +393,7 @@ FunctionDecl *MTKContext::napraviFunkciju(DeclContext *kontekst,
                                           const std::string &ime) const {
     return FunctionDecl::Create(TheASTContext, kontekst,
                                 SourceLocation(), SourceLocation(),
-                                &TheASTContext.Idents.getOwn(nadjiIme(ime)),
-                                tip, nullptr, SC_None);
+                                nadjiIdent(ime), tip, nullptr, SC_None);
 }
 
 /* Pravljenje parametra */
