@@ -41,9 +41,9 @@ int main() {
           break;
         }
         if (cond != 3 && cond != 4) {
-          int cond0 = k - 1;
+          int cond1 = k - 1;
           do {
-            if (cond0 == 4)
+            if (cond1 == 4)
               putchar('5');
           } while (0);
         }
@@ -65,6 +65,25 @@ int main() {
 
     if (cont)
       continue;
+  }
+
+  // spoljasnji sa dubokim oznakama
+  switch (2) {
+    while (0) {
+    case 1:
+      break;
+    case 2:
+      break;
+
+      {
+        int cond0 = 10;
+        do {
+          if (cond0 == 10)
+            return 0;
+          return 1;
+        } while (0);
+      }
+    }
   }
 
   return 0;

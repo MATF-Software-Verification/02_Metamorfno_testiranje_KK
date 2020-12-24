@@ -46,9 +46,9 @@ int main() {
         break;
       }
       {
-        int cond3 = 0;
+        int cond4 = 0;
         do {
-          if (cond3 == 1) {
+          if (cond4 == 1) {
             { return 1; }
             break;
           }
@@ -76,9 +76,9 @@ int main() {
           break;
         }
         if (cond2 != 3 && cond2 != 4) {
-          int cond4 = k - 1;
+          int cond5 = k - 1;
           do {
-            if (cond4 == 4)
+            if (cond5 == 4)
               putchar('5');
           } while (0);
         }
@@ -100,6 +100,25 @@ int main() {
 
     if (cont)
       continue;
+  }
+
+  // spoljasnji sa dubokim oznakama
+  switch (2) {
+    while (0) {
+    case 1:
+      break;
+    case 2:
+      break;
+
+      {
+        int cond3 = 10;
+        do {
+          if (cond3 == 10)
+            return 0;
+          return 1;
+        } while (0);
+      }
+    }
   }
 
   return 0;

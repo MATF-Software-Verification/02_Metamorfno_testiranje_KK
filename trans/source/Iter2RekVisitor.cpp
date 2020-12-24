@@ -80,7 +80,7 @@ bool Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
             if (const auto var = dyn_cast<VarDecl>(dekl)) {
                 tabu.insert(var);
 
-                /* Greska ukoliko je ime vec korisceno */
+                /* Problem ukoliko je ime vec korisceno */
                 if (dekli.count(var->getName().str()))
                     return false;
 

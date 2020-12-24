@@ -40,26 +40,28 @@
  ***********************/
 
 /* Provera ima li dubokih oznaka */
-bool PrepSwitchVisitor::VisitSwitchCase(SwitchCase *s) const {
+bool PrepSwitchVisitor::proveriSwitchCase(SwitchCase *s) const {
     /* Dohvatanje prvog roditelja */
     const auto telo = TheASTContext.getParents(*s)
                       .begin()->get<CompoundStmt>();
-    if (!telo) greska(dubokeOznake);
+    if (!telo) return false;
 
     /* Dohvatanje drugog roditelja */
     const auto swch = TheASTContext.getParents(*telo)
                       .begin()->get<SwitchStmt>();
-    if (!swch) greska(dubokeOznake);
+    if (!swch) return false;
 
-    /* Nastavljanje dalje */
+    /* Sve je u redu u ovom trenutku */
     return true;
 }
 
 /* Obrada odgovarajuceg switcha */
 DeclRefExpr *PrepSwitchVisitor::obradiSwitch(const SwitchStmt *s) {
+    /* Odustajanje od tabu switcheva */
+    if (tabu.count(s)) return nullptr;
+
     /* Odustajanje od pripremljenih */
-    if (prip.count(s))
-        return prip[s];
+    if (prip.count(s)) return prip[s];
 
     /* Deklaracija uslovne promenljive */
     const auto dekl = napraviUslovnu(tekdek, "cont", false);
@@ -122,6 +124,21 @@ bool PrepSwitchVisitor::VisitContinueStmt(ContinueStmt *s) {
 
     /* Tekstualna zamena koda */
     zameni(s, zamena);
+
+    /* Nastavljanje dalje */
+    return true;
+}
+
+/* Provera switch naredbe */
+bool PrepSwitchVisitor::VisitSwitchStmt(SwitchStmt *s) {
+    /* Prolazak kroz svaki switch case */
+    for (auto swc = s->getSwitchCaseList();
+         swc; swc = swc->getNextSwitchCase())
+        /* Odustajanje ako postoje duboki */
+        if (!proveriSwitchCase(swc)) {
+            tabu.insert(s);
+            return true;
+        }
 
     /* Nastavljanje dalje */
     return true;

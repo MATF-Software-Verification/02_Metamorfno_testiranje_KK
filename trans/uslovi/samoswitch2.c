@@ -76,9 +76,9 @@ int main() {
         }
         switch ((int)(cond != 3 && cond != 4)) {
         case 1: {
-          int cond0 = k - 1;
+          int cond1 = k - 1;
           do {
-            switch ((int)(cond0 == 4)) {
+            switch ((int)(cond1 == 4)) {
             case 1:
               putchar('5');
             }
@@ -116,6 +116,28 @@ int main() {
     switch (cont) {
     case 1:
       continue;
+    }
+  }
+
+  // spoljasnji sa dubokim oznakama
+  switch (2) {
+    while (0) {
+    case 1:
+      break;
+    case 2:
+      break;
+
+      {
+        int cond0 = 10;
+        do {
+          switch ((int)(cond0 == 10)) {
+          case 1:
+            return 0;
+          }
+
+          return 1;
+        } while (0);
+      }
     }
   }
 

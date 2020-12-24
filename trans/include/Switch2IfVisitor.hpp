@@ -21,6 +21,9 @@ public:
     /* Provera da li je neprazan case */
     bool neprazanSwitchCase(SwitchCase *s) const;
 
+    /* Provera ima li dubokih oznaka */
+    bool dubokeOznake(SwitchStmt *s) const;
+
     /* Pretvaranje switch naredbe u if */
     bool VisitSwitchStmt(SwitchStmt *s) const;
 

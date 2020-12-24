@@ -13,13 +13,16 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Provera ima li dubokih oznaka */
-    bool VisitSwitchCase(SwitchCase *s) const;
+    bool proveriSwitchCase(SwitchCase *s) const;
 
     /* Obrada odgovarajuceg switcha */
     DeclRefExpr *obradiSwitch(const SwitchStmt *s);
 
     /* Priprema switch naredbe */
     bool VisitContinueStmt(ContinueStmt *s);
+
+    /* Provera switch naredbe */
+    bool VisitSwitchStmt(SwitchStmt *s);
 
     /* Nacin obrade deklaracije */
     bool TraverseDecl(Decl *d);
@@ -28,11 +31,11 @@ private:
     /* Privatno cuvanje tekuce deklaracije */
     Decl *tekdek;
 
+    /* Tabu skup switcheva koji se ne mogu izmeniti */
+    std::unordered_set<const SwitchStmt *> tabu;
+
     /* Privatno cuvanje vec pripremljenih naredbi */
     std::unordered_map<const SwitchStmt *, DeclRefExpr *> prip;
-
-    /* Poruka o nemogucnosti obrade switcha */
-    static constexpr auto dubokeOznake = "Duboke case i default oznake!";
 };
 
 #endif

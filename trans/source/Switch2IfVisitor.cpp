@@ -1,5 +1,7 @@
 #include "Switch2IfVisitor.hpp"
 
+#include "clang/AST/ParentMapContext.h"
+
 /*******************************
  * Shema transformacije
  * -----------------------------
@@ -67,8 +69,31 @@ bool Switch2IfVisitor::neprazanSwitchCase(SwitchCase *s) const {
     return s && !isa<BreakStmt>(s->getSubStmt());
 }
 
+/* Provera ima li dubokih oznaka */
+bool Switch2IfVisitor::dubokeOznake(SwitchStmt *s) const {
+    /* Prolazak kroz svaki switch case */
+    for (auto swc = s->getSwitchCaseList();
+         swc; swc = swc->getNextSwitchCase()) {
+        /* Dohvatanje prvog roditelja */
+        const auto telo = TheASTContext.getParents(*swc)
+                          .begin()->get<CompoundStmt>();
+        if (!telo) return true;
+
+        /* Dohvatanje drugog roditelja */
+        const auto swch = TheASTContext.getParents(*telo)
+                          .begin()->get<SwitchStmt>();
+        if (!swch) return true;
+    }
+
+    /* Sve je u redu u ovom trenutku */
+    return false;
+}
+
 /* Pretvaranje switch naredbe u if */
 bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
+    /* Odustajanje ako postoje duboke oznake */
+    if (dubokeOznake(s)) return true;
+
     /* Uslovna promenljiva switcha */
     const auto dekl = napraviUslovnu(tekdek, "cond", false);
 
@@ -171,7 +196,8 @@ bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
 
 /* Prekid obilaska kod switch naredbe */
 bool Switch2IfVisitor::TraverseSwitchStmt(SwitchStmt *s) {
-    return WalkUpFromSwitchStmt(s);
+    return !dubokeOznake(s) ? WalkUpFromSwitchStmt(s) :
+           RecursiveASTVisitor<Switch2IfVisitor>::TraverseSwitchStmt(s);
 }
 
 /* Nacin obrade deklaracije */

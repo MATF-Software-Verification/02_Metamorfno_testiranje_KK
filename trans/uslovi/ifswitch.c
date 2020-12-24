@@ -52,5 +52,22 @@ int main() {
       putchar('\n');
     }
 
+  // spoljasnji sa dubokim oznakama
+  switch (2) {
+    while (0) {
+    case 1:
+      break;
+    case 2:
+      break;
+
+      switch (10) {
+      case 10:
+        return 0;
+      default:
+        return 1;
+      }
+    }
+  }
+
   return 0;
 }
