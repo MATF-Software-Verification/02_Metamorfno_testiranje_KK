@@ -68,9 +68,9 @@ bool Iter2RekVisitor::imaWhilePrepreka(WhileStmt *s) const {
 }
 
 /* Dohvatanje deklaracija na koje se referise */
-void Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
+bool Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
     /* Nulta naredba nema deklaracije */
-    if (!s) return;
+    if (!s) return true;
 
     /* Provera naredbe kao deklaracije */
     if (const auto deklst = dyn_cast<DeclStmt>(s)) {
@@ -82,14 +82,15 @@ void Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
 
                 /* Greska ukoliko je ime vec korisceno */
                 if (dekli.count(var->getName().str()))
-                    MTKContext::greska(maskiranje);
+                    return false;
 
                 /* Dohvatanje dodatnih deklaracija */
-                dohvatiDeklaracije(var->getInit());
+                const auto rez = dohvatiDeklaracije(var->getInit());
+                if (!rez) return false;
             }
 
         /* Nastavljanje dalje */
-        return;
+        return true;
     }
 
     /* Provera naredbe kao izraza deklaracije */
@@ -108,7 +109,7 @@ void Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
             }
 
         /* Nastavljanje dalje */
-        return;
+        return true;
     }
 
     /* Obrada poziva funkcije preko promenljive */
@@ -127,8 +128,13 @@ void Iter2RekVisitor::dohvatiDeklaracije(Stmt *s) {
     }
 
     /* Prolazak kroz svu decu */
-    for (const auto dete : s->children())
-        dohvatiDeklaracije(dete);
+    for (const auto dete : s->children()) {
+        const auto rez = dohvatiDeklaracije(dete);
+        if (!rez) return false;
+    }
+
+    /* Nastavljanje dalje */
+    return true;
 }
 
 /* Pravljenje rekurzivne funkcije */
@@ -158,8 +164,16 @@ bool Iter2RekVisitor::VisitWhileStmt(WhileStmt *s) {
     /* Odustajanje ako nije okej */
     if (imaWhilePrepreka(s)) return true;
 
-    /* Dohvatanje deklaracija na koje while referise */
-    dohvatiDeklaracije(s);
+    /* Dohvatanje deklaracija na koje while referise
+     * i odustajanje ako postoji maskiranje */
+    const auto rez = dohvatiDeklaracije(s);
+    if (!rez) {
+        dekls.clear();
+        deklm.clear();
+        dekli.clear();
+        tabu.clear();
+        return true;
+    }
 
     /* Deklaracija povratne vrednosti ako ima smisla */
     DeclStmt *ret = nullptr;
@@ -201,6 +215,7 @@ bool Iter2RekVisitor::VisitWhileStmt(WhileStmt *s) {
     /* Praznjenje zapamcenih deklaracija */
     dekls.clear();
     deklm.clear();
+    dekli.clear();
     tabu.clear();
 
     /* Prekid rada, gleda se jedna po jedna petlja */
@@ -217,7 +232,15 @@ bool Iter2RekVisitor::VisitFunctionDecl(FunctionDecl *f) {
 
 /* Prolazak kroz sve (while) petlje */
 bool Iter2RekVisitor::TraverseWhileStmt(WhileStmt *s) {
-    /* Nastavljanje dalje ili povlacenje nazad */
-    return !imaWhilePrepreka(s) ? WalkUpFromWhileStmt(s) :
-           RecursiveASTVisitor<Iter2RekVisitor>::TraverseWhileStmt(s);
+    /* Nastavljanje dalje ako postoje prepreke */
+    if (imaWhilePrepreka(s))
+        return RecursiveASTVisitor<Iter2RekVisitor>::TraverseWhileStmt(s);
+    else if (!dohvatiDeklaracije(s)) {
+        dekls.clear();
+        deklm.clear();
+        dekli.clear();
+        tabu.clear();
+        return RecursiveASTVisitor<Iter2RekVisitor>::TraverseWhileStmt(s);
+    /* Povlacenje ako je while obradjen */
+    } else return WalkUpFromWhileStmt(s);
 }

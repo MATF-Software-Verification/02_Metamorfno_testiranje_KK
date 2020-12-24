@@ -165,6 +165,18 @@ int main() {
     break;
   }
 
+  // petlja sa maskiranjem
+  int k = 10;
+  while (!k) {
+    double k = 1;
+    k--;
+
+    while (0) {
+      double k = 1;
+      k--;
+    }
+  }
+
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));
   printf("%d%d\n", ittrn(7, 0), ittrn2(8, 0));
 

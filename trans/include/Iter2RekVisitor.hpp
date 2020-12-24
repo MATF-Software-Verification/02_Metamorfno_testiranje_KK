@@ -17,7 +17,7 @@ public:
     bool imaWhilePrepreka(WhileStmt *s) const;
 
     /* Dohvatanje deklaracija na koje se referise */
-    void dohvatiDeklaracije(Stmt *s);
+    bool dohvatiDeklaracije(Stmt *s);
 
     /* Pravljenje rekurzivne funkcije */
     FunctionDecl *napraviRekFunkciju(WhileStmt *s) const;
@@ -40,9 +40,6 @@ private:
     std::unordered_set<VarDecl *> deklm;
     std::unordered_set<VarDecl *> tabu;
     std::unordered_set<std::string> dekli;
-
-    /* Poruka da maskiranje vrednosti pravi problem */
-    static constexpr auto maskiranje = "Deklaracija maskira telo!";
 };
 
 #endif

@@ -296,6 +296,18 @@ int petlja11(int *x, void (**f)(int), int *ret9) {
   return 0;
 }
 
+int petlja12(int *ret10) {
+  if (0) {
+    {
+      double k = 1;
+      k--;
+    }
+    return petlja12(ret10);
+  }
+
+  return 0;
+}
+
 int main() {
   viter();
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
@@ -335,6 +347,19 @@ int main() {
     int ret9;
     if (petlja11(&x, &f, &ret9))
       return ret9;
+  }
+
+  // petlja sa maskiranjem
+  int k = 10;
+  while (!k) {
+    double k = 1;
+    k--;
+
+    {
+      int ret10;
+      if (petlja12(&ret10))
+        return ret10;
+    }
   }
 
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));
