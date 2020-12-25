@@ -7,7 +7,8 @@
 static constexpr auto upotreba = "Upotreba 1: ./trans <ulaz> <izlaz> <do|while|for>\n"
                                  "Upotreba 2: ./trans <ulaz> <izlaz> o<n: uint>\n"
                                  "Upotreba 3: ./trans <ulaz> <izlaz> <if|switch>\n"
-                                 "Upotreba 4: ./trans <ulaz> <izlaz> <iter|rek>";
+                                 "Upotreba 4: ./trans <ulaz> <izlaz> <iter|rek>\n"
+                                 "Upotreba 5: ./trans <ulaz> <izlaz> u<n: uint>";
 
 /* Glavna funkcija aplikacije */
 int main(int argc, char *argv[]) {

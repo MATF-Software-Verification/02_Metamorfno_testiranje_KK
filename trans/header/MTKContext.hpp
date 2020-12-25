@@ -44,11 +44,15 @@ public:
 
     /* Prednja tekstualna dopuna koda */
     void dodajIspred(const Stmt *const stari,
+                     const std::string &novi) const;
+
+    /* Prednja tekstualna dopuna koda */
+    void dodajIspred(const Stmt *const stari,
                      const Stmt *const novi) const;
 
     /* Zadnja tekstualna dopuna koda */
     void dodajIza(const Stmt *const stari,
-                  const Stmt *const novi) const;
+                  const Stmt *const novi = nullptr) const;
 
     /* Tekstualna dopuna koda funkcijom */
     void dodajFunkciju(const FunctionDecl *const stara,

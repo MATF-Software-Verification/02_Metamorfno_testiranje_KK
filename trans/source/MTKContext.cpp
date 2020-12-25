@@ -96,15 +96,21 @@ void MTKContext::zameni(const Stmt *const stari,
 
 /* Prednja tekstualna dopuna koda */
 void MTKContext::dodajIspred(const Stmt *const stari,
-                             const Stmt *const novi) const {
+                             const std::string &novi) const {
     /* Odredjivanje mesta naredbe u kodu */
     const auto mesto = odrediMesto(stari);
 
     /* Tekstualna reprezentacija nove naredbe */
-    const auto stmt = "{" + stampaj(novi);
+    const auto stmt = "{" + novi;
 
     /* Dodavanje teksta na izracunatom mestu */
     TheRewriter.InsertTextBefore(mesto.getBegin(), stmt);
+}
+
+/* Prednja tekstualna dopuna koda */
+void MTKContext::dodajIspred(const Stmt *const stari,
+                             const Stmt *const novi) const {
+    return dodajIspred(stari, stampaj(novi));
 }
 
 /* Zadnja tekstualna dopuna koda */
@@ -114,7 +120,7 @@ void MTKContext::dodajIza(const Stmt *const stari,
     const auto mesto = odrediMesto(stari);
 
     /* Tekstualna reprezentacija nove naredbe */
-    const auto stmt = "\n" + stampaj(novi) + "}";
+    const auto stmt = "\n" + (novi ? stampaj(novi) : "") + "}";
 
     /* Dodavanje teksta na izracunatom mestu */
     TheRewriter.InsertTextBefore(mesto.getEnd(), stmt);
