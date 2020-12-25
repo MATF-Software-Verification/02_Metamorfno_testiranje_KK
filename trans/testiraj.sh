@@ -198,3 +198,21 @@ diff output.txt output2.txt -q
 rm output2.txt
 #####################################
 
+### UMETANJE ########################
+cd ../umetanje
+
+$clang normal.c
+./a.out > output.txt
+rm a.out
+
+rm bloated.c 2> /dev/null
+$trans normal.c bloated.c u2
+
+$clang bloated.c
+./a.out > output2.txt
+rm a.out
+
+diff output.txt output2.txt -q
+rm output2.txt
+#####################################
+

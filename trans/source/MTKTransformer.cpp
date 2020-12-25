@@ -13,6 +13,7 @@
 #include "PrepSwitchVisitor.hpp"
 #include "If2SwitchVisitor.hpp"
 #include "Switch2IfVisitor.hpp"
+#include "CodeImputVisitor.hpp"
 
 #include "MTKTransformer.hpp"
 
@@ -66,6 +67,11 @@ void MTKTransformer::postaviOdmotavanje(unsigned long long n) {
     LoopUnrollVisitor::postaviBroj(n);
 }
 
+/* Registrovanje zeljenog broja umetanja */
+void MTKTransformer::postaviVerovatnocu(unsigned long long n) {
+    CodeImputVisitor::postaviBroj(n);
+}
+
 /* Odabir odgovarajuceg transformatora */
 ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     switch (izmena) {
@@ -84,6 +90,7 @@ ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     case Izmena::PrepSwitch: return new MTKConsumer<PrepSwitchVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::If2Switch: return new MTKConsumer<If2SwitchVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::Switch2If: return new MTKConsumer<Switch2IfVisitor>(*TheRewriter, *TheASTContext);
+    case Izmena::CodeImput: return new MTKConsumer<CodeImputVisitor>(*TheRewriter, *TheASTContext);
     }
 }
 
@@ -188,7 +195,8 @@ void MTKTransformer::primeni(Izmena izmena) {
             izmena == Izmena::PrepIf ||
             izmena == Izmena::PrepSwitch ||
             izmena == Izmena::Rek2Iter ||
-            izmena == Izmena::FinIter)
+            izmena == Izmena::FinIter ||
+            izmena == Izmena::CodeImput)
             break;
     }
 }

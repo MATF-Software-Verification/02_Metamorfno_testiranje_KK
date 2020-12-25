@@ -74,7 +74,9 @@ add_executable(trans source/main.cpp
                      header/FinRekVisitor.hpp
                      source/FinRekVisitor.cpp
                      header/LoopUnrollVisitor.hpp
-                     source/LoopUnrollVisitor.cpp)
+                     source/LoopUnrollVisitor.cpp
+                     header/CodeImputVisitor.hpp
+                     source/CodeImputVisitor.cpp)
 
 target_link_libraries(trans libLLVM-11.so
                             libclangTooling.a

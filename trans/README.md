@@ -36,6 +36,15 @@ Primer pokretanja (testiranja) programa:
 ./trans rekiter.c samoiter.c iter
 ```
 
+## Umetanje (imputacija) koda :new:
+Program umeće (imputira) nove AST čvorove u C kod, menjajući pritom svaki n-ti već postojeći.
+
+Primer pokretanja (testiranja) transformatora:
+```
+./trans <ulaz> <izlaz> u<n: uint>
+./trans normal.c bloated.c u2
+```
+
 ## Podešavanje :memo:
 Primer prevođenja programa sistemom CMake:
 ```

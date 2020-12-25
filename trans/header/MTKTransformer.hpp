@@ -37,11 +37,15 @@ public:
         PrepIf,
         PrepSwitch,
         If2Switch,
-        Switch2If
+        Switch2If,
+        CodeImput
     };
 
     /* Registrovanje zeljenog broja odmotavanja */
     static void postaviOdmotavanje(unsigned long long n);
+
+    /* Registrovanje zeljenog broja umetanja */
+    static void postaviVerovatnocu(unsigned long long n);
 
     /* Primena zeljene izmene koda; sustinski je
      * boilerplate (sablonski) kod za rad sa AST */

@@ -19,8 +19,9 @@ int main(int argc, char *argv[]) {
     std::string nova(argv[2]);
     std::string radnja(argv[3]);
 
-    /* Regularni izraz za odmotavanje */
-    const std::regex r("o(\\d+)");
+    /* Regularni izrazi za parametre */
+    const std::regex ro("o(\\d+)"),
+                     ru("u(\\d+)");
     std::smatch pogodak;
 
     /* Instanciranje transformatora */
@@ -53,11 +54,16 @@ int main(int argc, char *argv[]) {
         trans.primeni(MTKTransformer::For2While);
         trans.primeni(MTKTransformer::Iter2Rek);
         trans.primeni(MTKTransformer::FinRek);
-    } else if (std::regex_match(radnja, pogodak, r)
+    } else if (std::regex_match(radnja, pogodak, ro)
                && pogodak.size() == 2 /* cela i broj */) {
         const auto n = std::stoull(pogodak[1].str());
         MTKTransformer::postaviOdmotavanje(n);
         trans.primeni(MTKTransformer::LoopUnroll);
+    } else if (std::regex_match(radnja, pogodak, ru)
+               && pogodak.size() == 2 /* cela i broj */) {
+        const auto n = std::stoull(pogodak[1].str());
+        MTKTransformer::postaviVerovatnocu(n);
+        trans.primeni(MTKTransformer::CodeImput);
     /* Prekid pogresno pokrenutog programa */
     } else MTKTransformer::greska(upotreba);
 
