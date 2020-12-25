@@ -14,7 +14,7 @@ Program odmotava (unroll, unwind) petlje u C kodu, umnožavajući im telo n puta
 
 Primer pokretanja (testiranja) transformatora:
 ```
-./trans <ulaz> <izlaz> o<n>
+./trans <ulaz> <izlaz> o<n: uint>
 ./trans jednostruke.c trostruke.c o2
 ```
 
