@@ -36,7 +36,7 @@ Primer pokretanja (testiranja) programa:
 ./trans rekiter.c samoiter.c iter
 ```
 
-## Umetanje (imputacija) koda :new:
+## Imputacija koda :new:
 Program umeće (imputira) nove AST čvorove u C kod, menjajući pritom svaki n-ti već postojeći.
 
 Primer pokretanja (testiranja) transformatora:

@@ -15,6 +15,7 @@
  * noviKod4;
  ***********************/
 
+/* Staticki podatak o verovatnoci umetanja */
 unsigned long long CodeImputVisitor::n = 0;
 
 /* Postavljanje broja umetanja */

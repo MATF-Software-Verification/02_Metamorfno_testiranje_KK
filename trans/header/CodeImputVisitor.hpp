@@ -14,7 +14,7 @@ public:
     static void postaviBroj(unsigned long long i);
 
 private:
-    /* Staticki podatak o broju umetanja */
+    /* Staticki podatak o verovatnoci umetanja */
     static unsigned long long n;
 };
 
