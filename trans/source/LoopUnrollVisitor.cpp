@@ -1,11 +1,11 @@
 #include "LoopUnrollVisitor.hpp"
 
-/****************************************
+/***********************
  * Shema transformacije
- * --------------------------------------
+ * ---------------------
  * while (uslov)
  *   telo;
- * --------------------------------------
+ * ---------------------
  * while (uslov) {
  *   telo;
  *   if (!uslov)
@@ -15,7 +15,7 @@
  *     break;
  *   telo;
  * }
- ****************************************/
+ ***********************/
 
 /* Staticki podatak o broju odmotavanja */
 unsigned long long LoopUnrollVisitor::n = 0;
