@@ -64,11 +64,16 @@ bool CodeImputVisitor::VisitStmt(Stmt *s) {
 
 /* Obilazak svih naredbi */
 bool CodeImputVisitor::TraverseStmt(Stmt *s) {
-    /* Verovatnoca izmene je 1/n */
-    const auto izmena = s && !isa<ValueStmt>(s) && !isa<DeclStmt>(s) &&
-                        static_cast<unsigned long long>(rand()) % n == 0;
+    /* Odustajanje kod deklaracija ili izraza koji nisu pozivi */
+    if (!s || (isa<ValueStmt>(s) && !isa<CallExpr>(s)) || isa<DeclStmt>(s)) {
+        tabu.insert(s); return WalkUpFromStmt(s);
+    }
 
-    /* Nastavljanje dalje ili odustajanje */
+    /* Verovatnoca izmene je 1/n, pri cemu se mogu menjati samo one
+     * naredbe koje nisu izrazi, sa izuzetkom poziva i deklaracija */
+    const auto izmena = static_cast<unsigned long long>(rand()) % n == 0;
+
+    /* Nastavljanje dalje ukoliko nema izmena ili odustajanje inace */
     if (izmena) return WalkUpFromStmt(s);
     else {
         tabu.insert(s);
