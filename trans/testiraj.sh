@@ -5,6 +5,7 @@ cd "$( dirname "${BASH_SOURCE[0]}" )"
 trans='./../../build-trans-*/trans'
 clang='clang-11'
 
+### PETLJE ##########################
 cd petlje
 
 $clang whilefor.c
@@ -70,7 +71,38 @@ rm a.out
 
 diff output.txt output2.txt -q
 rm output2.txt
+#####################################
 
+### ODMOTAVANJE #####################
+cd ../odmot
+
+$clang jednostruke.c
+./a.out > output.txt
+rm a.out
+
+rm bezpromene.c 2> /dev/null
+$trans jednostruke.c bezpromene.c o0
+
+$clang bezpromene.c
+./a.out > output2.txt
+rm a.out
+
+diff output.txt output2.txt -q
+rm output2.txt
+
+rm trostruke.c 2> /dev/null
+$trans jednostruke.c trostruke.c o2
+
+$clang trostruke.c
+./a.out > output2.txt
+rm a.out
+
+diff output.txt output2.txt -q
+rm output2.txt
+
+#####################################
+
+### USLOVI ##########################
 cd ../uslovi
 
 $clang ifswitch.c
@@ -116,7 +148,9 @@ rm a.out
 
 diff output.txt output2.txt -q
 rm output2.txt
+#####################################
 
+### REKURZIJA #######################
 cd ../rekurzija
 
 $clang rekiter.c
@@ -162,4 +196,5 @@ rm a.out
 
 diff output.txt output2.txt -q
 rm output2.txt
+#####################################
 

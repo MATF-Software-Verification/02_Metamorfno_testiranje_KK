@@ -104,12 +104,15 @@ bool PrepForVisitor::VisitForStmt(ForStmt *s) {
     /* Dohvatanje deklaracija u koraku */
     dohvatiDeklaracije(s->getInc());
 
+    /* Odredjivanje mesta u kodu */
+    const auto mesto = odrediMesto(s);
+
     /* Odmaskiranje deklaracija u telu */
     if (!dekls.empty())
         odmaskirajDeklaracije(s->getBody());
 
     /* Zamena petlje odmaskiranom verzijom */
-    zameni(s, s);
+    zameni(mesto, s);
 
     /* Praznjenje niza deklaracija */
     dekls.clear();

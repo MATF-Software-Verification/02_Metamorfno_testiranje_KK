@@ -1,11 +1,13 @@
 #include "MTKTransformer.hpp"
 
+#include <regex>
 #include <sstream>
 
 /* Nacin upotrebe programa */
 static constexpr auto upotreba = "Upotreba 1: ./trans <ulaz> <izlaz> <do|while|for>\n"
-                                 "Upotreba 2: ./trans <ulaz> <izlaz> <if|switch>\n"
-                                 "Upotreba 3: ./trans <ulaz> <izlaz> <iter|rek>";
+                                 "Upotreba 2: ./trans <ulaz> <izlaz> o<n: uint>\n"
+                                 "Upotreba 3: ./trans <ulaz> <izlaz> <if|switch>\n"
+                                 "Upotreba 4: ./trans <ulaz> <izlaz> <iter|rek>";
 
 /* Glavna funkcija aplikacije */
 int main(int argc, char *argv[]) {
@@ -16,6 +18,10 @@ int main(int argc, char *argv[]) {
     std::string stara(argv[1]);
     std::string nova(argv[2]);
     std::string radnja(argv[3]);
+
+    /* Regularni izraz za odmotavanje */
+    const std::regex r("o(\\d+)");
+    std::smatch pogodak;
 
     /* Instanciranje transformatora */
     MTKTransformer trans(stara, nova);
@@ -47,6 +53,11 @@ int main(int argc, char *argv[]) {
         trans.primeni(MTKTransformer::For2While);
         trans.primeni(MTKTransformer::Iter2Rek);
         trans.primeni(MTKTransformer::FinRek);
+    } else if (std::regex_match(radnja, pogodak, r)
+               && pogodak.size() == 2 /* cela i broj */) {
+        const auto n = std::stoull(pogodak[1].str());
+        MTKTransformer::postaviOdmotavanje(n);
+        trans.primeni(MTKTransformer::LoopUnroll);
     /* Prekid pogresno pokrenutog programa */
     } else MTKTransformer::greska(upotreba);
 

@@ -9,6 +9,15 @@ Primer pokretanja (testiranja) transformatora:
 ./trans whilefor.c samodo.c do
 ```
 
+## Odmotavanje petlji :koko:
+Program odmotava (unroll, unwind) petlje u C kodu, umnožavajući im telo n puta.
+
+Primer pokretanja (testiranja) transformatora:
+```
+./trans <ulaz> <izlaz> o<n>
+./trans jednostruke.c trostruke.c o2
+```
+
 ## Transformacija uslova :grey_question:
 Program transformiše sve uslove u C kodu u željeni tip – if-then-else, switch-case-default.
 

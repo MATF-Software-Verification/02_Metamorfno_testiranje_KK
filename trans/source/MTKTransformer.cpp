@@ -4,6 +4,7 @@
 #include "For2WhileVisitor.hpp"
 #include "For2DoVisitor.hpp"
 #include "PrepForVisitor.hpp"
+#include "LoopUnrollVisitor.hpp"
 #include "Rek2IterVisitor.hpp"
 #include "FinIterVisitor.hpp"
 #include "Iter2RekVisitor.hpp"
@@ -60,6 +61,11 @@ void MTKTransformer::greska(const std::string &poruka) {
     MTKContext::greska(poruka);
 }
 
+/* Registrovanje zeljenog broja odmotavanja */
+void MTKTransformer::postaviOdmotavanje(unsigned long long n) {
+    LoopUnrollVisitor::postaviBroj(n);
+}
+
 /* Odabir odgovarajuceg transformatora */
 ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     switch (izmena) {
@@ -69,6 +75,7 @@ ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     case Izmena::PrepFor: return new MTKConsumer<PrepForVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::For2While: return new MTKConsumer<For2WhileVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::For2Do: return new MTKConsumer<For2DoVisitor>(*TheRewriter, *TheASTContext);
+    case Izmena::LoopUnroll: return new MTKConsumer<LoopUnrollVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::Rek2Iter: return new MTKConsumer<Rek2IterVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::FinIter: return new MTKConsumer<FinIterVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::Iter2Rek: return new MTKConsumer<Iter2RekVisitor>(*TheRewriter, *TheASTContext);
@@ -177,6 +184,7 @@ void MTKTransformer::primeni(Izmena izmena) {
         /* Iteracije i pripreme su jednoprolazni */
         if ((izmena == Izmena::PrepFor &&
              PrepForVisitor::imaloPosla()) ||
+            izmena == Izmena::LoopUnroll ||
             izmena == Izmena::PrepIf ||
             izmena == Izmena::PrepSwitch ||
             izmena == Izmena::Rek2Iter ||

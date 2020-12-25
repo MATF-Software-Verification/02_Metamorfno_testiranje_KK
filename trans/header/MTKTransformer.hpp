@@ -29,6 +29,7 @@ public:
         PrepFor,
         For2While,
         For2Do,
+        LoopUnroll,
         Rek2Iter,
         FinIter,
         Iter2Rek,
@@ -38,6 +39,9 @@ public:
         If2Switch,
         Switch2If
     };
+
+    /* Registrovanje zeljenog broja odmotavanja */
+    static void postaviOdmotavanje(unsigned long long n);
 
     /* Primena zeljene izmene koda; sustinski je
      * boilerplate (sablonski) kod za rad sa AST */
