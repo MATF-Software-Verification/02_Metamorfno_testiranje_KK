@@ -1,0 +1,53 @@
+{
+  int ok;
+  sscanf("0", "%d", &ok);
+  if (ok) {
+    char *t = "hello";
+    t[0] = 'H';
+    putchar(t[0]);
+
+    int x = 1;
+    int y = x / 0;
+    printf("%d\n", y);
+
+    int niz[] = {0, 1, 2, 3};
+    int *p = niz + 100;
+    printf("%d\n", *p);
+
+    p = 0;
+    int c = *p, d;
+    printf("%d\n", c);
+
+    int a = 0;
+    int b = 0;
+    if (&a < &b)
+      a = b;
+
+    int i = 0;
+    i = i++ + 1;
+
+    niz[i] = i++;
+    printf("%d %d\n", ++i, i * i);
+
+    int num = -1;
+    unsigned int val = 1 << num;
+    printf("%u", val);
+
+    num = 32;
+    val = 1 << num;
+    printf("%u\n", val);
+
+    num = 64;
+    unsigned long long val2 = 1ULL << num;
+    printf("%llu\n", val2);
+    
+    c = d = 0;
+    for (b = 4; b > -30; b--)
+      for (; c;)
+        for (;;) {
+          printf("%d", a > 2147483647 - b);
+          if (d) break;
+        }
+    putchar('\n');
+  }
+}

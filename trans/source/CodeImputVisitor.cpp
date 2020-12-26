@@ -23,8 +23,9 @@ unsigned long long CodeImputVisitor::n = 1;
 
 /* Staticki spisak datoteka za dodavanje */
 const char *CodeImputVisitor::dats[] = {
-    "../trans/umetanje/bezopt.txt",
-    "../trans/umetanje/undefopt.txt"
+    "../trans/umetanje/lagrneopt.txt",
+    "../trans/umetanje/undefined.txt",
+    "../trans/umetanje/lagrundef.txt"
 };
 
 /* Postavljanje broja umetanja */
@@ -73,10 +74,7 @@ bool CodeImputVisitor::TraverseStmt(Stmt *s) {
      * naredbe koje nisu izrazi, sa izuzetkom poziva i deklaracija */
     const auto izmena = static_cast<unsigned long long>(rand()) % n == 0;
 
-    /* Nastavljanje dalje ukoliko nema izmena ili odustajanje inace */
-    if (izmena) return WalkUpFromStmt(s);
-    else {
-        tabu.insert(s);
-        return RecursiveASTVisitor<CodeImputVisitor>::TraverseStmt(s);
-    }
+    /* Nastavljanje dalje i oznacavanje ukoliko nema izmena */
+    if (!izmena) tabu.insert(s);
+    return RecursiveASTVisitor<CodeImputVisitor>::TraverseStmt(s);
 }

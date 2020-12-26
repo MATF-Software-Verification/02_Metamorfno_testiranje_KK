@@ -206,9 +206,9 @@ $clang normal.c
 rm a.out
 
 rm bloated.c 2> /dev/null
-$trans normal.c bloated.c u2
+$trans normal.c bloated.c u3
 
-$clang bloated.c
+$clang bloated.c 2> /dev/null
 ./a.out > output2.txt
 rm a.out
 

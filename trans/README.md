@@ -42,7 +42,7 @@ Program umeće (imputira) nove AST čvorove u C kod, menjajući pritom svaki n-t
 Primer pokretanja (testiranja) transformatora:
 ```
 ./trans <ulaz> <izlaz> u<n: uint>
-./trans normal.c bloated.c u2
+./trans normal.c bloated.c u3
 ```
 
 ## Podešavanje :memo:
