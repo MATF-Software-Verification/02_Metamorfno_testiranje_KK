@@ -1,5 +1,7 @@
 #include "CodeImputVisitor.hpp"
 
+#include "clang/AST/ParentMapContext.h"
+
 #include <fstream>
 #include <sstream>
 
@@ -63,10 +65,25 @@ bool CodeImputVisitor::VisitStmt(Stmt *s) {
     return true;
 }
 
+/* Provera da li je moguca izmena */
+bool CodeImputVisitor::nemogucaIzmena(Stmt *s) const {
+    /* U redu je ako nema vrednost */
+    const auto val = dyn_cast<ValueStmt>(s);
+    if (!val) return false;
+
+    /* Nije u redu ako nema roditelja */
+    const auto rod = TheASTContext.getParents(*s);
+    if (rod.empty()) return true;
+
+    /* U redu je ako je roditelj slozen */
+    return !rod.begin()->get<CompoundStmt>();
+}
+
 /* Obilazak svih naredbi */
 bool CodeImputVisitor::TraverseStmt(Stmt *s) {
-    /* Odustajanje kod deklaracija ili izraza koji nisu pozivi */
-    if (!s || (isa<ValueStmt>(s) && !isa<CallExpr>(s)) || isa<DeclStmt>(s)) {
+    /* Odustajanje od deklaracija ili izraza koji
+     * nisu u slozenoj naredbi, kao i nultih naredbi */
+    if (!s || isa<DeclStmt>(s) || nemogucaIzmena(s)) {
         tabu.insert(s); return WalkUpFromStmt(s);
     }
 

@@ -16,6 +16,9 @@ public:
     /* Imputacija oko naredbe ako treba */
     bool VisitStmt(Stmt *s);
 
+    /* Provera da li je moguca izmena */
+    bool nemogucaIzmena(Stmt *s) const;
+
     /* Obilazak svih naredbi */
     bool TraverseStmt(Stmt *s);
 

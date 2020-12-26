@@ -2,7 +2,9 @@
 
 int main() {
   int x = 10;
-  while (x--) {
+  while (x--)
+    printf("%d", x);
+  {
     {
       int ok;
       sscanf("0", "%d", &ok);
@@ -57,9 +59,8 @@ int main() {
         putchar('\n');
       }
     }
-    printf("%d", x);
+    putchar('\n');
   }
-  putchar('\n');
 
   for (;;) {
     x = 10;
