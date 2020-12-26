@@ -68,8 +68,7 @@ bool CodeImputVisitor::VisitStmt(Stmt *s) {
 /* Provera da li je moguca izmena */
 bool CodeImputVisitor::nemogucaIzmena(Stmt *s) const {
     /* U redu je ako nema vrednost */
-    const auto val = dyn_cast<ValueStmt>(s);
-    if (!val) return false;
+    if (!isa<ValueStmt>(s)) return false;
 
     /* Nije u redu ako nema roditelja */
     const auto rod = TheASTContext.getParents(*s);
