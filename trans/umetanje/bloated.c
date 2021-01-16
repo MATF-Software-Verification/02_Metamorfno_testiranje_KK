@@ -6,8 +6,7 @@ int main() {
     printf("%d", x);
   {
     {
-      int ok;
-      sscanf("0", "%d", &ok);
+      volatile int ok = 0;
       if (ok) {
         char *t = "hello";
         t[0] = 'H';
@@ -66,8 +65,7 @@ int main() {
     x = 10;
     {
       {
-        int ok;
-        sscanf("0", "%d", &ok);
+        volatile int ok = 0;
         if (ok) {
           int x[] = {1, 2, 3, 4, 5};
           int y[] = {2, 4, 6, 8, 10};

@@ -3,7 +3,7 @@
 cd "$( dirname "${BASH_SOURCE[0]}" )"
 
 trans='./../../build-trans-*/trans'
-clang='clang-11'
+clang='clang-11 -O0'
 
 ### PETLJE ##########################
 cd petlje
@@ -180,7 +180,7 @@ rm output2.txt
 rm samorek2.c 2> /dev/null
 $trans samoiter.c samorek2.c rek
 
-clang samorek2.c
+$clang samorek2.c
 ./a.out > output2.txt
 rm a.out
 
@@ -190,7 +190,7 @@ rm output2.txt
 rm samoiter2.c 2> /dev/null
 $trans samorek.c samoiter2.c iter
 
-clang samoiter2.c
+$clang samoiter2.c
 ./a.out > output2.txt
 rm a.out
 

@@ -1,6 +1,5 @@
 {
-  int ok;
-  sscanf("0", "%d", &ok);
+  volatile int ok = 0;
   if (ok) {
     char *t = "hello";
     t[0] = 'H';
