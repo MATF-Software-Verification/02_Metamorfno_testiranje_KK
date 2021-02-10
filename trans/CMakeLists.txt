@@ -10,6 +10,9 @@ set(CMAKE_MODULE_PATH
 set(CMAKE_C_COMPILER clang-11)
 set(CMAKE_CXX_COMPILER clang++-11)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -fprofile-arcs -ftest-coverage -O0")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage -lgcov")
+
 execute_process(
   COMMAND llvm-config-11 --cxxflags
   OUTPUT_VARIABLE LibClang_DEFINITIONS)
@@ -92,4 +95,3 @@ target_link_libraries(trans libLLVM-11.so
                             libclangSema.a
                             libclangSerialization.a
                             libclangTooling.a)
-
