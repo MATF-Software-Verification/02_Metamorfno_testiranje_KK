@@ -18,9 +18,6 @@ public:
     MTKTransformer(const std::string &s,
                    const std::string &n);
 
-    /* Prijavljivanje greske u radu */
-    [[noreturn]] static void greska(const std::string &poruka);
-
     /* Enumeracija izmena */
     enum Izmena {
         While2Do,
@@ -41,15 +38,11 @@ public:
         CodeImput
     };
 
-    /* Registrovanje zeljenog broja odmotavanja */
-    static void postaviOdmotavanje(unsigned long long n);
+    /* Prijavljivanje greske u radu */
+    [[noreturn]] static void greska(const std::string &poruka);
 
-    /* Registrovanje zeljenog broja umetanja */
-    static void postaviVerovatnocu(unsigned long long n);
-
-    /* Primena zeljene izmene koda; sustinski je
-     * boilerplate (sablonski) kod za rad sa AST */
-    void primeni(Izmena izmena);
+    /* Obrada zeljene transformacije */
+    static int obradi(int argc, char *argv[]);
 
 private:
     /* Datoteke koje se obradjuju */
@@ -72,11 +65,28 @@ private:
     /* Provera validnosti ulaza */
     void proveri() const;
 
+    /* Primena zeljene izmene koda; sustinski je
+     * boilerplate (sablonski) kod za rad sa AST */
+    void primeni(Izmena izmena);
+
+    /* Registrovanje zeljenog broja odmotavanja */
+    static void postaviOdmotavanje(unsigned long long n);
+
+    /* Registrovanje zeljenog broja umetanja */
+    static void postaviVerovatnocu(unsigned long long n);
+
     /* Informacije o cestim greskama */
     static constexpr auto istaDatoteka = "Datoteke su istog imena!";
     static constexpr auto postojiDatoteka = "Nova datoteka vec postoji!";
     static constexpr auto nemaDatoteke = "Neuspelo otvaranje datoteke!";
     static constexpr auto losUlaz = "Nepremostivi problem sa ulazom!";
+
+    /* Nacin upotrebe programa */
+    static constexpr auto upotreba = "Upotreba 1: ./trans <ulaz> <izlaz> <do|while|for>\n"
+                                     "Upotreba 2: ./trans <ulaz> <izlaz> o<n: uint>\n"
+                                     "Upotreba 3: ./trans <ulaz> <izlaz> <if|switch>\n"
+                                     "Upotreba 4: ./trans <ulaz> <izlaz> <iter|rek>\n"
+                                     "Upotreba 5: ./trans <ulaz> <izlaz> u<n: uint>";
 };
 
 #endif

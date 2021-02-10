@@ -22,6 +22,7 @@
 #include "clang/Parse/ParseAST.h"
 #include "llvm/Support/Host.h"
 
+#include <regex>
 #include <fstream>
 #include <sstream>
 
@@ -62,14 +63,69 @@ void MTKTransformer::greska(const std::string &poruka) {
     MTKContext::greska(poruka);
 }
 
-/* Registrovanje zeljenog broja odmotavanja */
-void MTKTransformer::postaviOdmotavanje(unsigned long long n) {
-    LoopUnrollVisitor::postaviBroj(n);
-}
+/* Obrada zeljene transformacije */
+int MTKTransformer::obradi(int argc, char *argv[]) {
+    /* Prekid pogresno pokrenutog programa */
+    if (argc != 4) greska(upotreba);
 
-/* Registrovanje zeljenog broja umetanja */
-void MTKTransformer::postaviVerovatnocu(unsigned long long n) {
-    CodeImputVisitor::postaviBroj(n);
+    /* Citanje argumenata */
+    std::string stara(argv[1]);
+    std::string nova(argv[2]);
+    std::string radnja(argv[3]);
+
+    /* Regularni izrazi za parametre */
+    const std::regex ro("o(\\d+)"),
+                     ru("u(\\d+)");
+    std::smatch pogodak;
+
+    /* Instanciranje transformatora */
+    MTKTransformer trans(stara, nova);
+
+    /* Prvi deo algoritma */
+    if (radnja == "do") {
+        trans.primeni(Izmena::While2Do);
+        trans.primeni(Izmena::PrepFor);
+        trans.primeni(Izmena::For2Do);
+    } else if (radnja == "for") {
+        trans.primeni(Izmena::Do2For);
+        trans.primeni(Izmena::While2For);
+    } else if (radnja == "while") {
+        trans.primeni(Izmena::Do2For);
+        trans.primeni(Izmena::PrepFor);
+        trans.primeni(Izmena::For2While);
+    } else if (radnja == "if") {
+        trans.primeni(Izmena::PrepSwitch);
+        trans.primeni(Izmena::Switch2If);
+    } else if (radnja == "switch") {
+        trans.primeni(Izmena::PrepIf);
+        trans.primeni(Izmena::If2Switch);
+    } else if (radnja == "iter") {
+        trans.primeni(Izmena::Rek2Iter);
+        trans.primeni(Izmena::FinIter);
+    } else if (radnja == "rek") {
+        trans.primeni(Izmena::Do2For);
+        trans.primeni(Izmena::PrepFor);
+        trans.primeni(Izmena::For2While);
+        trans.primeni(Izmena::Iter2Rek);
+        trans.primeni(Izmena::FinRek);
+    } else if (std::regex_match(radnja, pogodak, ro)
+               && pogodak.size() == 2 /* cela i broj */) {
+        postaviOdmotavanje(std::stoull(pogodak[1].str()));
+        trans.primeni(Izmena::LoopUnroll);
+    } else if (std::regex_match(radnja, pogodak, ru)
+               && pogodak.size() == 2 /* cela i broj */) {
+        postaviVerovatnocu(std::stoull(pogodak[1].str()));
+        trans.primeni(Izmena::CodeImput);
+    /* Prekid pogresno pokrenutog programa */
+    } else greska(upotreba);
+
+    /* Lepo formatiranje novog koda */
+    std::ostringstream buffer;
+    buffer << "clang-format -i " << nova;
+    std::system(buffer.str().c_str());
+
+    /* Normalno zavrsavanje programa */
+    return EXIT_SUCCESS;
 }
 
 /* Odabir odgovarajuceg transformatora */
@@ -133,6 +189,19 @@ bool MTKTransformer::izmeniKod(Izmena izmena) {
 
     /* Inace ne treba iskociti */
     return false;
+}
+
+/* Provera validnosti ulaza */
+void MTKTransformer::proveri() const {
+    /* Pokusaj prevodjenja ulaza */
+    std::ostringstream buffer;
+    buffer << "clang-11 -fsyntax-only " << stara << " 2>/dev/null";
+    const auto ret
+        = std::system(buffer.str().c_str());
+
+    /* Prijava greske ako nesto nije u redu */
+    if (!WIFEXITED(ret) || WEXITSTATUS(ret))
+        greska(losUlaz);
 }
 
 /* Primena zeljene izmene koda; sustinski je
@@ -201,15 +270,12 @@ void MTKTransformer::primeni(Izmena izmena) {
     }
 }
 
-/* Provera validnosti ulaza */
-void MTKTransformer::proveri() const {
-    /* Pokusaj prevodjenja ulaza */
-    std::ostringstream buffer;
-    buffer << "clang-11 -fsyntax-only " << stara << " 2>/dev/null";
-    const auto ret
-        = std::system(buffer.str().c_str());
+/* Registrovanje zeljenog broja odmotavanja */
+void MTKTransformer::postaviOdmotavanje(unsigned long long n) {
+    LoopUnrollVisitor::postaviBroj(n);
+}
 
-    /* Prijava greske ako nesto nije u redu */
-    if (!WIFEXITED(ret) || WEXITSTATUS(ret))
-        greska(losUlaz);
+/* Registrovanje zeljenog broja umetanja */
+void MTKTransformer::postaviVerovatnocu(unsigned long long n) {
+    CodeImputVisitor::postaviBroj(n);
 }
