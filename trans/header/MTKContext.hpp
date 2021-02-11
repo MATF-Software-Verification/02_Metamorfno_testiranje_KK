@@ -24,7 +24,7 @@ public:
     static void postaviDat(const std::string &d);
 
     /* Prijavljivanje greske u radu */
-    [[noreturn]] static void greska(const std::string &poruka);
+    static int greska(const std::string &poruka, bool fatal = false);
 
     /* Tekstualna reprezentacija naredbe */
     std::string stampaj(const Stmt *const s) const;

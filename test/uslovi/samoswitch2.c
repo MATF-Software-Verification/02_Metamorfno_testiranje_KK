@@ -74,11 +74,11 @@ int main() {
           if (br0)
             break;
         }
-        switch ((int)(cond != 3 && cond != 4)) {
+        switch ((int)(cond != 3 && cond != 4 && cond != 6)) {
         case 1: {
-          int cond2 = k - 1;
+          int cond3 = k - 1;
           do {
-            switch ((int)(cond2 == 4)) {
+            switch ((int)(cond3 == 4)) {
             case 1:
               putchar('5');
             }
@@ -89,7 +89,7 @@ int main() {
 
         {
           int br1 = 0;
-          switch ((int)(cond != 4)) {
+          switch ((int)(cond != 4 && cond != 6)) {
           case 1: {
             {
               putchar('3');
@@ -108,8 +108,27 @@ int main() {
           if (br1)
             break;
         }
-        putchar('4');
-        putchar('\n');
+        {
+          int br2 = 0;
+          switch ((int)(cond != 6)) {
+          case 1: {
+            {
+              putchar('4');
+              putchar('\n');
+            }
+            {
+              cont = 1;
+              {
+                br2 = 1;
+                break;
+              }
+            }
+          }
+          }
+
+          if (br2)
+            break;
+        }
       } while (0);
     }
 
@@ -126,6 +145,10 @@ int main() {
       break;
     case 2:
       break;
+    case 3:
+      continue;
+    case 4:
+      continue;
 
       {
         int cond0 = 10;
@@ -166,24 +189,61 @@ int main() {
 
   } while (0);
 
+  do {
+    int cont1 = 0;
+    {
+      int cond2 = 1;
+      do {
+        {
+          int br3 = 0;
+          switch ((int)(cond2 != 1)) {
+          case 1: {
+            {
+              cont1 = 1;
+              {
+                br3 = 1;
+                break;
+              }
+            }
+            {
+              br3 = 1;
+              break;
+            }
+          }
+          }
+
+          if (br3)
+            break;
+        }
+        return 1;
+      } while (0);
+    }
+
+    switch (cont1) {
+    case 1:
+      continue;
+    }
+
+  } while (0);
+
   for (; 0;) {
     {
-      int br2 = 0;
+      int br4 = 0;
       switch (1) {
       case 1: {
         {
-          br2 = 1;
+          br4 = 1;
           break;
         }
         continue;
         {
-          br2 = 1;
+          br4 = 1;
           break;
         }
       }
       }
 
-      if (br2)
+      if (br4)
         break;
     }
   }

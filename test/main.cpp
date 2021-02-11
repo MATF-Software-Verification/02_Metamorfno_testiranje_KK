@@ -27,6 +27,7 @@ private Q_SLOTS:
     void uslovi();
     void rekurzija();
     void umetanje();
+    void greske();
 };
 
 /* Pozicioniranje u konstruktoru */
@@ -164,6 +165,50 @@ void MTKTest::umetanje() {
 
     /* Vracanje na pocetnu poziciju */
     chdir("..");
+}
+
+/* Provera rada sa greskama */
+void MTKTest::greske() {
+    /* Manjak argumenata komandne linije */
+    {
+        MTKTransformer::resetuj();
+        const char *argv[] = {"trans"};
+        const int argc = sizeof argv / sizeof *argv;
+        QVERIFY(MTKTransformer::obradi(argc, argv));
+    }
+
+    /* Pogresna opcija komandne linije */
+    {
+        MTKTransformer::resetuj();
+        const char *argv[] = {"trans", "", "", "yo"};
+        const int argc = sizeof argv / sizeof *argv;
+        QVERIFY(MTKTransformer::obradi(argc, argv));
+    }
+
+    /* Pogresna opcija komandne linije */
+    {
+        MTKTransformer::resetuj();
+        const char *argv[] = {"trans", "", "", "ok"};
+        const int argc = sizeof argv / sizeof *argv;
+        QVERIFY(MTKTransformer::obradi(argc, argv));
+    }
+
+    /* Pogresna opcija komandne linije */
+    {
+        MTKTransformer::resetuj();
+        const char *argv[] = {"trans", "", "", "uk"};
+        const int argc = sizeof argv / sizeof *argv;
+        QVERIFY(MTKTransformer::obradi(argc, argv));
+    }
+
+    /* Nova datoteka vec postoji */
+    {
+        MTKTransformer::resetuj();
+        const char *argv[] = {"trans", "petlje/whilefor.c",
+                              "uslovi/ifswitch.c", "do"};
+        const int argc = sizeof argv / sizeof *argv;
+        QVERIFY(MTKTransformer::obradi(argc, argv));
+    }
 }
 
 /* Automatski main sa jednom klasom */

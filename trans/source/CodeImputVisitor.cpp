@@ -51,7 +51,7 @@ bool CodeImputVisitor::VisitStmt(Stmt *s) {
         dat = dat.substr(dat.find_last_of('/')+1);
         ulaz.open(dat);
     }
-    if (!ulaz) greska(nemaDatoteke);
+    if (!ulaz) greska(nemaDatoteke, true);
 
     /* Izvlacenje teksta iz datoteke */
     std::ostringstream buffer;

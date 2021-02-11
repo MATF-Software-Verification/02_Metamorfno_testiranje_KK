@@ -39,7 +39,7 @@ public:
     };
 
     /* Prijavljivanje greske u radu */
-    [[noreturn]] static void greska(const std::string &poruka);
+    static int greska(const std::string &poruka, bool fatal = false);
 
     /* Resetovanje statickih parametara */
     static void resetuj();
@@ -77,6 +77,9 @@ private:
 
     /* Registrovanje zeljenog broja umetanja */
     static void postaviVerovatnocu(unsigned long long n);
+
+    /* Podatak o uocenoj gresci */
+    static bool error;
 
     /* Informacije o cestim greskama */
     static constexpr auto istaDatoteka = "Datoteke su istog imena!";

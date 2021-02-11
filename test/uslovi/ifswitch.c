@@ -50,6 +50,10 @@ int main() {
     case 4:
       putchar('4');
       putchar('\n');
+      continue;
+
+    case 6:
+      break;
     }
 
   // spoljasnji sa dubokim oznakama
@@ -59,6 +63,10 @@ int main() {
       break;
     case 2:
       break;
+    case 3:
+      continue;
+    case 4:
+      continue;
 
       switch (10) {
       case 10:
@@ -68,7 +76,7 @@ int main() {
       }
     }
   }
-  
+
   while (0) {
     continue;
     break;
@@ -81,7 +89,18 @@ int main() {
       break;
     }
   while (0);
-  
+
+  do
+    switch (1) {
+    default:
+      continue;
+      break;
+    
+    case 1:
+      return 1;
+    }
+  while (0);
+
   for (; 0;) {
     if (1) {
       break;

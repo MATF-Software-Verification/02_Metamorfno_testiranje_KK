@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-02-11 04:57:52</td>
+            <td class="headerValue">2021-02-11 08:30:34</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">8</td>
@@ -102,7 +102,7 @@
 <a name="24"><span class="lineNum">      24 </span>                :            :     static void postaviDat(const std::string &amp;d);</a>
 <a name="25"><span class="lineNum">      25 </span>                :            : </a>
 <a name="26"><span class="lineNum">      26 </span>                :            :     /* Prijavljivanje greske u radu */</a>
-<a name="27"><span class="lineNum">      27 </span>                :            :     [[noreturn]] static void greska(const std::string &amp;poruka);</a>
+<a name="27"><span class="lineNum">      27 </span>                :            :     static int greska(const std::string &amp;poruka, bool fatal = false);</a>
 <a name="28"><span class="lineNum">      28 </span>                :            : </a>
 <a name="29"><span class="lineNum">      29 </span>                :            :     /* Tekstualna reprezentacija naredbe */</a>
 <a name="30"><span class="lineNum">      30 </span>                :            :     std::string stampaj(const Stmt *const s) const;</a>
@@ -294,9 +294,9 @@
 <a name="216"><span class="lineNum">     216 </span>                :            : </a>
 <a name="217"><span class="lineNum">     217 </span>                :            :     /* Prebacivanje naredbe na hip */</a>
 <a name="218"><span class="lineNum">     218 </span>                :            :     template &lt;typename Naredba&gt;</a>
-<a name="219"><span class="lineNum">     219 </span>                :<span class="lineCov">        402 :     Naredba *naHip(const Naredba &amp;nar) const {</span></a>
-<a name="220"><span class="lineNum">     220 </span>                :<span class="lineCov">        402 :         const auto adresa = static_cast&lt;Naredba *&gt;(malloc(sizeof(nar)));</span></a>
-<a name="221"><span class="lineNum">     221 </span>                :<span class="lineCov">        402 :         memcpy(adresa, &amp;nar, sizeof(nar)); return adresa;</span></a>
+<a name="219"><span class="lineNum">     219 </span>                :<span class="lineCov">        429 :     Naredba *naHip(const Naredba &amp;nar) const {</span></a>
+<a name="220"><span class="lineNum">     220 </span>                :<span class="lineCov">        429 :         const auto adresa = static_cast&lt;Naredba *&gt;(malloc(sizeof(nar)));</span></a>
+<a name="221"><span class="lineNum">     221 </span>                :<span class="lineCov">        429 :         memcpy(adresa, &amp;nar, sizeof(nar)); return adresa;</span></a>
 <a name="222"><span class="lineNum">     222 </span>                :            :     }</a>
 <a name="223"><span class="lineNum">     223 </span>                :            : </a>
 <a name="224"><span class="lineNum">     224 </span>                :            : protected:</a>

@@ -26,19 +26,28 @@
 #include <fstream>
 #include <sstream>
 
+/* Podatak o uocenoj gresci */
+bool MTKTransformer::error = false;
+
 /* Inicijalizacija transformatora */
 MTKTransformer::MTKTransformer(const std::string &s,
                                const std::string &n)
     : stara(s), nova(n) {
     /* Nije sigurno da bude ista datoteka */
-    if (stara == nova) greska(istaDatoteka);
+    if (stara == nova) {
+        greska(istaDatoteka);
+        return;
+    }
 
     /* Stara mora da bude validan kod */
     proveri();
 
     /* Nova ne sme da postoji vec */
     std::ifstream ulaz(nova);
-    if (ulaz) greska(postojiDatoteka);
+    if (ulaz) {
+        greska(postojiDatoteka);
+        return;
+    }
 
     /* Postavljanje skupa funkcija */
     MTKContext::postaviFje(fje);
@@ -59,12 +68,14 @@ MTKTransformer::MTKTransformer(const std::string &s,
 }
 
 /* Prijavljivanje greske u radu */
-void MTKTransformer::greska(const std::string &poruka) {
-    MTKContext::greska(poruka);
+int MTKTransformer::greska(const std::string &poruka, bool fatal) {
+    error = true;
+    return MTKContext::greska(poruka, fatal);
 }
 
 /* Resetovanje statickih parametara */
 void MTKTransformer::resetuj() {
+    error = false;
     PrepForVisitor::prviProlaz = true;
     FinRekVisitor::prviProlaz = true;
     PrepForVisitor::posaoBroj = 0;
@@ -74,7 +85,7 @@ void MTKTransformer::resetuj() {
 /* Obrada zeljene transformacije */
 int MTKTransformer::obradi(int argc, const char *argv[]) {
     /* Prekid pogresno pokrenutog programa */
-    if (argc != 4) greska(upotreba);
+    if (argc != 4) return greska(upotreba);
 
     /* Citanje argumenata */
     std::string stara(argv[1]);
@@ -82,8 +93,8 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
     std::string radnja(argv[3]);
 
     /* Regularni izrazi za parametre */
-    const std::regex ro("o(\\d+)"),
-                     ru("u(\\d+)");
+    const std::regex ro("^o(\\d+)$"),
+                     ru("^u(\\d+)$");
     std::smatch pogodak;
 
     /* Instanciranje transformatora */
@@ -116,16 +127,17 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
         trans.primeni(Izmena::For2While);
         trans.primeni(Izmena::Iter2Rek);
         trans.primeni(Izmena::FinRek);
-    } else if (std::regex_match(radnja, pogodak, ro)
-               && pogodak.size() == 2 /* cela i broj */) {
+    } else if (std::regex_match(radnja, pogodak, ro)) {
         postaviOdmotavanje(std::stoull(pogodak[1].str()));
         trans.primeni(Izmena::LoopUnroll);
-    } else if (std::regex_match(radnja, pogodak, ru)
-               && pogodak.size() == 2 /* cela i broj */) {
+    } else if (std::regex_match(radnja, pogodak, ru)) {
         postaviVerovatnocu(std::stoull(pogodak[1].str()));
         trans.primeni(Izmena::CodeImput);
     /* Prekid pogresno pokrenutog programa */
-    } else greska(upotreba);
+    } else return greska(upotreba);
+
+    /* Izvestavanje o uocenoj gresci */
+    if (error) return EXIT_FAILURE;
 
     /* Lepo formatiranje novog koda */
     std::ostringstream buffer;
@@ -169,7 +181,7 @@ bool MTKTransformer::izmeniKod(Izmena izmena) {
     if (RewriteBuf) {
         /* Otvaranje izlazne datoteke */
         std::ofstream izlaz(nova);
-        if (!izlaz) greska(nemaDatoteke);
+        if (!izlaz) return greska(nemaDatoteke);
 
         /* Upisivanje rezultata */
         izlaz << std::string(RewriteBuf->begin(), RewriteBuf->end());
@@ -181,8 +193,7 @@ bool MTKTransformer::izmeniKod(Izmena izmena) {
         /* Otvaranje ulazne i izlazne datoteke */
         std::ifstream ulaz(stara);
         std::ofstream izlaz(nova);
-        if (!ulaz || !izlaz)
-            greska(nemaDatoteke);
+        if (!ulaz || !izlaz) return greska(nemaDatoteke);
 
         /* Prepisivanje ulaza na izlaz */
         std::ostringstream buffer;
@@ -208,13 +219,15 @@ void MTKTransformer::proveri() const {
         = std::system(buffer.str().c_str());
 
     /* Prijava greske ako nesto nije u redu */
-    if (!WIFEXITED(ret) || WEXITSTATUS(ret))
-        greska(losUlaz);
+    if (!WIFEXITED(ret) || WEXITSTATUS(ret)) greska(losUlaz, true);
 }
 
 /* Primena zeljene izmene koda; sustinski je
  * boilerplate (sablonski) kod za rad sa AST */
 void MTKTransformer::primeni(Izmena izmena) {
+    /* Odustajanje u slucaju greske */
+    if (error) return;
+
     /* Parsiranje dokle god ima promena */
     for(;;) {
         /* Pravljenje upravljaca datoteka */
@@ -238,7 +251,7 @@ void MTKTransformer::primeni(Izmena izmena) {
 
         /* Citanje prosledjenog fajla */
         const auto FileInOpt = FileMgr.getFile(stara);
-        if (!FileInOpt) greska(nemaDatoteke);
+        if (!FileInOpt) { greska(nemaDatoteke); return; }
         const auto FileIn = FileInOpt.get();
 
         /* Postavljanje prosledjenog fajla za ulazni */
@@ -256,7 +269,7 @@ void MTKTransformer::primeni(Izmena izmena) {
         delete TheConsumer;
 
         /* Potencijalne izmene koda */
-        if (izmeniKod(izmena)) break;
+        if (izmeniKod(izmena)) return;
 
         /* Zamena starog fajla */
         stara = nova;
@@ -274,7 +287,7 @@ void MTKTransformer::primeni(Izmena izmena) {
             izmena == Izmena::Rek2Iter ||
             izmena == Izmena::FinIter ||
             izmena == Izmena::CodeImput)
-            break;
+            return;
     }
 }
 

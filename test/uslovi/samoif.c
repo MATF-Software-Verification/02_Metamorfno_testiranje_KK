@@ -40,15 +40,15 @@ int main() {
           }
           break;
         }
-        if (cond != 3 && cond != 4) {
-          int cond2 = k - 1;
+        if (cond != 3 && cond != 4 && cond != 6) {
+          int cond3 = k - 1;
           do {
-            if (cond2 == 4)
+            if (cond3 == 4)
               putchar('5');
           } while (0);
         }
 
-        if (cond != 4) {
+        if (cond != 4 && cond != 6) {
           {
             putchar('3');
             putchar('\n');
@@ -58,8 +58,16 @@ int main() {
             break;
           }
         }
-        putchar('4');
-        putchar('\n');
+        if (cond != 6) {
+          {
+            putchar('4');
+            putchar('\n');
+          }
+          {
+            cont = 1;
+            break;
+          }
+        }
       } while (0);
     }
 
@@ -74,6 +82,10 @@ int main() {
       break;
     case 2:
       break;
+    case 3:
+      continue;
+    case 4:
+      continue;
 
       {
         int cond0 = 10;
@@ -105,6 +117,26 @@ int main() {
     }
 
     if (cont0)
+      continue;
+  } while (0);
+
+  do {
+    int cont1 = 0;
+    {
+      int cond2 = 1;
+      do {
+        if (cond2 != 1) {
+          {
+            cont1 = 1;
+            break;
+          }
+          break;
+        }
+        return 1;
+      } while (0);
+    }
+
+    if (cont1)
       continue;
   } while (0);
 

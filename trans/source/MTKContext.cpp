@@ -22,7 +22,7 @@ void MTKContext::postaviDat(const std::string &d) {
 }
 
 /* Prijavljivanje greske u radu */
-void MTKContext::greska(const std::string &poruka) {
+int MTKContext::greska(const std::string &poruka, bool fatal) {
     llvm::errs() << poruka << '\n';
 
     /* Brisanje izlazne datoteke */
@@ -32,8 +32,11 @@ void MTKContext::greska(const std::string &poruka) {
         std::system(buffer.str().c_str());
     }
 
+    /* Pad kod fatalne greske */
+    if (fatal) exit(EXIT_FAILURE);
+
     /* Izlazak iz programa sa kodom greske */
-    exit(EXIT_FAILURE);
+    return EXIT_FAILURE;
 }
 
 /* Tekstualna reprezentacija naredbe */
@@ -154,7 +157,7 @@ std::string MTKContext::nadjiIme(const std::string &pocetno) const {
     /* Proba svih mogucih kombinacija */
     while (TheASTContext.Idents.find(ime)
            != TheASTContext.Idents.end()) {
-        if (i == ULLONG_MAX) greska(nemaImena);
+        if (i == ULLONG_MAX) greska(nemaImena, true);
         ime = pocetno + std::to_string(i++);
     }
 

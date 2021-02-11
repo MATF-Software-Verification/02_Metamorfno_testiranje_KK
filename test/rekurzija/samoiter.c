@@ -145,6 +145,14 @@ void test3() {
     return test2();
 }
 
+void test4();
+
+void test4() {
+  if (0)
+    ;
+  return;
+}
+
 int main() {
   viter();
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
@@ -203,6 +211,11 @@ int main() {
 
   printf("%d%d", ittrn(5, 0), ittrn2(6, 0));
   printf("%d%d\n", ittrn(7, 0), ittrn2(8, 0));
+
+  test1();
+  test2();
+  test3();
+  test4();
 
   return 0;
 }

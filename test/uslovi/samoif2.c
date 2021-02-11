@@ -46,9 +46,9 @@ int main() {
         break;
       }
       {
-        int cond6 = 0;
+        int cond7 = 0;
         do {
-          if (cond6 == 1) {
+          if (cond7 == 1) {
             { return 1; }
             break;
           }
@@ -75,15 +75,15 @@ int main() {
           }
           break;
         }
-        if (cond2 != 3 && cond2 != 4) {
-          int cond7 = k - 1;
+        if (cond2 != 3 && cond2 != 4 && cond2 != 6) {
+          int cond8 = k - 1;
           do {
-            if (cond7 == 4)
+            if (cond8 == 4)
               putchar('5');
           } while (0);
         }
 
-        if (cond2 != 4) {
+        if (cond2 != 4 && cond2 != 6) {
           {
             putchar('3');
             putchar('\n');
@@ -93,8 +93,16 @@ int main() {
             break;
           }
         }
-        putchar('4');
-        putchar('\n');
+        if (cond2 != 6) {
+          {
+            putchar('4');
+            putchar('\n');
+          }
+          {
+            cont = 1;
+            break;
+          }
+        }
       } while (0);
     }
 
@@ -109,6 +117,10 @@ int main() {
       break;
     case 2:
       break;
+    case 3:
+      continue;
+    case 4:
+      continue;
 
       {
         int cond3 = 10;
@@ -143,21 +155,41 @@ int main() {
       continue;
   } while (0);
 
+  do {
+    int cont1 = 0;
+    {
+      int cond5 = 1;
+      do {
+        if (cond5 != 1) {
+          {
+            cont1 = 1;
+            break;
+          }
+          break;
+        }
+        return 1;
+      } while (0);
+    }
+
+    if (cont1)
+      continue;
+  } while (0);
+
   for (; 0;) {
     {
       int br0 = 0;
       {
-        int cont1 = 0;
+        int cont2 = 0;
         {
-          int cond5 = 1;
+          int cond6 = 1;
           do {
-            if (cond5 == 1) {
+            if (cond6 == 1) {
               {
                 br0 = 1;
                 break;
               }
               {
-                cont1 = 1;
+                cont2 = 1;
                 break;
               }
               {
@@ -168,7 +200,7 @@ int main() {
           } while (0);
         }
 
-        if (cont1)
+        if (cont2)
           continue;
       }
 
