@@ -41,8 +41,11 @@ public:
     /* Prijavljivanje greske u radu */
     [[noreturn]] static void greska(const std::string &poruka);
 
+    /* Resetovanje statickih parametara */
+    static void resetuj();
+
     /* Obrada zeljene transformacije */
-    static int obradi(int argc, char *argv[]);
+    static int obradi(int argc, const char *argv[]);
 
 private:
     /* Datoteke koje se obradjuju */

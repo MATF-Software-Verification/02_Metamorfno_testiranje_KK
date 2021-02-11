@@ -46,15 +46,18 @@ public:
     /* Podatak o tome da li je bilo vise prolaza */
     static bool imaloPosla();
 
+    /* Staticki podatak da li je prvi prolaz */
+    static bool prviProlaz;
+
+    /* Staticki podatak da li je imalo posla */
+    static int posaoBroj;
+
 private:
     /* Privatno cuvanje tekuce funkcije */
     FunctionDecl *tekf;
 
     /* Privatno cuvanje posecenih izraza */
     std::unordered_set<DeclRefExpr *> izr;
-
-    /* Staticki podatak da li je prvi prolaz */
-    static bool prviProlaz;
 };
 
 #endif

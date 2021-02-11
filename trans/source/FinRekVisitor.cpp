@@ -36,6 +36,9 @@
 /* Staticki podatak da li je prvi prolaz */
 bool FinRekVisitor::prviProlaz = true;
 
+/* Staticki podatak da li je imalo posla */
+int FinRekVisitor::posaoBroj = 0;
+
 /* Virtuelni dekstruktor za brojanje prolaza */
 FinRekVisitor::~FinRekVisitor() {
     prviProlaz = false;
@@ -225,6 +228,5 @@ bool FinRekVisitor::TraverseFunctionDecl(FunctionDecl *f) {
 
 /* Podatak o tome da li je bilo vise prolaza */
 bool FinRekVisitor::imaloPosla() {
-    static auto pozivi = 0;
-    return pozivi++;
+    return posaoBroj++;
 }

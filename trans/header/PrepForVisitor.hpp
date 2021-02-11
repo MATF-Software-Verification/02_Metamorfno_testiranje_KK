@@ -39,15 +39,18 @@ public:
     /* Podatak o tome da li je bilo vise prolaza */
     static bool imaloPosla();
 
+    /* Staticki podatak da li je prvi prolaz */
+    static bool prviProlaz;
+
+    /* Staticki podatak da li je imalo posla */
+    static int posaoBroj;
+
 private:
     /* Privatno cuvanje steka petlji */
     std::stack<Stmt *> petlje;
 
     /* Privatno cuvanje sadrzanih deklaracija */
     std::unordered_set<std::string> dekls;
-
-    /* Staticki podatak da li je prvi prolaz */
-    static bool prviProlaz;
 };
 
 #endif

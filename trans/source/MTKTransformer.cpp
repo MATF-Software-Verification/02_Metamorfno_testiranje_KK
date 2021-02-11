@@ -63,8 +63,16 @@ void MTKTransformer::greska(const std::string &poruka) {
     MTKContext::greska(poruka);
 }
 
+/* Resetovanje statickih parametara */
+void MTKTransformer::resetuj() {
+    PrepForVisitor::prviProlaz = true;
+    FinRekVisitor::prviProlaz = true;
+    PrepForVisitor::posaoBroj = 0;
+    FinRekVisitor::posaoBroj = 0;
+}
+
 /* Obrada zeljene transformacije */
-int MTKTransformer::obradi(int argc, char *argv[]) {
+int MTKTransformer::obradi(int argc, const char *argv[]) {
     /* Prekid pogresno pokrenutog programa */
     if (argc != 4) greska(upotreba);
 

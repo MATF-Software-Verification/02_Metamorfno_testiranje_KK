@@ -22,6 +22,9 @@
 /* Staticki podatak da li je prvi prolaz */
 bool PrepForVisitor::prviProlaz = true;
 
+/* Staticki podatak da li je imalo posla */
+int PrepForVisitor::posaoBroj = 0;
+
 /* Virtuelni dekstruktor za brojanje prolaza */
 PrepForVisitor::~PrepForVisitor() {
     prviProlaz = false;
@@ -168,6 +171,5 @@ bool PrepForVisitor::TraverseForStmt(ForStmt *s) {
 
 /* Podatak o tome da li je bilo vise prolaza */
 bool PrepForVisitor::imaloPosla() {
-    static auto pozivi = 0;
-    return pozivi++;
+    return posaoBroj++;
 }
