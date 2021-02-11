@@ -23,6 +23,10 @@ private:
 /* Slotovi za konkretne testove */
 private Q_SLOTS:
     void petlje();
+    void odmotavanje();
+    void uslovi();
+    void rekurzija();
+    void umetanje();
 };
 
 /* Pozicioniranje u konstruktoru */
@@ -33,7 +37,8 @@ MTKTest::MTKTest() {
 /* Prevodjenje zadatog programa */
 void MTKTest::prevedi(const std::string &in,
                       const std::string &out) {
-    const auto prev = "clang-11 -O0 " + in;
+    const auto prev = "clang-11 -O0 " + in
+                      + " 2> /dev/null";
     std::system(prev.c_str());
 
     /* Cuvanje izlaza zadatog programa */
@@ -89,6 +94,73 @@ void MTKTest::petlje() {
     akcija("samodo.c", "samodo2.c", "do");
     akcija("samodo.c", "samofor2.c", "for");
     akcija("samodo.c", "samowhile2.c", "while");
+
+    /* Vracanje na pocetnu poziciju */
+    chdir("..");
+}
+
+/* Provera rada sa odmotavanjem */
+void MTKTest::odmotavanje() {
+    chdir("odmotavanje");
+
+    /* Prevodjenje ulaznog programa */
+    prevedi("jednostruke.c", "output.txt");
+
+    /* Prva iteracija tranformacija */
+    akcija("jednostruke.c", "bezpromene.c", "o0");
+    akcija("jednostruke.c", "trostruke.c", "o2");
+
+    /* Vracanje na pocetnu poziciju */
+    chdir("..");
+}
+
+/* Provera rada sa uslovima */
+void MTKTest::uslovi() {
+    chdir("uslovi");
+
+    /* Prevodjenje ulaznog programa */
+    prevedi("ifswitch.c", "output.txt");
+
+    /* Prva iteracija tranformacija */
+    akcija("ifswitch.c", "samoif.c", "if");
+    akcija("ifswitch.c", "samoswitch.c", "switch");
+
+    /* Druga iteracija tranformacija */
+    akcija("samoif.c", "samoswitch2.c", "switch");
+    akcija("samoswitch.c", "samoif2.c", "if");
+
+    /* Vracanje na pocetnu poziciju */
+    chdir("..");
+}
+
+/* Provera rada sa rekurzijom */
+void MTKTest::rekurzija() {
+    chdir("rekurzija");
+
+    /* Prevodjenje ulaznog programa */
+    prevedi("rekiter.c", "output.txt");
+
+    /* Prva iteracija tranformacija */
+    akcija("rekiter.c", "samoiter.c", "iter");
+    akcija("rekiter.c", "samorek.c", "rek");
+
+    /* Prva iteracija tranformacija */
+    akcija("samoiter.c", "samorek2.c", "rek");
+    akcija("samorek.c", "samoiter2.c", "iter");
+
+    /* Vracanje na pocetnu poziciju */
+    chdir("..");
+}
+
+/* Provera rada sa umetanjem */
+void MTKTest::umetanje() {
+    chdir("umetanje");
+
+    /* Prevodjenje ulaznog programa */
+    prevedi("normal.c", "output.txt");
+
+    /* Prva iteracija tranformacija */
+    akcija("normal.c", "bloated.c", "u3");
 
     /* Vracanje na pocetnu poziciju */
     chdir("..");
