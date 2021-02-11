@@ -41,9 +41,9 @@ int main() {
           break;
         }
         if (cond != 3 && cond != 4) {
-          int cond1 = k - 1;
+          int cond2 = k - 1;
           do {
-            if (cond1 == 4)
+            if (cond2 == 4)
               putchar('5');
           } while (0);
         }
@@ -83,6 +83,36 @@ int main() {
           return 1;
         } while (0);
       }
+    }
+  }
+
+  while (0) {
+    continue;
+    break;
+  }
+
+  do {
+    int cont0 = 0;
+    {
+      int cond1 = 1;
+      do {
+        {
+          cont0 = 1;
+          break;
+        }
+        break;
+      } while (0);
+    }
+
+    if (cont0)
+      continue;
+  } while (0);
+
+  for (; 0;) {
+    if (1) {
+      break;
+      continue;
+      break;
     }
   }
 

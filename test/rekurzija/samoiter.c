@@ -124,6 +124,27 @@ void hello(int i) {
     printf("hello\n");
 }
 
+void test1() {
+  while (0)
+    continue;
+
+  ;
+}
+
+void test2() {
+  while (!1)
+    continue;
+
+  ;
+}
+
+void test3() {
+  if (1)
+    ;
+  else
+    return test2();
+}
+
 int main() {
   viter();
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
@@ -155,6 +176,9 @@ int main() {
   for (; 1;)
   labela:
     break;
+
+  while (0)
+    goto labela;
 
   // rad sa funkcijama
   void (*f)(int) = &hello;

@@ -68,6 +68,27 @@ int main() {
       }
     }
   }
+  
+  while (0) {
+    continue;
+    break;
+  }
+  
+  do
+    switch (1) {
+    default:
+      continue;
+      break;
+    }
+  while (0);
+  
+  for (; 0;) {
+    if (1) {
+      break;
+      continue;
+      break;
+    }
+  }
 
   return 0;
 }

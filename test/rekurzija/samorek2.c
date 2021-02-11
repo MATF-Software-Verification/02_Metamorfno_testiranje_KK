@@ -226,7 +226,46 @@ void hello(int i) {
     return;
 }
 
-int petlja7(int *x, int *y, int *ret5) {
+int petlja7() {
+  if (0) {
+    return petlja7();
+    return petlja7();
+  }
+
+  return 0;
+}
+
+void test1() {
+  if (petlja7())
+    return;
+
+  ;
+}
+
+int petlja8() {
+  if (!1) {
+    return petlja8();
+    return petlja8();
+  }
+
+  return 0;
+}
+
+void test2() {
+  if (petlja8())
+    return;
+
+  ;
+}
+
+void test3() {
+  if (1)
+    ;
+  else
+    return test2();
+}
+
+int petlja9(int *x, int *y, int *ret5) {
   if ((*x) > 2) {
     {
       (*y)++;
@@ -234,55 +273,55 @@ int petlja7(int *x, int *y, int *ret5) {
       return 0;
       putchar('x');
     }
-    return petlja7(x, y, ret5);
+    return petlja9(x, y, ret5);
   }
 
   return 0;
 }
 
-int petlja8(int *x, int *y, int *ret6) {
+int petlja10(int *x, int *y, int *ret6) {
   if ((*x) > 2) {
     {
       int z = 3;
       (*x) = (*y) - z;
       putchar((*x) + '0');
-      return petlja8(x, y, ret6);
+      return petlja10(x, y, ret6);
       putchar('y');
     }
-    return petlja8(x, y, ret6);
+    return petlja10(x, y, ret6);
   }
 
   return 0;
 }
 
-int petlja9(int *ret7) {
+int petlja11(int *ret7) {
   if (1) {
     return 0;
-    return petlja9(ret7);
+    return petlja11(ret7);
   }
 
   return 0;
 }
 
-int petlja10(int *cond, int *ret8) {
+int petlja12(int *cond, int *ret8) {
   if ((*cond)) {
     {
       {
         int ret7;
-        if (petlja9(&ret7)) {
+        if (petlja11(&ret7)) {
           (*ret8) = ret7;
           return 1;
         }
       }
       (*cond) = 0;
     }
-    return petlja10(cond, ret8);
+    return petlja12(cond, ret8);
   }
 
   return 0;
 }
 
-int petlja11(int *x, void (**f)(int), int *ret9) {
+int petlja13(int *x, void (**f)(int), int *ret9) {
   if ((*x) < 2) {
     {
       (*f)((*x) + 5);
@@ -290,19 +329,19 @@ int petlja11(int *x, void (**f)(int), int *ret9) {
       hello((*x) + 3);
       return 0;
     }
-    return petlja11(x, f, ret9);
+    return petlja13(x, f, ret9);
   }
 
   return 0;
 }
 
-int petlja12(int *ret10) {
+int petlja14(int *ret10) {
   if (0) {
     {
       double k = 1;
       k--;
     }
-    return petlja12(ret10);
+    return petlja14(ret10);
   }
 
   return 0;
@@ -316,13 +355,13 @@ int main() {
   int x = 3, y = x;
   {
     int ret5;
-    if (petlja7(&x, &y, &ret5))
+    if (petlja9(&x, &y, &ret5))
       return ret5;
   }
 
   {
     int ret6;
-    if (petlja8(&x, &y, &ret6))
+    if (petlja10(&x, &y, &ret6))
       return ret6;
   }
 
@@ -331,7 +370,7 @@ int main() {
     int cond = 1;
     {
       int ret8;
-      if (petlja10(&cond, &ret8))
+      if (petlja12(&cond, &ret8))
         return ret8;
     }
   }
@@ -341,11 +380,14 @@ int main() {
   labela:
     break;
 
+  while (0)
+    goto labela;
+
   // rad sa funkcijama
   void (*f)(int) = &hello;
   {
     int ret9;
-    if (petlja11(&x, &f, &ret9))
+    if (petlja13(&x, &f, &ret9))
       return ret9;
   }
 
@@ -357,7 +399,7 @@ int main() {
 
     {
       int ret10;
-      if (petlja12(&ret10))
+      if (petlja14(&ret10))
         return ret10;
     }
   }

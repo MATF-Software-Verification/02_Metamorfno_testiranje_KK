@@ -30,8 +30,8 @@ int main() {
   printf("%d", x);
   putchar('\n');
 
-  while (0) {
-  }
+  do {
+  } while (0);
 
   for (; 0;)
     ;

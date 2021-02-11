@@ -95,7 +95,7 @@ int main() {
   printf("%d", x);
   putchar('\n');
 
-  while (0) {
+  do {
     {}
     if (!0)
       break;
@@ -103,7 +103,7 @@ int main() {
     if (!0)
       break;
     {}
-  }
+  } while (0);
 
   for (; 0;) {
     if (!0)

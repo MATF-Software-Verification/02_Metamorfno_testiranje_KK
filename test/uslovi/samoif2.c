@@ -46,9 +46,9 @@ int main() {
         break;
       }
       {
-        int cond4 = 0;
+        int cond6 = 0;
         do {
-          if (cond4 == 1) {
+          if (cond6 == 1) {
             { return 1; }
             break;
           }
@@ -76,9 +76,9 @@ int main() {
           break;
         }
         if (cond2 != 3 && cond2 != 4) {
-          int cond5 = k - 1;
+          int cond7 = k - 1;
           do {
-            if (cond5 == 4)
+            if (cond7 == 4)
               putchar('5');
           } while (0);
         }
@@ -118,6 +118,62 @@ int main() {
           return 1;
         } while (0);
       }
+    }
+  }
+
+  while (0) {
+    continue;
+    break;
+  }
+
+  do {
+    int cont0 = 0;
+    {
+      int cond4 = 1;
+      do {
+        {
+          cont0 = 1;
+          break;
+        }
+        break;
+      } while (0);
+    }
+
+    if (cont0)
+      continue;
+  } while (0);
+
+  for (; 0;) {
+    {
+      int br0 = 0;
+      {
+        int cont1 = 0;
+        {
+          int cond5 = 1;
+          do {
+            if (cond5 == 1) {
+              {
+                br0 = 1;
+                break;
+              }
+              {
+                cont1 = 1;
+                break;
+              }
+              {
+                br0 = 1;
+                break;
+              }
+            }
+          } while (0);
+        }
+
+        if (cont1)
+          continue;
+      }
+
+      if (br0)
+        break;
     }
   }
 

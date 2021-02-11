@@ -11,8 +11,8 @@ int main() {
     break;
   }
 
-  while (0) {
-  }
+  do {
+  } while (0);
 
   for (; 0;)
     ;

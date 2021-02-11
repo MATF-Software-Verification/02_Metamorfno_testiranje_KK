@@ -89,5 +89,40 @@ int main() {
     }
   }
 
+  while (0) {
+    continue;
+    break;
+  }
+
+  do
+    switch (1) {
+    default:
+      continue;
+      break;
+    }
+  while (0);
+
+  for (; 0;) {
+    {
+      int br0 = 0;
+      switch (1) {
+      case 1: {
+        {
+          br0 = 1;
+          break;
+        }
+        continue;
+        {
+          br0 = 1;
+          break;
+        }
+      }
+      }
+
+      if (br0)
+        break;
+    }
+  }
+
   return 0;
 }

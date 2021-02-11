@@ -88,6 +88,27 @@ void hello(int i) {
     printf("hello\n");
 }
 
+void test1() {
+  if (0)
+    return test1();
+  else
+    ;
+}
+
+void test2() {
+  if (1)
+    ;
+  else
+    return test2();
+}
+
+void test3() {
+  if (1)
+    ;
+  else
+    return test2();
+}
+
 int main() {
   viter();
   printf("%d%d", itenr(1, 1), itenr2(2, 2));
@@ -119,6 +140,9 @@ int main() {
   for (; 1;)
   labela:
     break;
+  
+  while (0)
+    goto labela;
 
   // rad sa funkcijama
   void (*f)(int) = &hello;

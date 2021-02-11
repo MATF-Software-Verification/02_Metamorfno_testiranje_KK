@@ -76,9 +76,9 @@ int main() {
         }
         switch ((int)(cond != 3 && cond != 4)) {
         case 1: {
-          int cond1 = k - 1;
+          int cond2 = k - 1;
           do {
-            switch ((int)(cond1 == 4)) {
+            switch ((int)(cond2 == 4)) {
             case 1:
               putchar('5');
             }
@@ -138,6 +138,53 @@ int main() {
           return 1;
         } while (0);
       }
+    }
+  }
+
+  while (0) {
+    continue;
+    break;
+  }
+
+  do {
+    int cont0 = 0;
+    {
+      int cond1 = 1;
+      do {
+        {
+          cont0 = 1;
+          break;
+        }
+        break;
+      } while (0);
+    }
+
+    switch (cont0) {
+    case 1:
+      continue;
+    }
+
+  } while (0);
+
+  for (; 0;) {
+    {
+      int br2 = 0;
+      switch (1) {
+      case 1: {
+        {
+          br2 = 1;
+          break;
+        }
+        continue;
+        {
+          br2 = 1;
+          break;
+        }
+      }
+      }
+
+      if (br2)
+        break;
     }
   }
 

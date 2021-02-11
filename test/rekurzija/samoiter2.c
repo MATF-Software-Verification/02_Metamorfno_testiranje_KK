@@ -136,6 +136,27 @@ void hello(int i) {
     return;
 }
 
+void test1() {
+  while (0)
+    continue;
+
+  ;
+}
+
+void test2() {
+  while (!1)
+    continue;
+
+  ;
+}
+
+void test3() {
+  if (1)
+    ;
+  else
+    return test2();
+}
+
 int petlja0(int *x, int *y, int *ret) {
   while ((*x) > 2) {
     {
@@ -291,6 +312,9 @@ int main() {
   while (1)
   labela:
     break;
+
+  while (0)
+    goto labela;
 
   // rad sa funkcijama
   void (*f)(int) = &hello;
