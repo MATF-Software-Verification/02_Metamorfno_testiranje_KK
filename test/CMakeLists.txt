@@ -7,8 +7,11 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/cmake/modules"
 )
 
-set(CMAKE_C_COMPILER clang-11)
-set(CMAKE_CXX_COMPILER clang++-11)
+set(CMAKE_C_COMPILER gcc-10)
+set(CMAKE_CXX_COMPILER g++-10)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 
 execute_process(
   COMMAND llvm-config-11 --cxxflags
