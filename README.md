@@ -12,7 +12,7 @@ Polazna tačka za način transformacije petlji – [autorski](https://github.com
 ## Podešavanje :memo:
 Primer podešavanja zavisnosti za Ubuntu:
 ```
-sudo apt install clang-11 libclang-11-dev llvm-11-dev
+sudo apt install clang-11 libclang-11-dev llvm-11-dev libqt5test5
 ```
 Korišćeni sistem izgradnje je [CMake](https://cmake.org/).
 
