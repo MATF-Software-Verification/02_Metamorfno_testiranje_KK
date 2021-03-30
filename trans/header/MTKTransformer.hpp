@@ -32,6 +32,7 @@ public:
         Iter2Rek,
         FinRek,
         PrepIf,
+        PrepIff,
         PrepSwitch,
         If2Switch,
         Switch2If,

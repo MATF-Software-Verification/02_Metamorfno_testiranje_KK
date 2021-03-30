@@ -113,7 +113,7 @@ void MTKContext::dodajIspred(const Stmt *const stari,
 /* Prednja tekstualna dopuna koda */
 void MTKContext::dodajIspred(const Stmt *const stari,
                              const Stmt *const novi) const {
-    return dodajIspred(stari, stampaj(novi));
+    return dodajIspred(stari, novi ? stampaj(novi) : "");
 }
 
 /* Zadnja tekstualna dopuna koda */

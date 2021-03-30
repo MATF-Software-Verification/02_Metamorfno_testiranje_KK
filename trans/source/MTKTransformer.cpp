@@ -10,6 +10,7 @@
 #include "Iter2RekVisitor.hpp"
 #include "FinRekVisitor.hpp"
 #include "PrepIfVisitor.hpp"
+#include "PrepIffVisitor.hpp"
 #include "PrepSwitchVisitor.hpp"
 #include "If2SwitchVisitor.hpp"
 #include "Switch2IfVisitor.hpp"
@@ -116,6 +117,7 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
         trans.primeni(Izmena::PrepSwitch);
         trans.primeni(Izmena::Switch2If);
     } else if (radnja == "switch") {
+        trans.primeni(Izmena::PrepIff);
         trans.primeni(Izmena::PrepIf);
         trans.primeni(Izmena::If2Switch);
     } else if (radnja == "iter") {
@@ -163,6 +165,7 @@ ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     case Izmena::Iter2Rek: return new MTKConsumer<Iter2RekVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::FinRek: return new MTKConsumer<FinRekVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::PrepIf: return new MTKConsumer<PrepIfVisitor>(*TheRewriter, *TheASTContext);
+    case Izmena::PrepIff: return new MTKConsumer<PrepIffVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::PrepSwitch: return new MTKConsumer<PrepSwitchVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::If2Switch: return new MTKConsumer<If2SwitchVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::Switch2If: return new MTKConsumer<Switch2IfVisitor>(*TheRewriter, *TheASTContext);

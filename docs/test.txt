@@ -4,5 +4,5 @@ Zavisnosti za test svitu, pored onih za sam transformator, jesu g++-10 i libqt5t
 
 U okviru klase MTKTest implementirana je cela svita testova. Redom je testirana svaka grupa transformacija: izmene i odmotavanje petlji, izmene uslova, izmene rekurzije, imputacija koda. Na kraju je proveren rad sa raznim tipovima neispravnog izlaza.
 
-Primenjena je tehnika testiranja bele kutije, koja uzima u obzir različite putanje izvršavanja, pri čemu je postignuta faktički potpuna (~100%) pokrivenost linija koda i funkcija, kao i sasvim zadovoljavajuća visoka (91%) pokrivenost grana.
+Primenjena je tehnika testiranja bele kutije, koja uzima u obzir različite putanje izvršavanja, pri čemu je postignuta faktički potpuna (~100%) pokrivenost linija koda i funkcija, kao i sasvim zadovoljavajuća visoka (>91%) pokrivenost grana.
 

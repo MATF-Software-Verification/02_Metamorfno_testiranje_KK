@@ -48,7 +48,7 @@ public:
 
     /* Prednja tekstualna dopuna koda */
     void dodajIspred(const Stmt *const stari,
-                     const Stmt *const novi) const;
+                     const Stmt *const novi = nullptr) const;
 
     /* Zadnja tekstualna dopuna koda */
     void dodajIza(const Stmt *const stari,

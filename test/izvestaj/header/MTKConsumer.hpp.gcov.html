@@ -37,11 +37,11 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-02-11 08:30:34</td>
+            <td class="headerValue">2021-03-30 19:00:29</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntry">48</td>
-            <td class="headerCovTableEntry">48</td>
+            <td class="headerCovTableEntry">51</td>
+            <td class="headerCovTableEntry">51</td>
             <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
@@ -89,8 +89,8 @@
 <a name="11"><span class="lineNum">      11 </span>                :            : public:</a>
 <a name="12"><span class="lineNum">      12 </span>                :            :     /* Konstruktor inicijalizuje posetioca</a>
 <a name="13"><span class="lineNum">      13 </span>                :            :      * prepisivacem i kontekstom parsiranja */</a>
-<a name="14"><span class="lineNum">      14 </span>                :<span class="lineCov">         93 :     MTKVisitor(Rewriter &amp;R, ASTContext &amp;A)</span></a>
-<a name="15"><span class="lineNum">      15 </span>                :<span class="lineCov">         93 :       : MTKContext(R, A) {}</span></a>
+<a name="14"><span class="lineNum">      14 </span>                :<span class="lineCov">         97 :     MTKVisitor(Rewriter &amp;R, ASTContext &amp;A)</span></a>
+<a name="15"><span class="lineNum">      15 </span>                :<span class="lineCov">         97 :       : MTKContext(R, A) {}</span></a>
 <a name="16"><span class="lineNum">      16 </span>                :            : };</a>
 <a name="17"><span class="lineNum">      17 </span>                :            : </a>
 <a name="18"><span class="lineNum">      18 </span>                :            : /* Klasa za obradu dobijenog AST stabla */</a>
@@ -99,14 +99,14 @@
 <a name="21"><span class="lineNum">      21 </span>                :            : public:</a>
 <a name="22"><span class="lineNum">      22 </span>                :            :     /* Konstruktor inicijalizuje posetioca</a>
 <a name="23"><span class="lineNum">      23 </span>                :            :      * prepisivacem i kontekstom parsiranja */</a>
-<a name="24"><span class="lineNum">      24 </span>                :<span class="lineCov">         93 :     MTKConsumer(Rewriter &amp;R, ASTContext &amp;A)</span></a>
-<a name="25"><span class="lineNum">      25 </span>                :<span class="lineCov">         93 :       : TheVisitor(R, A) {}</span></a>
+<a name="24"><span class="lineNum">      24 </span>                :<span class="lineCov">         97 :     MTKConsumer(Rewriter &amp;R, ASTContext &amp;A)</span></a>
+<a name="25"><span class="lineNum">      25 </span>                :<span class="lineCov">         97 :       : TheVisitor(R, A) {}</span></a>
 <a name="26"><span class="lineNum">      26 </span>                :            : </a>
 <a name="27"><span class="lineNum">      27 </span>                :            :     /* Svaka deklaracija obradjuje se zasebno */</a>
-<a name="28"><span class="lineNum">      28 </span>                :<span class="lineCov">        970 :     bool HandleTopLevelDecl(DeclGroupRef DR) override {</span></a>
-<a name="29"><span class="lineNum">      29 </span>        [<span class="branchCov" title="Branch 0 was taken 970 times"> + </span><span class="branchCov" title="Branch 1 was taken 970 times"> + </span>]:<span class="lineCov">       1940 :         for (auto x: DR)</span></a>
-<a name="30"><span class="lineNum">      30 </span>                :<span class="lineCov">        970 :             TheVisitor.TraverseDecl(x);</span></a>
-<a name="31"><span class="lineNum">      31 </span>                :<span class="lineCov">        970 :         return true;</span></a>
+<a name="28"><span class="lineNum">      28 </span>                :<span class="lineCov">        974 :     bool HandleTopLevelDecl(DeclGroupRef DR) override {</span></a>
+<a name="29"><span class="lineNum">      29 </span>        [<span class="branchCov" title="Branch 0 was taken 974 times"> + </span><span class="branchCov" title="Branch 1 was taken 974 times"> + </span>]:<span class="lineCov">       1948 :         for (auto x: DR)</span></a>
+<a name="30"><span class="lineNum">      30 </span>                :<span class="lineCov">        974 :             TheVisitor.TraverseDecl(x);</span></a>
+<a name="31"><span class="lineNum">      31 </span>                :<span class="lineCov">        974 :         return true;</span></a>
 <a name="32"><span class="lineNum">      32 </span>                :            :     }</a>
 <a name="33"><span class="lineNum">      33 </span>                :            : </a>
 <a name="34"><span class="lineNum">      34 </span>                :            : private:</a>
