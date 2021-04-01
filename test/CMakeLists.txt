@@ -70,6 +70,8 @@ add_executable(test main.cpp
                     ../trans/source/PrepForVisitor.cpp
                     ../trans/header/PrepIfVisitor.hpp
                     ../trans/source/PrepIfVisitor.cpp
+                    ../trans/header/PrepIffVisitor.hpp
+                    ../trans/source/PrepIffVisitor.cpp
                     ../trans/header/PrepSwitchVisitor.hpp
                     ../trans/source/PrepSwitchVisitor.cpp
                     ../trans/header/If2SwitchVisitor.hpp

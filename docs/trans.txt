@@ -18,7 +18,7 @@ Primer pokretanja (testiranja) transformatora:
 
 Na ovaj način će na osnovu koda jednostruke.c biti formiran kod trostruke.c u kome je telo svake petlje utrostručeno (dvaput odmotano).
 
-Treća implementirana transformacija je izmena uslova. Program transformiše sve uslove u C kodu u željeni tip – if-then-else, switch-case-default. Za te potrebe koriste se klase PrepIfVisitor, PrepSwitchVisitor, If2SwitchVisitor i Switch2IfVisitor. Prve dve pripremaju if i switch naredbe za dobru zamenu naredbi break i continue, dok ostale sprovode odgovarajuće transformacije. Tačne sheme izmena moguće je videti u svakom cpp fajlu.
+Treća implementirana transformacija je izmena uslova. Program transformiše sve uslove u C kodu u željeni tip – if-then-else, switch-case-default. Za te potrebe koriste se klase PrepIfVisitor, PrepIffVisitor, PrepSwitchVisitor, If2SwitchVisitor i Switch2IfVisitor. Prve tri pripremaju if i switch naredbe za dobru zamenu naredbi break i continue, dok preostale sprovode odgovarajuće transformacije. Tačne sheme izmena moguće je videti u svakom cpp fajlu.
 
 Primer pokretanja (testiranja) programa:
 ./trans <ulaz> <izlaz> <if|switch>

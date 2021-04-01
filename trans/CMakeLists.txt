@@ -59,6 +59,8 @@ add_executable(trans source/main.cpp
                      source/PrepForVisitor.cpp
                      header/PrepIfVisitor.hpp
                      source/PrepIfVisitor.cpp
+                     header/PrepIffVisitor.hpp
+                     source/PrepIffVisitor.cpp
                      header/PrepSwitchVisitor.hpp
                      source/PrepSwitchVisitor.cpp
                      header/If2SwitchVisitor.hpp
