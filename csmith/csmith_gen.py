@@ -62,7 +62,7 @@ def run_csmith():
     command = f'csmith {args_line}'
     subprocess.run(command, shell=True)
 
-    return output_filename
+    return output_filename, seed
 
 def replace_csmith_include(output_filename, csmith_include):
     """
@@ -92,7 +92,8 @@ def test_generated_c_code(output_filename):
     In `[seed].checksum.txt` is program output.
     """
     compiled_file_name = 'csmith.out'
-    compile_command = f'gcc {output_filename} -o {compiled_file_name}'
+    # Option '-w' disables all warnings
+    compile_command = f'gcc {output_filename} -o {compiled_file_name} -w'
     subprocess.run(compile_command, shell=True)
 
     run_commad = f'./{compiled_file_name}'
@@ -119,11 +120,14 @@ def test_generated_c_code(output_filename):
 def run():
     passed_test = False
 
+    seed = None
     while not passed_test:
         csmith_include = get_csmith_include()
-        output_filename = run_csmith()
+        output_filename, seed = run_csmith()
         replace_csmith_include(output_filename, csmith_include)
         passed_test = test_generated_c_code(output_filename)
+
+    return seed
 
 if __name__ == '__main__':
     run()

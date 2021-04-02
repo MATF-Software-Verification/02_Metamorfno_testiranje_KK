@@ -1,2 +1,6 @@
 **/build*
 **/*.user
+
+**/storage*
+**/platform.info*
+**/__pycache__*
