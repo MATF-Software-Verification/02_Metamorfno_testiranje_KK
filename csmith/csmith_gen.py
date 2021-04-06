@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import subprocess
 import time
@@ -71,17 +72,22 @@ def replace_csmith_include(output_filename, csmith_include):
     """
     result_lines = []
 
-    # Copying all lines except include csmith line
     with open(output_filename, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            if line.strip() == '#include "csmith.h"':
-                result_lines.append(f'#include "{csmith_include}"')
-            else:
-                result_lines.append(line)
+        code = f.read()
+
+    # Tuning include path and fixed-width types
+    code = re.sub(r'#include "csmith.h"', f'#include "{csmith_include}"', code)
+    code = re.sub(r'([(), ])int8_t([(), ])', r'\1signed char\2', code)
+    code = re.sub(r'([(), ])int16_t([(), ])', r'\1short\2', code)
+    code = re.sub(r'([(), ])int32_t([(), ])', r'\1long\2', code)
+    code = re.sub(r'([(), ])int64_t([(), ])', r'\1long long\2', code)
+    code = re.sub(r'([(), ])uint8_t([(), ])', r'\1unsigned char\2', code)
+    code = re.sub(r'([(), ])uint16_t([(), ])', r'\1unsigned short\2', code)
+    code = re.sub(r'([(), ])uint32_t([(), ])', r'\1unsigned long\2', code)
+    code = re.sub(r'([(), ])uint64_t([(), ])', r'\1unsigned long long\2', code)
 
     with open(output_filename, 'w') as f:
-        f.write('\n'.join(result_lines))
+        f.write(code)
 
 def test_generated_c_code(output_filename):
     """
@@ -131,4 +137,4 @@ def run():
 
 if __name__ == '__main__':
     run()
-    
+

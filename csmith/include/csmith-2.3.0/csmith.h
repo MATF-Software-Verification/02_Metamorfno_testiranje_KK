@@ -76,7 +76,7 @@ crc32_byte (uint8_t b) {
 
 #if defined(__SPLAT__) || defined(NO_LONGLONG)
 static void 
-crc32_8bytes (uint32_t val)
+crc32_8bytes (unsigned long val)
 {
 	crc32_byte ((val>>0) & 0xff);
 	crc32_byte ((val>>8) & 0xff);
@@ -85,7 +85,7 @@ crc32_8bytes (uint32_t val)
 }
 
 static void 
-transparent_crc (uint32_t val, char* vname, int flag)
+transparent_crc (unsigned long val, char* vname, int flag)
 {
 	crc32_8bytes(val);
 	if (flag) {
@@ -94,7 +94,7 @@ transparent_crc (uint32_t val, char* vname, int flag)
 }
 #else
 static void 
-crc32_8bytes (uint64_t val)
+crc32_8bytes (unsigned long long val)
 {
 	crc32_byte ((val>>0) & 0xff);
 	crc32_byte ((val>>8) & 0xff);
@@ -107,7 +107,7 @@ crc32_8bytes (uint64_t val)
 }
 
 static void 
-transparent_crc (uint64_t val, char* vname, int flag)
+transparent_crc (unsigned long long val, char* vname, int flag)
 {
 	crc32_8bytes(val);
 	if (flag) {
