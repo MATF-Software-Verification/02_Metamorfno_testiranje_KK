@@ -4,6 +4,7 @@ import sys
 import time
 import random
 import signal
+import subprocess
 
 class Timeout:
 
@@ -124,7 +125,7 @@ def test_generated_c_code(output_filename):
     checksum_file = filename + '.checksum.txt'
     with Timeout(seconds=MAX_RUN_DURATION, error_message='JobX took too much time'):
         try:
-            os.system(f'{run_command} > {checksum_file}')
+            subprocess.run(f'{run_command} > {checksum_file}', shell=True)
         except TimeoutError:
             print('[Csmith-gen]: Generated program timed out...')
             # Removing files from dumped program
