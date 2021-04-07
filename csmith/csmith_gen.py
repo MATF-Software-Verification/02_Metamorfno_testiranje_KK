@@ -46,7 +46,7 @@ def get_csmith_include():
     csmith_include = f'{csmith_relative_path}/{csmith_include_file}'
     return csmith_include
 
-def run_csmith():
+def run_csmith(seed):
     """
     Generates random C file using CSmith tool.
 
@@ -60,7 +60,9 @@ def run_csmith():
         assert len(args) > seed_index, 'Missing seed number after "-o" option!'
         seed = int(args[seed_index])
     except ValueError:
-        seed = random.randrange(sys.maxsize)
+        # If custom seed is given...
+        if seed is None:
+            seed = random.randrange(sys.maxsize)
         args.append('-s')
         args.append(str(seed))
 
@@ -140,13 +142,12 @@ def test_generated_c_code(output_filename):
     os.remove(compiled_file_name)
     return True
 
-def run():
+def run(seed=None):
     passed_test = False
 
-    seed = None
     while not passed_test:
         csmith_include = get_csmith_include()
-        output_filename, seed = run_csmith()
+        output_filename, seed = run_csmith(seed)
         replace_csmith_include(output_filename, csmith_include)
         passed_test = test_generated_c_code(output_filename)
 

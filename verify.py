@@ -4,8 +4,20 @@ import shutil
 import sys
 import filecmp
 from pathlib import Path
+import random
 
-MAX_ITERATION = 10
+MAX_ITERATION = 1
+
+def get_next_transformation(n=10):
+    # transformacije koje trenutno ne rade 'switch', 'rek', 'u', 'o'
+    transformations = ['do', 'while', 'for', 'if', 'iter']
+    for _ in range(n):
+        t = random.choice(transformations)
+        if t in ('o', 'u'):
+            r = random.randrange(5)
+            t = f'{t}{r}'
+        yield t
+
 
 class Transformator:
     """
@@ -57,8 +69,12 @@ class Transformator:
 
         # 1
         self._trace('Transforming generated C program!', verbosity=1)
-        transform_command = f'./{trans_path} {c_file} {c_transformed_file} do'
-        os.system(transform_command)
+        for transformation in get_next_transformation():
+            self._trace(f'Next transformation is "{transformation}"', verbosity=1)
+            transform_command = f'./{trans_path} {c_file} tmp.c {transformation}'
+            os.system(transform_command)
+            os.rename('tmp.c', c_file)
+        os.rename(c_file, c_transformed_file)
 
         # 2
         # Option '-w' disables all warnings
@@ -129,7 +145,7 @@ def run():
 
     iteration = 1
     while iteration <= MAX_ITERATION:
-        print(f'[verify-global]: Iteration {iteration}:')
+        trace(f'Iteration {iteration}:')
         try:
             trace('Generating c program...')
             seed = csmith_gen.run()
