@@ -6,7 +6,25 @@ import time
 import random
 import copy
 
-MAX_RUN_DURATION = 3
+import signal
+
+class Timeout:
+
+    def __init__(self, seconds=1, error_message='TimeoutError'):
+        self.seconds = seconds
+        self.error_message = error_message
+
+    def handle_timeout(self, signum, frame):
+        raise TimeoutError(self.error_message)
+
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.handle_timeout)
+        signal.alarm(self.seconds)
+
+    def __exit__(self, type, value, traceback):
+        signal.alarm(0)
+
+MAX_RUN_DURATION = 5
 
 def get_csmith_include():
     """
@@ -102,23 +120,25 @@ def test_generated_c_code(output_filename):
     compile_command = f'gcc {output_filename} -o {compiled_file_name} -w'
     subprocess.run(compile_command, shell=True)
 
-    run_commad = f'./{compiled_file_name}'
+    run_command = f'./{compiled_file_name}'
 
     filename = output_filename[:-2]
     warn_filename = filename + '.warn.txt'
     checksum_filename = filename + '.checksum.txt'
     with open(checksum_filename, 'w') as checksum_file: 
-        poll = subprocess.Popen(run_commad, shell=True, stdout=checksum_file)
+        with Timeout(seconds=MAX_RUN_DURATION, error_message='JobX took too much time'):
+            try:
+                subprocess.run(run_command, shell=True, stdout=checksum_file)
+            except TimeoutError:
+                print('[Csmith-gen]: Generated program timed out...')
+                # Removing files from dumped program
+                if os.path.exists(output_filename):
+                    os.remove(output_filename)
+                if os.path.exists(warn_filename):
+                    os.remove(warn_filename)
+                return False
 
-        time.sleep(MAX_RUN_DURATION)
-        if poll is None:
-            poll.kill()
-
-            # Removing files from dumped program
-            os.remove(output_filename)
-            os.remove(warn_filename)
-            return False
-
+        print('[Csmith-gen]: New program is generated!')
         # cleanup
         os.remove(compiled_file_name)
         return True

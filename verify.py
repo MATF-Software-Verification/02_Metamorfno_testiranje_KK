@@ -25,7 +25,7 @@ class Transformator:
         """
         build_path = f'{self.path}/build'
         if not os.path.exists(build_path):
-            print('Compiling transformator library!')
+            print('[verify-transformator]: Compiling transformator library!')
             os.mkdir(build_path)
             owd = os.getcwd()
             os.chdir(build_path)
@@ -52,11 +52,11 @@ class Transformator:
         trans_path = f'{self.path}/build/trans'
 
         # 1
-        # Option '-w' disables all warnings
         transform_command = f'./{trans_path} {c_file} {c_transformed_file} do'
         subprocess.run(transform_command, shell=True)
 
         # 2
+        # Option '-w' disables all warnings
         compile_command = f'gcc {c_transformed_file} -o {self.compiled_program_name} -w'
         subprocess.run(compile_command, shell=True)
 
@@ -119,27 +119,27 @@ def run():
 
     iteration = 1
     while iteration <= MAX_ITERATION:
-        print(f'Iteration {iteration}:')
+        print(f'[verify-global]: Iteration {iteration}:')
         try:
-            print('\tGenerating c program...')
+            print('[verify-global]: Generating c program...')
             seed = csmith_gen.run()
             if not os.path.exists(f'{storage_path}/{seed}'):
-                print('\tTransforming c program...')
+                print('[verify-global]: Transforming c program...')
                 transformator.transform(seed)
-                print('\tComparing checksums...')
+                print('[verify-global]: Comparing checksums...')
                 passed_test = verify(seed)
                 if not passed_test:
-                    print('\tTest failed :(')
-                    print('\tSaving test info...')
+                    print('[verify-global]: Test failed :(')
+                    print('[verify-global]: Saving test info...')
                     save_test_info(storage_path, seed)
                 else:
-                    print('\tTest Passed :)')
+                    print('[verify-global]: Test Passed :)')
 
                 iteration += 1
             else:
                 print('Test seed already exists. Skipping...')
 
-            print('\tDone!', end='\n\n')
+            print('[verify-global]: Done!', end='\n\n')
         finally:
             cleanup(seed, transformator)
 
