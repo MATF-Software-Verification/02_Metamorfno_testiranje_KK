@@ -121,24 +121,23 @@ def test_generated_c_code(output_filename):
 
     filename = output_filename[:-2]
     warn_filename = filename + '.warn.txt'
-    checksum_filename = filename + '.checksum.txt'
-    with open(checksum_filename, 'w') as checksum_file: 
-        with Timeout(seconds=MAX_RUN_DURATION, error_message='JobX took too much time'):
-            try:
-                os.system(f'{run_command} > {checksum_file}')
-            except TimeoutError:
-                print('[Csmith-gen]: Generated program timed out...')
-                # Removing files from dumped program
-                if os.path.exists(output_filename):
-                    os.remove(output_filename)
-                if os.path.exists(warn_filename):
-                    os.remove(warn_filename)
-                return False
+    checksum_file = filename + '.checksum.txt'
+    with Timeout(seconds=MAX_RUN_DURATION, error_message='JobX took too much time'):
+        try:
+            os.system(f'{run_command} > {checksum_file}')
+        except TimeoutError:
+            print('[Csmith-gen]: Generated program timed out...')
+            # Removing files from dumped program
+            if os.path.exists(output_filename):
+                os.remove(output_filename)
+            if os.path.exists(warn_filename):
+                os.remove(warn_filename)
+            return False
 
-        print('[Csmith-gen]: New program is generated!')
-        # cleanup
-        os.remove(compiled_file_name)
-        return True
+    print('[Csmith-gen]: New program is generated!')
+    # cleanup
+    os.remove(compiled_file_name)
+    return True
 
 def run():
     passed_test = False
