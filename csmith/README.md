@@ -42,5 +42,6 @@ Ako se kompilacija pokreće iz direktorijuma gde se nalazi ovaj README.md, onda 
 - Nameštanje promenljive okruženja koja zauvek važi: 
     * `vim ~/.profile` (ili bilo koji editor)
     * Na dnu datoteke napisati dodati `export CSMITH_PATH=[DOBIJENA_PUTANJA]`
+    * `vim ~/.bashrc` (isto kao za `~/.profile`)
     * Ako koristimo `zsh`, onda treba isto da uradimo i za `vim ~/.zprofile`
 
