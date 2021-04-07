@@ -1,7 +1,6 @@
 from csmith import csmith_gen
 import os
 import shutil
-import subprocess
 import sys
 import filecmp
 from pathlib import Path
@@ -31,9 +30,9 @@ class Transformator:
             os.chdir(build_path)
 
             build_command = 'cmake -G "Unix Makefiles" ..'
-            subprocess.run(build_command, shell=True)
+            os.system(build_command)
 
-            subprocess.run('make', shell=True)
+            os.system('make')
 
             os.chdir(owd)
 
@@ -53,17 +52,17 @@ class Transformator:
 
         # 1
         transform_command = f'./{trans_path} {c_file} {c_transformed_file} do'
-        subprocess.run(transform_command, shell=True)
+        os.system(transform_command)
 
         # 2
         # Option '-w' disables all warnings
         compile_command = f'gcc {c_transformed_file} -o {self.compiled_program_name} -w'
-        subprocess.run(compile_command, shell=True)
+        os.system(compile_command)
 
         # 3
         output_file = f'{seed}.output.txt'
         run_command = f'./{self.compiled_program_name} > {output_file}'
-        subprocess.run(run_command, shell=True)
+        os.system(run_command)
 
     def cleanup(self):
         """
@@ -147,3 +146,4 @@ def run():
 
 if __name__ == '__main__':
     run()
+
