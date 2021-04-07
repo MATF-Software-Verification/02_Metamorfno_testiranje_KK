@@ -7,7 +7,10 @@ import signal
 import subprocess
 
 class Timeout:
-
+    """
+    Helper Class that stops program execution after X seconds if it has not finished.
+    Used to filter programs with no lower chance of infinite loop (they do not last too long).
+    """
     def __init__(self, seconds=1, error_message='TimeoutError'):
         self.seconds = seconds
         self.error_message = error_message
@@ -23,6 +26,9 @@ class Timeout:
         signal.alarm(0)
 
 MAX_RUN_DURATION = 5
+
+def trace(content: str, *args, **kwargs):
+    print(f'[csmith-gen]: {content}', *args, **kwargs)
 
 def get_csmith_include():
     """
@@ -65,6 +71,8 @@ def run_csmith(seed):
             seed = random.randrange(sys.maxsize)
         args.append('-s')
         args.append(str(seed))
+
+    trace(f'Program seed is {seed}.')
 
     # if no output filename is chosen with `-o` option then name is same as seed number
     try:
@@ -129,7 +137,7 @@ def test_generated_c_code(output_filename):
         try:
             subprocess.run(f'{run_command} > {checksum_file}', shell=True)
         except TimeoutError:
-            print('[Csmith-gen]: Generated program timed out...')
+            trace('Generated program timed out...')
             # Removing files from dumped program
             if os.path.exists(output_filename):
                 os.remove(output_filename)
@@ -137,7 +145,7 @@ def test_generated_c_code(output_filename):
                 os.remove(warn_filename)
             return False
 
-    print('[Csmith-gen]: New program is generated!')
+    trace('New program is generated!')
     # cleanup
     os.remove(compiled_file_name)
     return True

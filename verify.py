@@ -6,9 +6,12 @@ import filecmp
 from pathlib import Path
 import random
 
-MAX_ITERATION = 1
+MAX_ITERATION = 3
 
 def get_next_transformation(n=10):
+    """
+    Generates random sequence of transformations.
+    """
     # transformacije koje trenutno ne rade 'switch', 'rek', 'u', 'o'
     transformations = ['do', 'while', 'for', 'if', 'iter']
     for _ in range(n):
@@ -69,12 +72,14 @@ class Transformator:
 
         # 1
         self._trace('Transforming generated C program!', verbosity=1)
-        for transformation in get_next_transformation():
-            self._trace(f'Next transformation is "{transformation}"', verbosity=1)
-            transform_command = f'./{trans_path} {c_file} tmp.c {transformation}'
-            os.system(transform_command)
-            os.rename('tmp.c', c_file)
-        os.rename(c_file, c_transformed_file)
+        with open(f'{seed}.trans.sequence.txt', 'w') as tseq_file:
+            for transformation in get_next_transformation():
+                tseq_file.write(f'{transformation}\n')
+                self._trace(f'Next transformation is "{transformation}".', verbosity=1)
+                transform_command = f'./{trans_path} {c_file} tmp.c {transformation}'
+                os.system(transform_command)
+                os.rename('tmp.c', c_file)
+            os.rename(c_file, c_transformed_file)
 
         # 2
         # Option '-w' disables all warnings
@@ -123,6 +128,7 @@ def rename_files(seed, save_dir):
     os.rename(f'{save_dir}/{seed}.checksum.txt', f'{save_dir}/expected_output.txt')
     os.rename(f'{save_dir}/{seed}.output.txt', f'{save_dir}/result_output.txt')
     os.rename(f'{save_dir}/{seed}.transform.c', f'{save_dir}/transformed.c')
+    os.rename(f'{save_dir}/{seed}.trans.sequence.txt', f'{save_dir}/sequence.txt')
 
 def save_test_info(storage_path, seed):
     """
