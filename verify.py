@@ -12,9 +12,10 @@ class Transformator:
     """
     Transformations wrapper.
     """
-    def __init__(self, cpp_trans_path: str):
+    def __init__(self, cpp_trans_path: str, verbosity: int = 1):
         self.path = cpp_trans_path
         self.compiled_program_name = 'run.out'
+        self.verbosity = verbosity
 
         self._initialize()
 
@@ -25,7 +26,7 @@ class Transformator:
         """
         build_path = f'{self.path}/build'
         if not os.path.exists(build_path):
-            print('[verify-transformator]: Compiling transformator library!')
+            self._trace('Compiling transformator library!')
             os.mkdir(build_path)
             owd = os.getcwd()
             os.chdir(build_path)
@@ -36,6 +37,10 @@ class Transformator:
             subprocess.run('make', shell=True)
 
             os.chdir(owd)
+
+    def _trace(self, content: str, verbosity: int = 0, *args, **kwargs):
+        if verbosity <= self.verbosity:
+            print(f'[verify-transformator]: {content}', *args, **kwargs)
 
     def transform(self, seed):
         """
@@ -52,15 +57,18 @@ class Transformator:
         trans_path = f'{self.path}/build/trans'
 
         # 1
+        self._trace('Transforming generated C program!', verbosity=1)
         transform_command = f'./{trans_path} {c_file} {c_transformed_file} do'
         subprocess.run(transform_command, shell=True)
 
         # 2
         # Option '-w' disables all warnings
+        self._trace('Compiling transformed generated C program!', verbosity=1)
         compile_command = f'gcc {c_transformed_file} -o {self.compiled_program_name} -w'
         subprocess.run(compile_command, shell=True)
 
         # 3
+        self._trace('Running transformed generated C program!', verbosity=1)
         output_file = f'{seed}.output.txt'
         run_command = f'./{self.compiled_program_name} > {output_file}'
         subprocess.run(run_command, shell=True)
@@ -71,6 +79,9 @@ class Transformator:
         """
         if os.path.exists(self.compiled_program_name):
             os.remove(self.compiled_program_name)
+
+def trace(content: str, *args, **kwargs):
+    print(f'[verify-global]: {content}', *args, **kwargs)
 
 def verify(seed):
     """
@@ -115,31 +126,31 @@ def run():
     if not os.path.exists(storage_path):
         os.mkdir(storage_path)
 
-    transformator = Transformator('trans')
+    transformator = Transformator('trans', verbosity=1)
 
     iteration = 1
     while iteration <= MAX_ITERATION:
         print(f'[verify-global]: Iteration {iteration}:')
         try:
-            print('[verify-global]: Generating c program...')
+            trace('Generating c program...')
             seed = csmith_gen.run()
             if not os.path.exists(f'{storage_path}/{seed}'):
-                print('[verify-global]: Transforming c program...')
+                trace('Transforming c program...')
                 transformator.transform(seed)
-                print('[verify-global]: Comparing checksums...')
+                trace('Comparing checksums...')
                 passed_test = verify(seed)
                 if not passed_test:
-                    print('[verify-global]: Test failed :(')
-                    print('[verify-global]: Saving test info...')
+                    trace('Test failed :(')
+                    trace('Saving test info...')
                     save_test_info(storage_path, seed)
                 else:
-                    print('[verify-global]: Test Passed :)')
+                    trace('Test Passed :)')
 
                 iteration += 1
             else:
                 print('Test seed already exists. Skipping...')
 
-            print('[verify-global]: Done!', end='\n\n')
+            trace('Done!', end='\n\n')
         finally:
             cleanup(seed, transformator)
 
