@@ -1,11 +1,8 @@
 import os
 import re
 import sys
-import subprocess
 import time
 import random
-import copy
-
 import signal
 
 class Timeout:
@@ -79,7 +76,7 @@ def run_csmith():
     # Creating random C program
     args_line = ' '.join(args)
     command = f'csmith {args_line}'
-    subprocess.run(command, shell=True)
+    os.system(command)
 
     return output_filename, seed
 
@@ -118,7 +115,7 @@ def test_generated_c_code(output_filename):
     compiled_file_name = 'csmith.out'
     # Option '-w' disables all warnings
     compile_command = f'gcc {output_filename} -o {compiled_file_name} -w'
-    subprocess.run(compile_command, shell=True)
+    os.system(compile_command)
 
     run_command = f'./{compiled_file_name}'
 
@@ -128,7 +125,7 @@ def test_generated_c_code(output_filename):
     with open(checksum_filename, 'w') as checksum_file: 
         with Timeout(seconds=MAX_RUN_DURATION, error_message='JobX took too much time'):
             try:
-                subprocess.run(run_command, shell=True, stdout=checksum_file)
+                os.system(f'{run_command} > {checksum_file}')
             except TimeoutError:
                 print('[Csmith-gen]: Generated program timed out...')
                 # Removing files from dumped program
