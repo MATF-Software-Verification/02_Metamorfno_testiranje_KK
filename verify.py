@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from csmith import csmith_gen
 import os
 import shutil
@@ -8,7 +10,7 @@ import random
 
 MAX_ITERATION = 3
 
-def get_next_transformation(n=10):
+def get_next_transformation(n=3):
     """
     Generates random sequence of transformations.
     """
@@ -16,18 +18,19 @@ def get_next_transformation(n=10):
     transformations = ['do', 'while', 'for', 'if', 'iter']
     for _ in range(n):
         t = random.choice(transformations)
-        if t in ('o', 'u'):
-            r = random.randrange(5)
+        if t == 'o':
+            r = random.randrange(3)
+            t = f'{t}{r}'
+        if t == 'u':
+            r = random.randrange(10, 100)
             t = f'{t}{r}'
         yield t
-
 
 class Transformator:
     """
     Transformations wrapper.
     """
-    def __init__(self, cpp_trans_path: str, verbosity: int = 1):
-        self.path = cpp_trans_path
+    def __init__(self, verbosity: int = 1):
         self.compiled_program_name = 'run.out'
         self.verbosity = verbosity
 
@@ -38,7 +41,7 @@ class Transformator:
         If transformations program is not compiled yet 
         then it compiles before future Transformator usage.
         """
-        build_path = f'{self.path}/build'
+        build_path = f'build'
         if not os.path.exists(build_path):
             self._trace('Compiling transformator library!')
             os.mkdir(build_path)
@@ -68,7 +71,7 @@ class Transformator:
         c_file = f'{seed}.c'
         c_transformed_file = f'{seed}.transform.c'
         checksum_file = f'{seed}.checksum.txt'
-        trans_path = f'{self.path}/build/trans'
+        trans_path = f'build/trans'
 
         # 1
         self._trace('Transforming generated C program!', verbosity=1)
@@ -147,7 +150,7 @@ def run():
     if not os.path.exists(storage_path):
         os.mkdir(storage_path)
 
-    transformator = Transformator('trans', verbosity=1)
+    transformator = Transformator(verbosity=1)
 
     iteration = 1
     while iteration <= MAX_ITERATION:

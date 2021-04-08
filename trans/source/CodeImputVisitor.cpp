@@ -25,9 +25,9 @@ unsigned long long CodeImputVisitor::n = 1;
 
 /* Staticki spisak datoteka za dodavanje */
 const char *CodeImputVisitor::dats[] = {
-    "../trans/umetanje/lagrneopt.txt",
-    "../trans/umetanje/undefined.txt",
-    "../trans/umetanje/lagrundef.txt"
+    "../test/umetanje/lagrneopt.txt",
+    "../test/umetanje/undefined.txt",
+    "../test/umetanje/lagrundef.txt"
 };
 
 /* Postavljanje broja umetanja */
@@ -48,7 +48,11 @@ bool CodeImputVisitor::VisitStmt(Stmt *s) {
     /* Pokusaj otvaranja datoteke */
     std::ifstream ulaz(dat);
     if (!ulaz) {
-        dat = dat.substr(dat.find_last_of('/')+1);
+        dat = dat.substr(dat.find('/')+1);
+        ulaz.open(dat);
+    }
+    if (!ulaz) {
+        dat = dat.substr(dat.rfind('/')+1);
         ulaz.open(dat);
     }
     if (!ulaz) greska(nemaDatoteke, true);
