@@ -42,13 +42,13 @@ class Transformator:
         then it compiles before future Transformator usage.
         """
         build_path = f'build'
-        if not os.path.exists(build_path):
+        if not os.path.exists(f'{build_path}/trans'):
             self._trace('Compiling transformator library!')
-            os.mkdir(build_path)
+            Path(build_path).mkdir(parents=True, exist_ok=True)
             owd = os.getcwd()
             os.chdir(build_path)
 
-            build_command = 'cmake -G "Unix Makefiles" ..'
+            build_command = 'cmake -G "Unix Makefiles" ../trans'
             os.system(build_command)
 
             os.system('make')
@@ -119,8 +119,9 @@ def cleanup(seed, transformator):
     """
     Deletes temporary files.
     """
-    for path in Path('.').glob(f'{seed}.*'):
-        os.remove(path)
+    if seed is not None:
+        for path in Path('.').glob(f'{seed}.*'):
+            os.remove(path)
     transformator.cleanup()
 
 def rename_files(seed, save_dir):
@@ -152,6 +153,7 @@ def run():
 
     transformator = Transformator(verbosity=1)
 
+    seed = None
     iteration = 1
     while iteration <= MAX_ITERATION:
         trace(f'Iteration {iteration}:')

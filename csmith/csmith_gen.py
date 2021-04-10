@@ -66,9 +66,7 @@ def run_csmith(seed):
         assert len(args) > seed_index, 'Missing seed number after "-o" option!'
         seed = int(args[seed_index])
     except ValueError:
-        # If custom seed is given...
-        if seed is None:
-            seed = random.randrange(sys.maxsize)
+        seed = random.randrange(sys.maxsize)
         args.append('-s')
         args.append(str(seed))
 
