@@ -34,7 +34,7 @@ def get_csmith_include():
     """
     Finds relative path based on `CSMITH_PATH` environment variable value.
     
-    CSmith output can be compiled with `<gcc/clang> <cfile> -I$CSMITH_PATH` but
+    CSmith output can be compiled with `gcc <cfile> -I$CSMITH_PATH` but
     AST library does not support `-I` option. This is solved by replacing:
 
     `#include "csmith.h"`
@@ -52,14 +52,13 @@ def get_csmith_include():
     csmith_include = f'{csmith_relative_path}/{csmith_include_file}'
     return csmith_include
 
-def run_csmith(seed: int):
+def run_csmith(seed):
     """
     Generates random C file using CSmith tool.
 
     This script takes same arguments as CSmith tool (it's just a wrapper)
     """
     args = sys.argv[1:]
-    csmith_args = []
 
     # If no seed is chosen with `-s` option then random seed is generated
     try:
@@ -68,10 +67,8 @@ def run_csmith(seed: int):
         seed = int(args[seed_index])
     except ValueError:
         seed = random.randrange(sys.maxsize)
-
-    # csmith filters all arguments except `-s` and `-o`
-    csmith_args.append('-s')
-    csmith_args.append(str(seed))
+        args.append('-s')
+        args.append(str(seed))
 
     trace(f'Program seed is {seed}.')
 
@@ -82,18 +79,17 @@ def run_csmith(seed: int):
         output_filename = args[output_filename_index]
     except ValueError:
         output_filename = f'{seed}.c'
-
-    csmith_args.append('-o')
-    csmith_args.append(output_filename)
+        args.append('-o')
+        args.append(output_filename)
 
     # Creating random C program
-    args_line = ' '.join(csmith_args)
+    args_line = ' '.join(args)
     command = f'csmith {args_line}'
     os.system(command)
 
     return output_filename, seed
 
-def replace_csmith_include(output_filename: str, csmith_include: str):
+def replace_csmith_include(output_filename, csmith_include):
     """
     Replacing `#include "csmith.h"` with `include "[csmith_include]"` in output_filename.
     Check `get_csmith_include()` function.
@@ -117,7 +113,7 @@ def replace_csmith_include(output_filename: str, csmith_include: str):
     with open(output_filename, 'w') as f:
         f.write(code)
 
-def test_generated_c_code(compiler: str, output_filename: str, compiler_options: str):
+def test_generated_c_code(output_filename):
     """
     CSmith can generate C programs with infinite loop.
     All files that need more than [MAX_RUN_DURATION] to finish are dumped.
@@ -127,7 +123,7 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     """
     compiled_file_name = 'csmith.out'
     # Option '-w' disables all warnings
-    compile_command = f'{compiler} {output_filename} -o {compiled_file_name} -w {compiler_options}'
+    compile_command = f'gcc {output_filename} -o {compiled_file_name} -w'
     os.system(compile_command)
 
     run_command = f'./{compiled_file_name}'
@@ -152,14 +148,14 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     os.remove(compiled_file_name)
     return True
 
-def run(seed: int = None, compiler: str = 'gcc', compiler_options=''):
+def run(seed=None):
     passed_test = False
 
     while not passed_test:
         csmith_include = get_csmith_include()
         output_filename, seed = run_csmith(seed)
         replace_csmith_include(output_filename, csmith_include)
-        passed_test = test_generated_c_code(compiler, output_filename, compiler_options)
+        passed_test = test_generated_c_code(output_filename)
 
     return seed
 
