@@ -13,17 +13,28 @@ def get_next_transformation(n: int = 3):
     """
     Generates random sequence of transformations.
     """
-    # transformacije koje trenutno ne rade 'switch', 'rek', 'u', 'o'
-    transformations = ['do', 'while', 'for', 'if', 'iter']
+    transformations = ['do', 'while', 'for', 'if', 'iter', 'u', 'o']
+
+    sequence = []
+    hasO = False
+    hasU = False
+
     for _ in range(n):
         t = random.choice(transformations)
         if t == 'o':
-            r = random.randrange(3)
+            r = random.randrange(2)
             t = f'{t}{r}'
+
+            if hasO: continue
+            hasO = True
         if t == 'u':
-            r = random.randrange(10, 100)
+            r = random.randrange(10, 50)
             t = f'{t}{r}'
-        yield t
+
+            if hasU: continue
+            hasU = True
+        sequence.append(t)
+    return sequence
 
 class Transformator:
     """

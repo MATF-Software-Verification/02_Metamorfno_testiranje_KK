@@ -1,6 +1,9 @@
 **/build*
 **/*.user
 
+**/*checksum.txt
+**/tmp.c
+
 **/storage*
 **/platform.info*
 **/__pycache__*
