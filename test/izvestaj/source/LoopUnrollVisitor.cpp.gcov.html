@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-03-30 19:00:29</td>
+            <td class="headerValue">2021-04-19 04:40:39</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">13</td>
@@ -281,19 +281,19 @@
 <a name="203"><span class="lineNum">     203 </span>                :            : /* Prekid obilaska kod prve do petlje */</a>
 <a name="204"><span class="lineNum">     204 </span>                :<span class="lineCov">          2 : bool LoopUnrollVisitor::TraverseDoStmt(DoStmt *s) {</span></a>
 <a name="205"><span class="lineNum">     205 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          2 :     return !imaLabelStmt(s) ? WalkUpFromDoStmt(s) :</span></a>
-<a name="206"><span class="lineNum">     206 </span>                :<span class="lineCov">          2 :            RecursiveASTVisitor&lt;LoopUnrollVisitor&gt;::TraverseDoStmt(s);</span></a>
+<a name="206"><span class="lineNum">     206 </span>                :<span class="lineCov">          2 :            MTKVisitor::TraverseDoStmt(s);</span></a>
 <a name="207"><span class="lineNum">     207 </span>                :            : }</a>
 <a name="208"><span class="lineNum">     208 </span>                :            : </a>
 <a name="209"><span class="lineNum">     209 </span>                :            : /* Prekid obilaska kod prve while petlje */</a>
 <a name="210"><span class="lineNum">     210 </span>                :<span class="lineCov">          8 : bool LoopUnrollVisitor::TraverseWhileStmt(WhileStmt *s) {</span></a>
 <a name="211"><span class="lineNum">     211 </span>        [<span class="branchCov" title="Branch 0 was taken 6 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span>]:<span class="lineCov">          8 :     return !imaLabelStmt(s) ? WalkUpFromWhileStmt(s) :</span></a>
-<a name="212"><span class="lineNum">     212 </span>                :<span class="lineCov">          8 :            RecursiveASTVisitor&lt;LoopUnrollVisitor&gt;::TraverseWhileStmt(s);</span></a>
+<a name="212"><span class="lineNum">     212 </span>                :<span class="lineCov">          8 :            MTKVisitor::TraverseWhileStmt(s);</span></a>
 <a name="213"><span class="lineNum">     213 </span>                :            : }</a>
 <a name="214"><span class="lineNum">     214 </span>                :            : </a>
 <a name="215"><span class="lineNum">     215 </span>                :            : /* Prekid obilaska kod prve for petlje */</a>
 <a name="216"><span class="lineNum">     216 </span>                :<span class="lineCov">          8 : bool LoopUnrollVisitor::TraverseForStmt(ForStmt *s) {</span></a>
 <a name="217"><span class="lineNum">     217 </span>        [<span class="branchCov" title="Branch 0 was taken 8 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">          8 :     return !imaLabelStmt(s) ? WalkUpFromForStmt(s) :</span></a>
-<a name="218"><span class="lineNum">     218 </span>                :<span class="lineCov">          8 :            RecursiveASTVisitor&lt;LoopUnrollVisitor&gt;::TraverseForStmt(s);</span></a>
+<a name="218"><span class="lineNum">     218 </span>                :<span class="lineCov">          8 :            MTKVisitor::TraverseForStmt(s);</span></a>
 <a name="219"><span class="lineNum">     219 </span>                :            : }</a>
 </pre>
       </td>
