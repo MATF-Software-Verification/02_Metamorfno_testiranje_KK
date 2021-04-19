@@ -46,13 +46,31 @@ bool If2SwitchVisitor::pomocni(IfStmt *s) const {
     return s == if2;
 }
 
+/* Provera da li je unutrasnji if */
+bool If2SwitchVisitor::imaIf(const Stmt *s) const {
+    /* Nulta naredba nema prepreka */
+    if (!s) return false;
+
+    /* Provera naredbe kao ifa */
+    if (isa<IfStmt>(s)) return true;
+
+    /* Prolazak kroz svu decu */
+    for (const auto dete : s->children())
+        if (imaIf(dete)) return true;
+
+    /* Inace nema prepreka */
+    return false;
+}
+
 /* Pretvaranje if naredbe u switch */
 bool If2SwitchVisitor::VisitIfStmt(IfStmt *s) const {
     /* Odustajanje ako je pomocni */
-    if (pomocni(s)) return true;
+    if (imaIf(s->getThen()) ||
+        imaIf(s->getElse()) ||
+        pomocni(s)) return true;
 
     /* Case klauza switcha */
-    const auto cas = napraviCase(napraviInt(1), s->getThen());
+    const auto cas = napraviCase(napraviTrue(), s->getThen());
 
     /* Iskakanje iz switcha */
     const auto br = napraviBreak();
@@ -75,9 +93,4 @@ bool If2SwitchVisitor::VisitIfStmt(IfStmt *s) const {
 
     /* Nastavljanje dalje */
     return true;
-}
-
-/* Prekid obilaska kod if naredbe */
-bool If2SwitchVisitor::TraverseIfStmt(IfStmt *s) {
-    return WalkUpFromIfStmt(s);
 }

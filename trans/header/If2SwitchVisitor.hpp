@@ -13,11 +13,11 @@ public:
     /* Provera da li je if pomocni */
     bool pomocni(IfStmt *s) const;
 
+    /* Provera da li je unutrasnji if */
+    bool imaIf(const Stmt *s) const;
+
     /* Pretvaranje if naredbe u switch */
     bool VisitIfStmt(IfStmt *s) const;
-
-    /* Prekid obilaska kod if naredbe */
-    bool TraverseIfStmt(IfStmt *s);
 };
 
 #endif

@@ -73,11 +73,12 @@ bool CodeImputVisitor::nemogucaIzmena(Stmt *s) const {
     if (!isa<ValueStmt>(s)) return false;
 
     /* Nije u redu ako nema roditelja */
-    const auto r = rods.at(s);
-    if (!r) return true;
+    const auto r = rods.find(s);
+    if (r == std::cend(rods)) return true;
+    if (!r->second) return true;
 
     /* U redu je ako je roditelj slozen */
-    return !isa<CompoundStmt>(r);
+    return !isa<CompoundStmt>(r->second);
 }
 
 /* Obilazak svih naredbi */

@@ -32,11 +32,9 @@ int main() {
   }
 
   int i = 1, j = 2;
-  switch ((int)(i > j)) {
-  case 1: {
+  if (i > j) {
     return 1;
-  } break;
-  default: {
+  } else {
     switch (0) {
     case 1: {
       return 1;
@@ -45,7 +43,6 @@ int main() {
       putchar('k');
     }
     }
-  }
   }
 
   putchar('\n');

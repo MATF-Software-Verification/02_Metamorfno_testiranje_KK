@@ -143,7 +143,7 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
 
     /* Lepo formatiranje novog koda */
     std::ostringstream buffer;
-    buffer << "clang-format -i " << nova;
+    buffer << "clang-format-11 -i " << nova;
     std::system(buffer.str().c_str());
 
     /* Normalno zavrsavanje programa */
@@ -287,6 +287,7 @@ void MTKTransformer::primeni(Izmena izmena) {
             izmena == Izmena::LoopUnroll ||
             izmena == Izmena::PrepIf ||
             izmena == Izmena::PrepSwitch ||
+            izmena == Izmena::If2Switch ||
             izmena == Izmena::Rek2Iter ||
             izmena == Izmena::FinIter ||
             izmena == Izmena::CodeImput)

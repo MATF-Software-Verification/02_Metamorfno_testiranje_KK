@@ -13,6 +13,9 @@ public:
     /* Obrada odgovarajuceg ifa */
     DeclRefExpr *obradiIf(const IfStmt *s);
 
+    /* Provera da li je unutrasnji if */
+    bool imaIf(const Stmt *s) const;
+
     /* Priprema if naredbe */
     bool VisitBreakStmt(BreakStmt *s);
 

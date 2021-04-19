@@ -41,26 +41,19 @@ int main() {
   }
 
   int i = 1, j = 2;
-  {
-    int cond1 = (int)(i > j);
-    do {
-      if (cond1 == 1) {
-        { return 1; }
-        break;
-      }
-      {
-        {
-          int cond7 = 0;
-          do {
-            if (cond7 == 1) {
-              { return 1; }
-              break;
-            }
-            { putchar('k'); }
-          } while (0);
+  if (i > j) {
+    return 1;
+  } else {
+    {
+      int cond1 = 0;
+      do {
+        if (cond1 == 1) {
+          { return 1; }
+          break;
         }
-      }
-    } while (0);
+        { putchar('k'); }
+      } while (0);
+    }
   }
 
   putchar('\n');
@@ -80,9 +73,9 @@ int main() {
           break;
         }
         if (cond2 != 3 && cond2 != 4 && cond2 != 6) {
-          int cond8 = k - 1;
+          int cond7 = k - 1;
           do {
-            if (cond8 == 4)
+            if (cond7 == 4)
               putchar('5');
           } while (0);
         }

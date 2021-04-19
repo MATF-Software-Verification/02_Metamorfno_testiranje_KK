@@ -61,27 +61,40 @@ DeclRefExpr *PrepIfVisitor::obradiIf(const IfStmt *s) {
     return prip[s] = uslov;
 }
 
+/* Provera da li je unutrasnji if */
+bool PrepIfVisitor::imaIf(const Stmt *s) const {
+    /* Nulta naredba nema prepreka */
+    if (!s) return false;
+
+    /* Provera naredbe kao ifa */
+    if (isa<IfStmt>(s)) return true;
+
+    /* Prolazak kroz svu decu */
+    for (const auto dete : s->children())
+        if (imaIf(dete)) return true;
+
+    /* Inace nema prepreka */
+    return false;
+}
+
 /* Priprema if naredbe */
 bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
     /* Inicijalizacija deklaracije */
     DeclRefExpr *dekl = nullptr;
 
-    /* Indikator posebne zamene ukoliko je
-     * break direktni potomak else grane */
-    bool dir = false;
-
     /* Prolazak kroz roditelje tekuceg break */
     auto r = rods.at(s);
     while (r) {
         /* Odustajanje ako je neka petlja ili switch */
-        if (!r || isa<DoStmt>(r)  || isa<WhileStmt>(r)
-               || isa<ForStmt>(r) || isa<SwitchStmt>(r))
+        if (isa<DoStmt>(r)  || isa<WhileStmt>(r) ||
+            isa<ForStmt>(r) || isa<SwitchStmt>(r))
             return true;
 
         /* Uzimanje roditelja koji je if */
         if (const auto rr = dyn_cast<IfStmt>(r)) {
+            if (imaIf(rr->getThen())) return true;
+            if (imaIf(rr->getElse())) return true;
             dekl = obradiIf(rr);
-            dir = s == rr->getElse();
             break;
         }
 
@@ -89,7 +102,7 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
         r = rods.at(r);
     }
 
-    /* Odustajanje ako nije switch roditelj */
+    /* Odustajanje ako nije if roditelj */
     if (!dekl) return true;
 
     /* Postavljanje zastavice za skok iz petlje */
@@ -102,7 +115,7 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
     const auto zamena = napraviSlozenu({dodela, iskoci});
 
     /* Tekstualna zamena koda */
-    zameni(s, zamena, dir);
+    zameni(s, zamena);
 
     /* Nastavljanje dalje */
     return true;
