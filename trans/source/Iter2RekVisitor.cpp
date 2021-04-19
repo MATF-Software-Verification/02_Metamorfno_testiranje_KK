@@ -234,13 +234,13 @@ bool Iter2RekVisitor::VisitFunctionDecl(FunctionDecl *f) {
 bool Iter2RekVisitor::TraverseWhileStmt(WhileStmt *s) {
     /* Nastavljanje dalje ako postoje prepreke */
     if (imaWhilePrepreka(s))
-        return RecursiveASTVisitor<Iter2RekVisitor>::TraverseWhileStmt(s);
+        return MTKVisitor::TraverseWhileStmt(s);
     else if (!dohvatiDeklaracije(s)) {
         dekls.clear();
         deklm.clear();
         dekli.clear();
         tabu.clear();
-        return RecursiveASTVisitor<Iter2RekVisitor>::TraverseWhileStmt(s);
+        return MTKVisitor::TraverseWhileStmt(s);
     /* Povlacenje ako je while obradjen */
     } else return WalkUpFromWhileStmt(s);
 }

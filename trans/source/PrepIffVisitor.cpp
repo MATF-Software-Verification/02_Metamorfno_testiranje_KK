@@ -42,5 +42,5 @@ bool PrepIffVisitor::VisitIfStmt(IfStmt *s) {
 /* Prekid obilaska kod prvog if */
 bool PrepIffVisitor::TraverseIfStmt(IfStmt *s) {
     return !slozenoTelo(s) ? WalkUpFromIfStmt(s) :
-           RecursiveASTVisitor<PrepIffVisitor>::TraverseIfStmt(s);
+           MTKVisitor::TraverseIfStmt(s);
 }

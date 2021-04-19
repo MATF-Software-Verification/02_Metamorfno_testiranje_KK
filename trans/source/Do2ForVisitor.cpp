@@ -47,5 +47,5 @@ bool Do2ForVisitor::TraverseDecl(Decl *d) {
     tekdek = d;
 
     /* Nastavljanje dalje */
-    return RecursiveASTVisitor<Do2ForVisitor>::TraverseDecl(d);
+    return MTKVisitor::TraverseDecl(d);
 }

@@ -150,8 +150,8 @@ bool FinRekVisitor::VisitForStmt(ForStmt *s) {
 
 /* Obrada svake (for) petlje ili ne */
 bool FinRekVisitor::TraverseForStmt(ForStmt *s) {
-    return fje->count(tekf->getName().str() + "_") ? WalkUpFromForStmt(s) :
-           RecursiveASTVisitor<FinRekVisitor>::TraverseForStmt(s);
+    return fje->count(tekf->getName().str() + "_") ?
+           WalkUpFromForStmt(s) : MTKVisitor::TraverseForStmt(s);
 }
 
 /* Zamena svakog return slozenom verzijom */
@@ -214,8 +214,7 @@ bool FinRekVisitor::TraverseFunctionDecl(FunctionDecl *f) {
         return obradiReturn(*f->getBody()->child_begin());
     /* Nastavljanje dalje ako je funkcija na spisku */
     } else if (naSpisku) {
-        const auto ret =
-            RecursiveASTVisitor<FinRekVisitor>::TraverseFunctionDecl(f);
+        const auto ret = MTKVisitor::TraverseFunctionDecl(f);
 
         /* Dodavanje funkcije u skup spremnih */
         fje->insert(f->getName().str() + "_");

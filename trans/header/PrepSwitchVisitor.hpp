@@ -3,8 +3,6 @@
 
 #include "MTKConsumer.hpp"
 
-#include <unordered_map>
-
 /* Posetilac koji priprema switch */
 class PrepSwitchVisitor : public MTKVisitor<PrepSwitchVisitor> {
 public:

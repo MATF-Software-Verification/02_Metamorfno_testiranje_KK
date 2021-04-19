@@ -1,7 +1,5 @@
 #include "PrepSwitchVisitor.hpp"
 
-#include "clang/AST/ParentMapContext.h"
-
 /***********************
  * Shema transformacije
  * ---------------------
@@ -42,13 +40,11 @@
 /* Provera ima li dubokih oznaka */
 bool PrepSwitchVisitor::proveriSwitchCase(SwitchCase *s) const {
     /* Dohvatanje prvog roditelja */
-    const auto telo = TheASTContext.getParents(*s)
-                      .begin()->get<CompoundStmt>();
+    const auto telo = dyn_cast<CompoundStmt>(rods.at(s));
     if (!telo) return false;
 
     /* Dohvatanje drugog roditelja */
-    const auto swch = TheASTContext.getParents(*telo)
-                      .begin()->get<SwitchStmt>();
+    const auto swch = dyn_cast<SwitchStmt>(rods.at(telo));
     if (!swch) return false;
 
     /* Sve je u redu u ovom trenutku */
@@ -91,11 +87,8 @@ bool PrepSwitchVisitor::VisitContinueStmt(ContinueStmt *s) {
     DeclRefExpr *dekl = nullptr;
 
     /* Prolazak kroz roditelje tekuceg continue */
-    auto rod = TheASTContext.getParents(*s);
-    while (!rod.empty()) {
-        /* Izdvajanje glavnog roditelja */
-        const auto r = rod.begin()->get<Stmt>();
-
+    auto r = rods.at(s);
+    while (r) {
         /* Odustajanje ako je neka petlja */
         if (!r || isa<DoStmt>(r) || isa<WhileStmt>(r) || isa<ForStmt>(r))
             return true;
@@ -107,7 +100,7 @@ bool PrepSwitchVisitor::VisitContinueStmt(ContinueStmt *s) {
         }
 
         /* Nastavljanje dalje */
-        rod = TheASTContext.getParents(*r);
+        r = rods.at(r);
     }
 
     /* Odustajanje ako nije switch roditelj */
@@ -150,5 +143,5 @@ bool PrepSwitchVisitor::TraverseDecl(Decl *d) {
     tekdek = d;
 
     /* Nastavljanje dalje */
-    return RecursiveASTVisitor<PrepSwitchVisitor>::TraverseDecl(d);
+    return MTKVisitor::TraverseDecl(d);
 }

@@ -1,7 +1,5 @@
 #include "PrepIfVisitor.hpp"
 
-#include "clang/AST/ParentMapContext.h"
-
 /***********************
  * Shema transformacije
  * ---------------------
@@ -73,11 +71,8 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
     bool dir = false;
 
     /* Prolazak kroz roditelje tekuceg break */
-    auto rod = TheASTContext.getParents(*s);
-    while (!rod.empty()) {
-        /* Izdvajanje glavnog roditelja */
-        const auto r = rod.begin()->get<Stmt>();
-
+    auto r = rods.at(s);
+    while (r) {
         /* Odustajanje ako je neka petlja ili switch */
         if (!r || isa<DoStmt>(r)  || isa<WhileStmt>(r)
                || isa<ForStmt>(r) || isa<SwitchStmt>(r))
@@ -91,7 +86,7 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
         }
 
         /* Nastavljanje dalje */
-        rod = TheASTContext.getParents(*r);
+        r = rods.at(r);
     }
 
     /* Odustajanje ako nije switch roditelj */
@@ -119,5 +114,5 @@ bool PrepIfVisitor::TraverseDecl(Decl *d) {
     tekdek = d;
 
     /* Nastavljanje dalje */
-    return RecursiveASTVisitor<PrepIfVisitor>::TraverseDecl(d);
+    return MTKVisitor::TraverseDecl(d);
 }

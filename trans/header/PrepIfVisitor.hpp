@@ -3,8 +3,6 @@
 
 #include "MTKConsumer.hpp"
 
-#include <unordered_map>
-
 /* Posetilac koji priprema if */
 class PrepIfVisitor : public MTKVisitor<PrepIfVisitor> {
 public:

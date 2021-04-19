@@ -129,8 +129,7 @@ bool PrepForVisitor::TraverseWhileStmt(WhileStmt *s) {
     petlje.push(s);
 
     /* Obilazak petlje i dece */
-    const auto rez =
-        RecursiveASTVisitor<PrepForVisitor>::TraverseWhileStmt(s);
+    const auto rez = MTKVisitor::TraverseWhileStmt(s);
 
     /* Skidanje gotove petlje sa steka */
     petlje.pop();
@@ -144,8 +143,7 @@ bool PrepForVisitor::TraverseDoStmt(DoStmt *s) {
     petlje.push(s);
 
     /* Obilazak petlje i dece */
-    const auto rez =
-        RecursiveASTVisitor<PrepForVisitor>::TraverseDoStmt(s);
+    const auto rez = MTKVisitor::TraverseDoStmt(s);
 
     /* Skidanje gotove petlje sa steka */
     petlje.pop();
@@ -160,7 +158,7 @@ bool PrepForVisitor::TraverseForStmt(ForStmt *s) {
 
     /* Obilazak petlje i dece ako nije prvi prolaz */
     const auto rez = prviProlaz ? WalkUpFromForStmt(s) :
-        RecursiveASTVisitor<PrepForVisitor>::TraverseForStmt(s);
+                     MTKVisitor::TraverseForStmt(s);
 
     /* Skidanje gotove petlje sa steka */
     petlje.pop();

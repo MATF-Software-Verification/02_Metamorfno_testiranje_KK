@@ -85,6 +85,7 @@ bool FinIterVisitor::TraverseFunctionDecl(FunctionDecl *f) {
     tekf = f;
 
     /* Nastavljanje dalje ili povlacenje nazad */
-    return !fje->count(f->getName().str()) ? WalkUpFromFunctionDecl(f) :
-           RecursiveASTVisitor<FinIterVisitor>::TraverseFunctionDecl(f);
+    return !fje->count(f->getName().str()) ?
+           WalkUpFromFunctionDecl(f) :
+           MTKVisitor::TraverseFunctionDecl(f);
 }

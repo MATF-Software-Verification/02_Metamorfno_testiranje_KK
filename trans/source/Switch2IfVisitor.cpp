@@ -1,7 +1,5 @@
 #include "Switch2IfVisitor.hpp"
 
-#include "clang/AST/ParentMapContext.h"
-
 /*******************************
  * Shema transformacije
  * -----------------------------
@@ -75,13 +73,11 @@ bool Switch2IfVisitor::dubokeOznake(SwitchStmt *s) const {
     for (auto swc = s->getSwitchCaseList();
          swc; swc = swc->getNextSwitchCase()) {
         /* Dohvatanje prvog roditelja */
-        const auto telo = TheASTContext.getParents(*swc)
-                          .begin()->get<CompoundStmt>();
+        const auto telo = dyn_cast<CompoundStmt>(rods.at(swc));
         if (!telo) return true;
 
         /* Dohvatanje drugog roditelja */
-        const auto swch = TheASTContext.getParents(*telo)
-                          .begin()->get<SwitchStmt>();
+        const auto swch = dyn_cast<SwitchStmt>(rods.at(telo));
         if (!swch) return true;
     }
 
@@ -197,7 +193,7 @@ bool Switch2IfVisitor::VisitSwitchStmt(SwitchStmt *s) const {
 /* Prekid obilaska kod switch naredbe */
 bool Switch2IfVisitor::TraverseSwitchStmt(SwitchStmt *s) {
     return !dubokeOznake(s) ? WalkUpFromSwitchStmt(s) :
-           RecursiveASTVisitor<Switch2IfVisitor>::TraverseSwitchStmt(s);
+           MTKVisitor::TraverseSwitchStmt(s);
 }
 
 /* Nacin obrade deklaracije */
@@ -206,5 +202,5 @@ bool Switch2IfVisitor::TraverseDecl(Decl *d) {
     tekdek = d;
 
     /* Nastavljanje dalje */
-    return RecursiveASTVisitor<Switch2IfVisitor>::TraverseDecl(d);
+    return MTKVisitor::TraverseDecl(d);
 }

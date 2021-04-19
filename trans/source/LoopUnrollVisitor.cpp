@@ -203,17 +203,17 @@ bool LoopUnrollVisitor::VisitForStmt(ForStmt *s) const {
 /* Prekid obilaska kod prve do petlje */
 bool LoopUnrollVisitor::TraverseDoStmt(DoStmt *s) {
     return !imaLabelStmt(s) ? WalkUpFromDoStmt(s) :
-           RecursiveASTVisitor<LoopUnrollVisitor>::TraverseDoStmt(s);
+           MTKVisitor::TraverseDoStmt(s);
 }
 
 /* Prekid obilaska kod prve while petlje */
 bool LoopUnrollVisitor::TraverseWhileStmt(WhileStmt *s) {
     return !imaLabelStmt(s) ? WalkUpFromWhileStmt(s) :
-           RecursiveASTVisitor<LoopUnrollVisitor>::TraverseWhileStmt(s);
+           MTKVisitor::TraverseWhileStmt(s);
 }
 
 /* Prekid obilaska kod prve for petlje */
 bool LoopUnrollVisitor::TraverseForStmt(ForStmt *s) {
     return !imaLabelStmt(s) ? WalkUpFromForStmt(s) :
-           RecursiveASTVisitor<LoopUnrollVisitor>::TraverseForStmt(s);
+           MTKVisitor::TraverseForStmt(s);
 }
