@@ -45,7 +45,7 @@ int main() {
     return 1;
   } else {
     {
-      int cond1 = 0;
+      int cond1 = (int)!!0;
       do {
         if (cond1 == 1) {
           { return 1; }
@@ -178,7 +178,7 @@ int main() {
       {
         int cont2 = 0;
         {
-          int cond6 = 1;
+          int cond6 = (int)!!1;
           do {
             if (cond6 == 1) {
               {

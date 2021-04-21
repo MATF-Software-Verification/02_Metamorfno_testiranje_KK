@@ -35,7 +35,7 @@ int main() {
   if (i > j) {
     return 1;
   } else {
-    switch (0) {
+    switch ((int)!!0) {
     case 1: {
       return 1;
     } break;
@@ -133,7 +133,7 @@ int main() {
       } while (0);
     }
 
-    switch (cont) {
+    switch ((int)!!cont) {
     case 1: {
       continue;
     }
@@ -185,7 +185,7 @@ int main() {
       } while (0);
     }
 
-    switch (cont0) {
+    switch ((int)!!cont0) {
     case 1: {
       continue;
     }
@@ -223,7 +223,7 @@ int main() {
       } while (0);
     }
 
-    switch (cont1) {
+    switch ((int)!!cont1) {
     case 1: {
       continue;
     }
@@ -234,7 +234,7 @@ int main() {
   for (; 0;) {
     {
       int br4 = 0;
-      switch (1) {
+      switch ((int)!!1) {
       case 1: {
         {
           br4 = 1;

@@ -291,15 +291,10 @@ Expr *MTKContext::dohvatiCelobrojnu(Expr *izraz) const {
 
 /* Dohvatanje istinitosne vrednosti */
 Expr *MTKContext::dohvatiIstinitost(Expr *izraz) const {
-    /* Dohvatanje podataka o tipu izraza */
-    const auto integer = izraz->getType()->isIntegerType();
-    const auto boolean = izraz->isKnownToHaveBooleanValue();
-
     /* Istinitosni tip se pretvara u ceo broj */
-    if (boolean) return dohvatiCelobrojnu(izraz);
-    /* Celobrojni neistinitosni tip se ne menja */
-    else if (integer) return izraz;
-    /* Necelobrojni tip se duplo negira i kastuje */
+    if (izraz->isKnownToHaveBooleanValue())
+        return dohvatiCelobrojnu(izraz);
+    /* Ostali tipovi se duplo negiraju i kastuju */
     else return dohvatiCelobrojnu(napraviNegaciju(napraviNegaciju(izraz)));
 }
 

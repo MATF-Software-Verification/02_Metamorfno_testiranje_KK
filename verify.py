@@ -13,7 +13,7 @@ def get_next_transformation(n: int = 3):
     """
     Generates random sequence of transformations.
     """
-    transformations = ['do', 'while', 'for', 'if', 'iter', 'u', 'o']
+    transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
 
     sequence = []
     hasO = False
