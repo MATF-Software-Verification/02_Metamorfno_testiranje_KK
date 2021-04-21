@@ -31,17 +31,17 @@
             <td class="headerValue">coverage-filtered.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntry">32</td>
-            <td class="headerCovTableEntry">32</td>
+            <td class="headerCovTableEntry">37</td>
+            <td class="headerCovTableEntry">37</td>
             <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-04-19 04:40:39</td>
+            <td class="headerValue">2021-04-21 06:30:02</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntry">3</td>
-            <td class="headerCovTableEntry">3</td>
+            <td class="headerCovTableEntry">4</td>
+            <td class="headerCovTableEntry">4</td>
             <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
@@ -56,9 +56,9 @@
 </td>
             <td></td>
             <td class="headerItem">Branches:</td>
-            <td class="headerCovTableEntry">16</td>
-            <td class="headerCovTableEntry">20</td>
-            <td class="headerCovTableEntryMed">80.0 %</td>
+            <td class="headerCovTableEntry">25</td>
+            <td class="headerCovTableEntry">26</td>
+            <td class="headerCovTableEntryHi">96.2 %</td>
           </tr>
           <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
         </table>
@@ -139,62 +139,72 @@
 <a name="61"><span class="lineNum">      61 </span>                :<span class="lineCov">          8 :     return prip[s] = uslov;</span></a>
 <a name="62"><span class="lineNum">      62 </span>                :            : }</a>
 <a name="63"><span class="lineNum">      63 </span>                :            : </a>
-<a name="64"><span class="lineNum">      64 </span>                :            : /* Priprema if naredbe */</a>
-<a name="65"><span class="lineNum">      65 </span>                :<span class="lineCov">         23 : bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {</span></a>
-<a name="66"><span class="lineNum">      66 </span>                :            :     /* Inicijalizacija deklaracije */</a>
-<a name="67"><span class="lineNum">      67 </span>                :<span class="lineCov">         23 :     DeclRefExpr *dekl = nullptr;</span></a>
+<a name="64"><span class="lineNum">      64 </span>                :            : /* Provera da li je unutrasnji if */</a>
+<a name="65"><span class="lineNum">      65 </span>                :<span class="lineCov">        120 : bool PrepIfVisitor::imaIf(const Stmt *s) const {</span></a>
+<a name="66"><span class="lineNum">      66 </span>                :            :     /* Nulta naredba nema prepreka */</a>
+<a name="67"><span class="lineNum">      67 </span>        [<span class="branchCov" title="Branch 0 was taken 9 times"> + </span><span class="branchCov" title="Branch 1 was taken 111 times"> + </span>]:<span class="lineCov">        120 :     if (!s) return false;</span></a>
 <a name="68"><span class="lineNum">      68 </span>                :            : </a>
-<a name="69"><span class="lineNum">      69 </span>                :            :     /* Indikator posebne zamene ukoliko je</a>
-<a name="70"><span class="lineNum">      70 </span>                :            :      * break direktni potomak else grane */</a>
-<a name="71"><span class="lineNum">      71 </span>                :<span class="lineCov">         23 :     bool dir = false;</span></a>
-<a name="72"><span class="lineNum">      72 </span>                :            : </a>
-<a name="73"><span class="lineNum">      73 </span>                :            :     /* Prolazak kroz roditelje tekuceg break */</a>
-<a name="74"><span class="lineNum">      74 </span>                :<span class="lineCov">         23 :     auto r = rods.at(s);</span></a>
-<a name="75"><span class="lineNum">      75 </span>        [<span class="branchCov" title="Branch 0 was taken 55 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span>]:<span class="lineCov">         55 :     while (r) {</span></a>
-<a name="76"><span class="lineNum">      76 </span>                :            :         /* Odustajanje ako je neka petlja ili switch */</a>
-<a name="77"><span class="lineNum">      77 </span>  [<span class="branchCov" title="Branch 0 was taken 53 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 47 times"> + </span><span class="branchCov" title="Branch 3 was taken 6 times"> + </span>]:<span class="lineCov">         55 :         if (!r || isa&lt;DoStmt&gt;(r)  || isa&lt;WhileStmt&gt;(r)</span></a>
-<a name="78"><span class="lineNum">      78 </span>  [<span class="branchCov" title="Branch 0 was taken 55 times"> + </span><span class="branchNoCov" title="Branch 1 was not taken"> - </span><span class="branchCov" title="Branch 2 was taken 47 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span> :<span class="lineCov">        110 :                || isa&lt;ForStmt&gt;(r) || isa&lt;SwitchStmt&gt;(r))</span></a>
-<span class="lineNum">         </span>   <span class="branchCov" title="Branch 4 was taken 4 times"> + </span><span class="branchCov" title="Branch 5 was taken 43 times"> + </span><span class="branchCov" title="Branch 6 was taken 12 times"> + </span><span class="branchCov" title="Branch 7 was taken 43 times"> + </span>]
-<a name="79"><span class="lineNum">      79 </span>                :<span class="lineCov">         12 :             return true;</span></a>
-<a name="80"><span class="lineNum">      80 </span>                :            : </a>
-<a name="81"><span class="lineNum">      81 </span>                :            :         /* Uzimanje roditelja koji je if */</a>
-<a name="82"><span class="lineNum">      82 </span>        [<span class="branchCov" title="Branch 0 was taken 11 times"> + </span><span class="branchCov" title="Branch 1 was taken 32 times"> + </span>]:<span class="lineCov">         43 :         if (const auto rr = dyn_cast&lt;IfStmt&gt;(r)) {</span></a>
-<a name="83"><span class="lineNum">      83 </span>                :<span class="lineCov">         11 :             dekl = obradiIf(rr);</span></a>
-<a name="84"><span class="lineNum">      84 </span>                :<span class="lineCov">         11 :             dir = s == rr-&gt;getElse();</span></a>
-<a name="85"><span class="lineNum">      85 </span>                :<span class="lineCov">         11 :             break;</span></a>
-<a name="86"><span class="lineNum">      86 </span>                :            :         }</a>
-<a name="87"><span class="lineNum">      87 </span>                :            : </a>
-<a name="88"><span class="lineNum">      88 </span>                :            :         /* Nastavljanje dalje */</a>
-<a name="89"><span class="lineNum">      89 </span>                :<span class="lineCov">         32 :         r = rods.at(r);</span></a>
-<a name="90"><span class="lineNum">      90 </span>                :            :     }</a>
-<a name="91"><span class="lineNum">      91 </span>                :            : </a>
-<a name="92"><span class="lineNum">      92 </span>                :            :     /* Odustajanje ako nije switch roditelj */</a>
-<a name="93"><span class="lineNum">      93 </span>        [<span class="branchNoCov" title="Branch 0 was not taken"> - </span><span class="branchCov" title="Branch 1 was taken 11 times"> + </span>]:<span class="lineCov">         11 :     if (!dekl) return true;</span></a>
-<a name="94"><span class="lineNum">      94 </span>                :            : </a>
-<a name="95"><span class="lineNum">      95 </span>                :            :     /* Postavljanje zastavice za skok iz petlje */</a>
-<a name="96"><span class="lineNum">      96 </span>                :<span class="lineCov">         11 :     const auto dodela = napraviDodelu(dekl, napraviTrue());</span></a>
-<a name="97"><span class="lineNum">      97 </span>                :            : </a>
-<a name="98"><span class="lineNum">      98 </span>                :            :     /* Break za skok iz switcha */</a>
-<a name="99"><span class="lineNum">      99 </span>                :<span class="lineCov">         11 :     const auto iskoci = napraviBreak();</span></a>
+<a name="69"><span class="lineNum">      69 </span>                :            :     /* Provera naredbe kao ifa */</a>
+<a name="70"><span class="lineNum">      70 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 107 times"> + </span>]:<span class="lineCov">        111 :     if (isa&lt;IfStmt&gt;(s)) return true;</span></a>
+<a name="71"><span class="lineNum">      71 </span>                :            : </a>
+<a name="72"><span class="lineNum">      72 </span>                :            :     /* Prolazak kroz svu decu */</a>
+<a name="73"><span class="lineNum">      73 </span>        [<span class="branchCov" title="Branch 0 was taken 92 times"> + </span><span class="branchCov" title="Branch 1 was taken 103 times"> + </span>]:<span class="lineCov">        195 :     for (const auto dete : s-&gt;children())</span></a>
+<a name="74"><span class="lineNum">      74 </span>        [<span class="branchCov" title="Branch 0 was taken 4 times"> + </span><span class="branchCov" title="Branch 1 was taken 88 times"> + </span>]:<span class="lineCov">         92 :         if (imaIf(dete)) return true;</span></a>
+<a name="75"><span class="lineNum">      75 </span>                :            : </a>
+<a name="76"><span class="lineNum">      76 </span>                :            :     /* Inace nema prepreka */</a>
+<a name="77"><span class="lineNum">      77 </span>                :<span class="lineCov">        103 :     return false;</span></a>
+<a name="78"><span class="lineNum">      78 </span>                :            : }</a>
+<a name="79"><span class="lineNum">      79 </span>                :            : </a>
+<a name="80"><span class="lineNum">      80 </span>                :            : /* Priprema if naredbe */</a>
+<a name="81"><span class="lineNum">      81 </span>                :<span class="lineCov">         27 : bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {</span></a>
+<a name="82"><span class="lineNum">      82 </span>                :            :     /* Inicijalizacija deklaracije */</a>
+<a name="83"><span class="lineNum">      83 </span>                :<span class="lineCov">         27 :     DeclRefExpr *dekl = nullptr;</span></a>
+<a name="84"><span class="lineNum">      84 </span>                :            : </a>
+<a name="85"><span class="lineNum">      85 </span>                :            :     /* Prolazak kroz roditelje tekuceg break */</a>
+<a name="86"><span class="lineNum">      86 </span>                :<span class="lineCov">         27 :     auto r = rods.at(s);</span></a>
+<a name="87"><span class="lineNum">      87 </span>                :            :     for(;;) {</a>
+<a name="88"><span class="lineNum">      88 </span>                :            :         /* Odustajanje ako je neka petlja ili switch */</a>
+<a name="89"><span class="lineNum">      89 </span>  [<span class="branchCov" title="Branch 0 was taken 55 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span><span class="branchCov" title="Branch 2 was taken 55 times"> + </span><span class="branchNoCov" title="Branch 3 was not taken"> - </span>]:<span class="lineCov">        179 :         if (isa&lt;DoStmt&gt;(r)  || isa&lt;WhileStmt&gt;(r) ||</span></a>
+<a name="90"><span class="lineNum">      90 </span>  [<span class="branchCov" title="Branch 0 was taken 61 times"> + </span><span class="branchCov" title="Branch 1 was taken 2 times"> + </span><span class="branchCov" title="Branch 2 was taken 4 times"> + </span><span class="branchCov" title="Branch 3 was taken 51 times"> + </span> :<span class="lineCov">        179 :             isa&lt;ForStmt&gt;(r) || isa&lt;SwitchStmt&gt;(r))</span></a>
+<span class="lineNum">         </span>         <span class="branchCov" title="Branch 4 was taken 12 times"> + </span><span class="branchCov" title="Branch 5 was taken 51 times"> + </span>]
+<a name="91"><span class="lineNum">      91 </span>                :<span class="lineCov">         12 :             return true;</span></a>
+<a name="92"><span class="lineNum">      92 </span>                :            : </a>
+<a name="93"><span class="lineNum">      93 </span>                :            :         /* Uzimanje roditelja koji je if */</a>
+<a name="94"><span class="lineNum">      94 </span>        [<span class="branchCov" title="Branch 0 was taken 15 times"> + </span><span class="branchCov" title="Branch 1 was taken 36 times"> + </span>]:<span class="lineCov">         51 :         if (const auto rr = dyn_cast&lt;IfStmt&gt;(r)) {</span></a>
+<a name="95"><span class="lineNum">      95 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 13 times"> + </span>]:<span class="lineCov">         15 :             if (imaIf(rr-&gt;getThen())) return true;</span></a>
+<a name="96"><span class="lineNum">      96 </span>        [<span class="branchCov" title="Branch 0 was taken 2 times"> + </span><span class="branchCov" title="Branch 1 was taken 11 times"> + </span>]:<span class="lineCov">         13 :             if (imaIf(rr-&gt;getElse())) return true;</span></a>
+<a name="97"><span class="lineNum">      97 </span>                :<span class="lineCov">         11 :             dekl = obradiIf(rr);</span></a>
+<a name="98"><span class="lineNum">      98 </span>                :<span class="lineCov">         11 :             break;</span></a>
+<a name="99"><span class="lineNum">      99 </span>                :            :         }</a>
 <a name="100"><span class="lineNum">     100 </span>                :            : </a>
-<a name="101"><span class="lineNum">     101 </span>                :            :     /* Pravljenje nove naredbe */</a>
-<a name="102"><span class="lineNum">     102 </span>                :<span class="lineCov">         11 :     const auto zamena = napraviSlozenu({dodela, iskoci});</span></a>
-<a name="103"><span class="lineNum">     103 </span>                :            : </a>
-<a name="104"><span class="lineNum">     104 </span>                :            :     /* Tekstualna zamena koda */</a>
-<a name="105"><span class="lineNum">     105 </span>                :<span class="lineCov">         11 :     zameni(s, zamena, dir);</span></a>
-<a name="106"><span class="lineNum">     106 </span>                :            : </a>
-<a name="107"><span class="lineNum">     107 </span>                :            :     /* Nastavljanje dalje */</a>
-<a name="108"><span class="lineNum">     108 </span>                :<span class="lineCov">         11 :     return true;</span></a>
-<a name="109"><span class="lineNum">     109 </span>                :            : }</a>
+<a name="101"><span class="lineNum">     101 </span>                :            :         /* Nastavljanje dalje */</a>
+<a name="102"><span class="lineNum">     102 </span>                :<span class="lineCov">         36 :         r = rods.at(r);</span></a>
+<a name="103"><span class="lineNum">     103 </span>                :<span class="lineCov">         36 :     }</span></a>
+<a name="104"><span class="lineNum">     104 </span>                :            : </a>
+<a name="105"><span class="lineNum">     105 </span>                :            :     /* Postavljanje zastavice za skok iz petlje */</a>
+<a name="106"><span class="lineNum">     106 </span>                :<span class="lineCov">         11 :     const auto dodela = napraviDodelu(dekl, napraviTrue());</span></a>
+<a name="107"><span class="lineNum">     107 </span>                :            : </a>
+<a name="108"><span class="lineNum">     108 </span>                :            :     /* Break za skok iz switcha */</a>
+<a name="109"><span class="lineNum">     109 </span>                :<span class="lineCov">         11 :     const auto iskoci = napraviBreak();</span></a>
 <a name="110"><span class="lineNum">     110 </span>                :            : </a>
-<a name="111"><span class="lineNum">     111 </span>                :            : /* Nacin obrade deklaracije */</a>
-<a name="112"><span class="lineNum">     112 </span>                :<span class="lineCov">         18 : bool PrepIfVisitor::TraverseDecl(Decl *d) {</span></a>
-<a name="113"><span class="lineNum">     113 </span>                :            :     /* Privatno cuvanje tekuce deklaracije */</a>
-<a name="114"><span class="lineNum">     114 </span>                :<span class="lineCov">         18 :     tekdek = d;</span></a>
-<a name="115"><span class="lineNum">     115 </span>                :            : </a>
-<a name="116"><span class="lineNum">     116 </span>                :            :     /* Nastavljanje dalje */</a>
-<a name="117"><span class="lineNum">     117 </span>                :<span class="lineCov">         18 :     return MTKVisitor::TraverseDecl(d);</span></a>
-<a name="118"><span class="lineNum">     118 </span>                :            : }</a>
+<a name="111"><span class="lineNum">     111 </span>                :            :     /* Pravljenje nove naredbe */</a>
+<a name="112"><span class="lineNum">     112 </span>                :<span class="lineCov">         11 :     const auto zamena = napraviSlozenu({dodela, iskoci});</span></a>
+<a name="113"><span class="lineNum">     113 </span>                :            : </a>
+<a name="114"><span class="lineNum">     114 </span>                :            :     /* Tekstualna zamena koda */</a>
+<a name="115"><span class="lineNum">     115 </span>                :<span class="lineCov">         11 :     zameni(s, zamena);</span></a>
+<a name="116"><span class="lineNum">     116 </span>                :            : </a>
+<a name="117"><span class="lineNum">     117 </span>                :            :     /* Nastavljanje dalje */</a>
+<a name="118"><span class="lineNum">     118 </span>                :<span class="lineCov">         11 :     return true;</span></a>
+<a name="119"><span class="lineNum">     119 </span>                :            : }</a>
+<a name="120"><span class="lineNum">     120 </span>                :            : </a>
+<a name="121"><span class="lineNum">     121 </span>                :            : /* Nacin obrade deklaracije */</a>
+<a name="122"><span class="lineNum">     122 </span>                :<span class="lineCov">         18 : bool PrepIfVisitor::TraverseDecl(Decl *d) {</span></a>
+<a name="123"><span class="lineNum">     123 </span>                :            :     /* Privatno cuvanje tekuce deklaracije */</a>
+<a name="124"><span class="lineNum">     124 </span>                :<span class="lineCov">         18 :     tekdek = d;</span></a>
+<a name="125"><span class="lineNum">     125 </span>                :            : </a>
+<a name="126"><span class="lineNum">     126 </span>                :            :     /* Nastavljanje dalje */</a>
+<a name="127"><span class="lineNum">     127 </span>                :<span class="lineCov">         18 :     return MTKVisitor::TraverseDecl(d);</span></a>
+<a name="128"><span class="lineNum">     128 </span>                :            : }</a>
 </pre>
       </td>
     </tr>

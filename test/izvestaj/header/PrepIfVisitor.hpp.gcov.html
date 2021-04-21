@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-04-19 04:40:39</td>
+            <td class="headerValue">2021-04-21 06:30:02</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">1</td>
@@ -91,21 +91,24 @@
 <a name="13"><span class="lineNum">      13 </span>                :            :     /* Obrada odgovarajuceg ifa */</a>
 <a name="14"><span class="lineNum">      14 </span>                :            :     DeclRefExpr *obradiIf(const IfStmt *s);</a>
 <a name="15"><span class="lineNum">      15 </span>                :            : </a>
-<a name="16"><span class="lineNum">      16 </span>                :            :     /* Priprema if naredbe */</a>
-<a name="17"><span class="lineNum">      17 </span>                :            :     bool VisitBreakStmt(BreakStmt *s);</a>
+<a name="16"><span class="lineNum">      16 </span>                :            :     /* Provera da li je unutrasnji if */</a>
+<a name="17"><span class="lineNum">      17 </span>                :            :     bool imaIf(const Stmt *s) const;</a>
 <a name="18"><span class="lineNum">      18 </span>                :            : </a>
-<a name="19"><span class="lineNum">      19 </span>                :            :     /* Nacin obrade deklaracije */</a>
-<a name="20"><span class="lineNum">      20 </span>                :            :     bool TraverseDecl(Decl *d);</a>
+<a name="19"><span class="lineNum">      19 </span>                :            :     /* Priprema if naredbe */</a>
+<a name="20"><span class="lineNum">      20 </span>                :            :     bool VisitBreakStmt(BreakStmt *s);</a>
 <a name="21"><span class="lineNum">      21 </span>                :            : </a>
-<a name="22"><span class="lineNum">      22 </span>                :            : private:</a>
-<a name="23"><span class="lineNum">      23 </span>                :            :     /* Privatno cuvanje tekuce deklaracije */</a>
-<a name="24"><span class="lineNum">      24 </span>                :            :     Decl *tekdek;</a>
-<a name="25"><span class="lineNum">      25 </span>                :            : </a>
-<a name="26"><span class="lineNum">      26 </span>                :            :     /* Privatno cuvanje vec pripremljenih naredbi */</a>
-<a name="27"><span class="lineNum">      27 </span>                :            :     std::unordered_map&lt;const IfStmt *, DeclRefExpr *&gt; prip;</a>
-<a name="28"><span class="lineNum">      28 </span>                :            : };</a>
-<a name="29"><span class="lineNum">      29 </span>                :            : </a>
-<a name="30"><span class="lineNum">      30 </span>                :            : #endif</a>
+<a name="22"><span class="lineNum">      22 </span>                :            :     /* Nacin obrade deklaracije */</a>
+<a name="23"><span class="lineNum">      23 </span>                :            :     bool TraverseDecl(Decl *d);</a>
+<a name="24"><span class="lineNum">      24 </span>                :            : </a>
+<a name="25"><span class="lineNum">      25 </span>                :            : private:</a>
+<a name="26"><span class="lineNum">      26 </span>                :            :     /* Privatno cuvanje tekuce deklaracije */</a>
+<a name="27"><span class="lineNum">      27 </span>                :            :     Decl *tekdek;</a>
+<a name="28"><span class="lineNum">      28 </span>                :            : </a>
+<a name="29"><span class="lineNum">      29 </span>                :            :     /* Privatno cuvanje vec pripremljenih naredbi */</a>
+<a name="30"><span class="lineNum">      30 </span>                :            :     std::unordered_map&lt;const IfStmt *, DeclRefExpr *&gt; prip;</a>
+<a name="31"><span class="lineNum">      31 </span>                :            : };</a>
+<a name="32"><span class="lineNum">      32 </span>                :            : </a>
+<a name="33"><span class="lineNum">      33 </span>                :            : #endif</a>
 </pre>
       </td>
     </tr>
