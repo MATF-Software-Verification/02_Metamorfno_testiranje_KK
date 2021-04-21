@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+static int i = 1;
+
 int main() {
   int x = 10;
   while (x--)

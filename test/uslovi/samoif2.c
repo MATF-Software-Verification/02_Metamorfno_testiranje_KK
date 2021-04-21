@@ -73,9 +73,9 @@ int main() {
           break;
         }
         if (cond2 != 3 && cond2 != 4 && cond2 != 6) {
-          int cond7 = k - 1;
+          int cond9 = k - 1;
           do {
-            if (cond7 == 4)
+            if (cond9 == 4)
               putchar('5');
           } while (0);
         }
@@ -108,24 +108,26 @@ int main() {
   }
 
   // spoljasnji sa dubokim oznakama
-  switch (2) {
-    while (0) {
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      continue;
-    case 4:
-      continue;
+  while (0) {
+    switch (2) {
+      while (0) {
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3:
+        continue;
+      case 4:
+        continue;
 
-      {
-        int cond3 = 10;
-        do {
-          if (cond3 == 10)
-            return 0;
-          return 1;
-        } while (0);
+        {
+          int cond3 = 10;
+          do {
+            if (cond3 == 10)
+              return 0;
+            return 1;
+          } while (0);
+        }
       }
     }
   }
@@ -205,6 +207,48 @@ int main() {
         break;
     }
   }
+
+  do {
+    if (0) {
+      break;
+      {
+        int cond7 = (int)!!0;
+        do {
+          if (cond7 == 1) {
+            return 1;
+          }
+        } while (0);
+      }
+    }
+  } while (0);
+
+  do {
+    if (0) {
+      break;
+    } else {
+      {
+        int cont3 = 0;
+        {
+          int cond8 = (int)!!0;
+          do {
+            if (cond8 == 1) {
+              { return 1; }
+              break;
+            }
+            {
+              {
+                cont3 = 1;
+                break;
+              }
+            }
+          } while (0);
+        }
+
+        if (cont3)
+          continue;
+      }
+    }
+  } while (0);
 
   return 0;
 }

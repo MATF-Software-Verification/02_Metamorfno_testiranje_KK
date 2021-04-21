@@ -76,24 +76,26 @@ int main() {
   }
 
   // spoljasnji sa dubokim oznakama
-  switch (2) {
-    while (0) {
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      continue;
-    case 4:
-      continue;
+  while (0) {
+    switch (2) {
+      while (0) {
+      case 1:
+        break;
+      case 2:
+        break;
+      case 3:
+        continue;
+      case 4:
+        continue;
 
-      {
-        int cond0 = 10;
-        do {
-          if (cond0 == 10)
-            return 0;
-          return 1;
-        } while (0);
+        {
+          int cond0 = 10;
+          do {
+            if (cond0 == 10)
+              return 0;
+            return 1;
+          } while (0);
+        }
       }
     }
   }
@@ -147,6 +149,23 @@ int main() {
       break;
     }
   }
+
+  do {
+    if (0) {
+      break;
+      if (0)
+        return 1;
+    }
+  } while (0);
+
+  do {
+    if (0)
+      break;
+    else if (0)
+      return 1;
+    else
+      continue;
+  } while (0);
 
   return 0;
 }

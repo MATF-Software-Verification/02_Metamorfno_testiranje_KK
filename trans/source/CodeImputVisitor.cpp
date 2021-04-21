@@ -30,7 +30,7 @@ const char *CodeImputVisitor::dats[] = {
 
 /* Postavljanje broja umetanja */
 void CodeImputVisitor::postaviBroj(unsigned long long i) {
-    if (i > 0) n = i;
+    n = std::max(i, 1ull);
 }
 
 /* Imputacija oko naredbe ako treba */
@@ -75,7 +75,6 @@ bool CodeImputVisitor::nemogucaIzmena(Stmt *s) const {
     /* Nije u redu ako nema roditelja */
     const auto r = rods.find(s);
     if (r == std::cend(rods)) return true;
-    if (!r->second) return true;
 
     /* U redu je ako je roditelj slozen */
     return !isa<CompoundStmt>(r->second);

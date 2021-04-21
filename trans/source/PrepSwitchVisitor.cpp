@@ -41,7 +41,6 @@
 bool PrepSwitchVisitor::proveriSwitchCase(SwitchCase *s) const {
     /* Dohvatanje prvog roditelja */
     const auto telo = dyn_cast<CompoundStmt>(rods.at(s));
-    if (!telo) return false;
 
     /* Dohvatanje drugog roditelja */
     const auto swch = dyn_cast<SwitchStmt>(rods.at(telo));
@@ -88,7 +87,7 @@ bool PrepSwitchVisitor::VisitContinueStmt(ContinueStmt *s) {
 
     /* Prolazak kroz roditelje tekuceg continue */
     auto r = rods.at(s);
-    while (r) {
+    for (;;) {
         /* Odustajanje ako je neka petlja */
         if (isa<DoStmt>(r) || isa<WhileStmt>(r) || isa<ForStmt>(r))
             return true;
@@ -102,9 +101,6 @@ bool PrepSwitchVisitor::VisitContinueStmt(ContinueStmt *s) {
         /* Nastavljanje dalje */
         r = rods.at(r);
     }
-
-    /* Odustajanje ako nije switch roditelj */
-    if (!dekl) return true;
 
     /* Postavljanje zastavice za skok iz petlje */
     const auto dodela = napraviDodelu(dekl, napraviTrue());

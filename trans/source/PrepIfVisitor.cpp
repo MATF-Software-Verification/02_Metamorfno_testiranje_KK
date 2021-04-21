@@ -84,7 +84,7 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
 
     /* Prolazak kroz roditelje tekuceg break */
     auto r = rods.at(s);
-    while (r) {
+    for(;;) {
         /* Odustajanje ako je neka petlja ili switch */
         if (isa<DoStmt>(r)  || isa<WhileStmt>(r) ||
             isa<ForStmt>(r) || isa<SwitchStmt>(r))
@@ -101,9 +101,6 @@ bool PrepIfVisitor::VisitBreakStmt(BreakStmt *s) {
         /* Nastavljanje dalje */
         r = rods.at(r);
     }
-
-    /* Odustajanje ako nije if roditelj */
-    if (!dekl) return true;
 
     /* Postavljanje zastavice za skok iz petlje */
     const auto dodela = napraviDodelu(dekl, napraviTrue());
