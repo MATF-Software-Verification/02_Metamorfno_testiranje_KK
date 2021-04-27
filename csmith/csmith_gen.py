@@ -7,6 +7,7 @@ import time
 import random
 import signal
 import subprocess
+from typing import List
 
 class Timeout:
     """
@@ -54,20 +55,23 @@ def get_csmith_include():
     csmith_include = f'{csmith_relative_path}/{csmith_include_file}'
     return csmith_include
 
-def run_csmith(seed: int):
+def run_csmith(seed: int, args: List[str]):
     """
     Generates random C file using CSmith tool.
 
     This script takes same arguments as CSmith tool (it's just a wrapper)
     """
-    args = sys.argv[1:]
     csmith_args = []
 
     # If no seed is chosen with `-s` option then random seed is generated
     try:
         seed_index = args.index('-s')
-        assert len(args) > seed_index, 'Missing seed number after "-o" option!'
-        seed = int(args[seed_index])
+        assert len(args) > seed_index+1, 'Missing seed number after "-s" option!'
+        seed = int(args[seed_index+1])
+
+        # Can only extract seed once
+        del args[seed_index+1]
+        del args[seed_index]
     except ValueError:
         seed = random.randrange(sys.maxsize)
 
@@ -93,7 +97,7 @@ def run_csmith(seed: int):
     command = f'csmith {args_line}'
     os.system(command)
 
-    return output_filename, seed
+    return output_filename, seed, args
 
 def replace_csmith_include(output_filename: str, csmith_include: str):
     """
@@ -140,15 +144,15 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     with Timeout(seconds=MAX_RUN_DURATION, error_message='Program took too long to run!'):
         try:
             process = subprocess.Popen(f'{run_command} > {checksum_file}', shell=True)
-            print(process.pid)
             process.communicate()
         except TimeoutError:
             trace('Generated program timed out...')
+            # Making sure he is dead...
+            os.kill(process.pid, signal.SIGKILL)
             # Removing files from dumped program
-            if os.path.exists(output_filename):
-                os.remove(output_filename)
-            if os.path.exists(warn_filename):
-                os.remove(warn_filename)
+            for file in [output_filename, checksum_file, warn_filename]:
+                if os.path.exists(file):
+                    os.remove(file)
             return False
 
     trace('New program is generated!')
@@ -158,10 +162,11 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
 
 def run(seed: int = None, compiler: str = 'gcc', compiler_options=''):
     passed_test = False
+    args = sys.argv[1:]
 
     while not passed_test:
         csmith_include = get_csmith_include()
-        output_filename, seed = run_csmith(seed)
+        output_filename, seed, args = run_csmith(seed, args)
         replace_csmith_include(output_filename, csmith_include)
         passed_test = test_generated_c_code(compiler, output_filename, compiler_options)
 
