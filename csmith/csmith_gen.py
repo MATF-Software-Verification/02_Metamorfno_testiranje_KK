@@ -137,9 +137,11 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     filename = output_filename[:-2]
     warn_filename = filename + '.warn.txt'
     checksum_file = filename + '.checksum.txt'
-    with Timeout(seconds=MAX_RUN_DURATION, error_message='JobX took too much time'):
+    with Timeout(seconds=MAX_RUN_DURATION, error_message='Program took too long to run!'):
         try:
-            subprocess.run(f'{run_command} > {checksum_file}', shell=True)
+            process = subprocess.Popen(f'{run_command} > {checksum_file}', shell=True)
+            print(process.pid)
+            process.communicate()
         except TimeoutError:
             trace('Generated program timed out...')
             # Removing files from dumped program
