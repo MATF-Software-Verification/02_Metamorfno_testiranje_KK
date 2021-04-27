@@ -87,20 +87,22 @@ class Transformator:
         3. Saves new output.
         """
         c_file = f'{seed}.c'
+        c_file_duplicate = f'{seed}.dup.c'
         c_transformed_file = f'{seed}.transform.c'
         checksum_file = f'{seed}.checksum.txt'
         trans_path = f'build/trans'
 
         # 1
+        shutil.copyfile(c_file, c_file_duplicate)
         self._trace('Transforming generated C program!', verbosity=1)
         with open(f'{seed}.trans.sequence.txt', 'w') as tseq_file:
             for transformation in get_next_transformation(n=self.trans_seq_len):
                 tseq_file.write(f'{transformation}\n')
                 self._trace(f'Next transformation is "{transformation}".', verbosity=1)
-                transform_command = f'./{trans_path} {c_file} tmp.c {transformation}'
+                transform_command = f'./{trans_path} {c_file_duplicate} tmp.c {transformation}'
                 os.system(transform_command)
-                os.rename('tmp.c', c_file)
-            os.rename(c_file, c_transformed_file)
+                os.rename('tmp.c', c_file_duplicate)
+            os.rename(c_file_duplicate, c_transformed_file)
 
         # 2
         # Option '-w' disables all warnings
