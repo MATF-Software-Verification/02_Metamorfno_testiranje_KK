@@ -179,6 +179,22 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     os.remove(compiled_file_name)
     return True
 
+def cleanup():
+    zombie_filename = 'zombies.txt'
+    list_zombies_command = f'ps -ef | grep csmith.out > {zombie_filename}'
+    subprocess.run(list_zombies_command, shell=True)
+    with open(zombie_filename, 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            content = line.split(' ')
+            content_without_spaces = list(filter(lambda w: w.strip() != '', content))
+            pid = int(content_without_spaces[1])
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+    os.remove(zombie_filename)
+
 def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max_run_duration: int = None) -> int:
     passed_test = False
     args = sys.argv[1:]
@@ -191,6 +207,7 @@ def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max
         replace_csmith_include(output_filename, csmith_include)
         passed_test = test_generated_c_code(compiler, output_filename, compiler_options, max_run_duration)
 
+    cleanup()
     return seed
 
 if __name__ == '__main__':
