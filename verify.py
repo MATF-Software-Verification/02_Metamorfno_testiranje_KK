@@ -9,10 +9,14 @@ from pathlib import Path
 import random
 import argparse
 import subprocess
+from typing import List
 
-def get_next_transformation(n: int = 3):
+def get_transformation_sequence(n: int = 3) -> List[str]:
     """
     Generates random sequence of transformations.
+
+    :param n: Sequence length
+    :return: Sequence of transformations
     """
     transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
 
@@ -57,7 +61,7 @@ class Transformator:
 
         self._initialize()
 
-    def _initialize(self):
+    def _initialize(self) -> None:
         """
         If transformations program is not compiled yet 
         then it compiles before future Transformator usage.
@@ -76,11 +80,11 @@ class Transformator:
 
             os.chdir(owd)
 
-    def _trace(self, content: str, verbosity: int = 0, *args, **kwargs):
+    def _trace(self, content: str, verbosity: int = 0, *args, **kwargs) -> None:
         if verbosity <= self.verbosity:
             print(f'[verify-transformator]: {content}', *args, **kwargs)
 
-    def transform(self, seed: int):
+    def transform(self, seed: int) -> bool:
         """
         Transforms C file using random transformation.
 
@@ -88,6 +92,9 @@ class Transformator:
         1. Transform C file using C++ compiled transformation program;
         2. Compiles transformed C file;
         3. Saves new output.
+
+        :param seed: Seed
+        :return: True if transformed program does not have infinite loop and False instead.
         """
         c_file = f'{seed}.c'
         c_file_duplicate = f'{seed}.dup.c'
@@ -99,7 +106,7 @@ class Transformator:
         shutil.copyfile(c_file, c_file_duplicate)
         self._trace('Transforming generated C program!', verbosity=1)
         with open(f'{seed}.trans.sequence.txt', 'w') as tseq_file:
-            for transformation in get_next_transformation(n=self.trans_seq_len):
+            for transformation in get_transformation_sequence(n=self.trans_seq_len):
                 tseq_file.write(f'{transformation}\n')
                 self._trace(f'Next transformation is "{transformation}".', verbosity=1)
                 transform_command = f'./{trans_path} {c_file_duplicate} tmp.c {transformation}'
@@ -129,37 +136,46 @@ class Transformator:
                 return False
         return True
 
-    def cleanup(self):
+    def cleanup(self) -> None:
         """
         Deletes temporary files.
         """
         if os.path.exists(self.compiled_program_name):
             os.remove(self.compiled_program_name)
 
-def trace(content: str, *args, **kwargs):
+def trace(content: str, *args, **kwargs) -> None:
     print(f'[verify-global]: {content}', *args, **kwargs)
 
-def verify(seed: int):
+def verify(seed: int) -> bool:
     """
     Check if two files are equal.
     If two files are equal then test passed else it failed.
+
+    :param seed: Seed
+    :return: True if files are equals (transformed and original) and False instead.
     """
     expected_output_filename = f'{seed}.checksum.txt'
     result_output_filename = f'{seed}.output.txt'
     return filecmp.cmp(expected_output_filename, result_output_filename)
 
-def cleanup(seed: int, transformator: Transformator):
+def cleanup(seed: int, transformator: Transformator) -> None:
     """
     Deletes temporary files.
+
+    :param seed: Seed
+    :param transformator: Transformator that needs to cleanup()
     """
     if seed is not None:
         for path in Path('.').glob(f'{seed}.*'):
             os.remove(path)
     transformator.cleanup()
 
-def rename_files(seed: int, save_dir: str):
+def rename_files(seed: int, save_dir: str) -> None:
     """
     Renames saved files in with more intuitive names.
+
+    :param seed: Seed
+    :param save_dir: Path where failed test data is stored.
     """
     os.rename(f'{save_dir}/{seed}.c', f'{save_dir}/raw.c')
     os.rename(f'{save_dir}/{seed}.checksum.txt', f'{save_dir}/expected_output.txt')
@@ -167,9 +183,12 @@ def rename_files(seed: int, save_dir: str):
     os.rename(f'{save_dir}/{seed}.transform.c', f'{save_dir}/transformed.c')
     os.rename(f'{save_dir}/{seed}.trans.sequence.txt', f'{save_dir}/sequence.txt')
 
-def save_test_info(storage_path: str, seed: int):
+def save_test_info(storage_path: str, seed: int) -> None:
     """
     Saves test info to storage.
+
+    :param storage_path: Path where failed test data is stored.
+    :param seed: Seed
     """
     save_dir = f'{storage_path}/{seed}'
     if not os.path.exists(save_dir):
@@ -234,7 +253,6 @@ def run():
             trace('Done!', end='\n\n')
         finally:
             cleanup(seed, transformator)
-
 
 
 if __name__ == '__main__':

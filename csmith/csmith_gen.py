@@ -7,18 +7,18 @@ import time
 import random
 import signal
 import subprocess
-from typing import List
+from typing import List, Tuple
 
 class Timeout:
     """
     Helper Class that stops program execution after X seconds if it has not finished.
     Used to filter programs with no lower chance of infinite loop (they do not last too long).
     """
-    def __init__(self, seconds=1, error_message='TimeoutError'):
+    def __init__(self, seconds: int = 1, error_message: str ='TimeoutError'):
         self.seconds = seconds
         self.error_message = error_message
 
-    def handle_timeout(self, signum, frame):
+    def handle_timeout(self, signum: int, frame: object):
         raise TimeoutError(self.error_message)
 
     def __enter__(self):
@@ -33,7 +33,7 @@ MAX_RUN_DURATION = 5
 def trace(content: str, *args, **kwargs):
     print(f'[csmith-gen]: {content}', *args, **kwargs)
 
-def get_csmith_include():
+def get_csmith_include() -> str:
     """
     Finds relative path based on `CSMITH_PATH` environment variable value.
     
@@ -45,6 +45,8 @@ def get_csmith_include():
     with 
 
     `include "[REL_PATH]/csmith.h"`
+
+    :return: `include "[REL_PATH]/csmith.h"`
     """
     assert os.environ['CSMITH_PATH'] is not None, 'Please set "CSMITH_PATH" environment variable value!'
     csmith_abs_path = os.environ['CSMITH_PATH']
@@ -55,11 +57,17 @@ def get_csmith_include():
     csmith_include = f'{csmith_relative_path}/{csmith_include_file}'
     return csmith_include
 
-def run_csmith(seed: int, args: List[str]):
+def run_csmith(seed: int, args: List[str]) -> Tuple[str, int, List[str]]:
     """
     Generates random C file using CSmith tool.
 
     This script takes same arguments as CSmith tool (it's just a wrapper)
+
+    Option '-s' is deleted from args after first run.
+
+    :param seed: Seed
+    :param args: Command line arguments without program name (first argument).
+    :return: Output filename, new (old) seed, new (old) args 
     """
     csmith_args = []
 
@@ -99,10 +107,13 @@ def run_csmith(seed: int, args: List[str]):
 
     return output_filename, seed, args
 
-def replace_csmith_include(output_filename: str, csmith_include: str):
+def replace_csmith_include(output_filename: str, csmith_include: str) -> None:
     """
     Replacing `#include "csmith.h"` with `include "[csmith_include]"` in output_filename.
     Check `get_csmith_include()` function.
+
+    :param output_filename: CSmith generated C file
+    :param csmith_include: CSmith library relative path
     """
     result_lines = []
 
@@ -110,6 +121,7 @@ def replace_csmith_include(output_filename: str, csmith_include: str):
         code = f.read()
 
     # Tuning include path and fixed-width types
+    # CSmith generated variable types are not compatible with Clang library
     code = re.sub(r'#include "csmith.h"', f'#include "{csmith_include}"', code)
     code = re.sub(r'([(), ])int8_t([(), ])', r'\1signed char\2', code)
     code = re.sub(r'([(), ])int16_t([(), ])', r'\1short\2', code)
@@ -123,13 +135,20 @@ def replace_csmith_include(output_filename: str, csmith_include: str):
     with open(output_filename, 'w') as f:
         f.write(code)
 
-def test_generated_c_code(compiler: str, output_filename: str, compiler_options: str, max_run_duration: int):
+def test_generated_c_code(compiler: str, output_filename: str, compiler_options: str, max_run_duration: int) -> bool:
     """
     CSmith can generate C programs with infinite loop.
     All files that need more than [MAX_RUN_DURATION] to finish are dumped.
 
     In `[seed].c` is program.
     In `[seed].checksum.txt` is program output.
+
+    :param compiler: clang/gcc
+    :param output_filename: CSmith generated C program
+    :param compiler_options: Compiler options
+    :param max_run_duration: All programs take mora than `max_run_duration` seconds to finish are considered
+        to have infinite loop
+    :return: True if program has not infinite loop and False instead.
     """
     compiled_file_name = 'csmith.out'
     # Option '-w' disables all warnings
@@ -160,7 +179,7 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     os.remove(compiled_file_name)
     return True
 
-def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max_run_duration: int = None):
+def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max_run_duration: int = None) -> int:
     passed_test = False
     args = sys.argv[1:]
     if max_run_duration is None:
