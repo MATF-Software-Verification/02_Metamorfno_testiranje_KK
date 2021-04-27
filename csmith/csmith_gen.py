@@ -123,7 +123,7 @@ def replace_csmith_include(output_filename: str, csmith_include: str):
     with open(output_filename, 'w') as f:
         f.write(code)
 
-def test_generated_c_code(compiler: str, output_filename: str, compiler_options: str):
+def test_generated_c_code(compiler: str, output_filename: str, compiler_options: str, max_run_duration: int):
     """
     CSmith can generate C programs with infinite loop.
     All files that need more than [MAX_RUN_DURATION] to finish are dumped.
@@ -141,7 +141,7 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     filename = output_filename[:-2]
     warn_filename = filename + '.warn.txt'
     checksum_file = filename + '.checksum.txt'
-    with Timeout(seconds=MAX_RUN_DURATION, error_message='Program took too long to run!'):
+    with Timeout(seconds=max_run_duration, error_message='Program took too long to run!'):
         try:
             process = subprocess.Popen(f'{run_command} > {checksum_file}', shell=True)
             process.communicate()
@@ -160,15 +160,17 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     os.remove(compiled_file_name)
     return True
 
-def run(seed: int = None, compiler: str = 'gcc', compiler_options=''):
+def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max_run_duration: int = None):
     passed_test = False
     args = sys.argv[1:]
+    if max_run_duration is None:
+        max_run_duration = MAX_RUN_DURATION
 
     while not passed_test:
         csmith_include = get_csmith_include()
         output_filename, seed, args = run_csmith(seed, args)
         replace_csmith_include(output_filename, csmith_include)
-        passed_test = test_generated_c_code(compiler, output_filename, compiler_options)
+        passed_test = test_generated_c_code(compiler, output_filename, compiler_options, max_run_duration)
 
     return seed
 

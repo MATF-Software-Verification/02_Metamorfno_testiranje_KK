@@ -8,6 +8,7 @@ import filecmp
 from pathlib import Path
 import random
 import argparse
+import subprocess
 
 def get_next_transformation(n: int = 3):
     """
@@ -44,13 +45,15 @@ class Transformator:
         verbosity: int, 
         compiler: str, 
         compiler_options: str,
-        trans_seq_len: int
+        trans_seq_len: int,
+        max_run_duration: int
     ):
         self.compiled_program_name = 'run.out'
         self.verbosity = verbosity
         self.compiler = compiler
         self.compiler_options = compiler_options
         self.trans_seq_len = trans_seq_len
+        self.max_run_duration = max_run_duration
 
         self._initialize()
 
@@ -114,7 +117,17 @@ class Transformator:
         self._trace('Running transformed generated C program!', verbosity=1)
         output_file = f'{seed}.output.txt'
         run_command = f'./{self.compiled_program_name} > {output_file}'
-        os.system(run_command)
+
+        with csmith_gen.Timeout(seconds=self.max_run_duration, error_message='Program took too long to run!'):
+            try:
+                process = subprocess.Popen(run_command, shell=True)
+                process.communicate()
+            except TimeoutError:
+                self._trace('Transformed program timed out...')
+                # Making sure he is dead...
+                os.kill(process.pid, signal.SIGKILL)
+                return False
+        return True
 
     def cleanup(self):
         """
@@ -174,6 +187,7 @@ def run():
     parser.add_argument('--compiler-options', help='Compiler options', type=str, default='')
     parser.add_argument('--trans-seq', help='Length of transformation sequence', type=int, default=3)
     parser.add_argument('--tests', help='Number of tests', type=int, default=3)
+    parser.add_argument('--max-duration', help='Maximum program time duration', type=int, default=5)
     args = parser.parse_args()
 
     storage_path = 'storage'
@@ -184,7 +198,8 @@ def run():
         verbosity=args.verbosity, 
         compiler=args.compiler,
         compiler_options=args.compiler_options,
-        trans_seq_len=args.trans_seq
+        trans_seq_len=args.trans_seq,
+        max_run_duration=args.max_duration
     )
 
     seed = None
@@ -195,12 +210,16 @@ def run():
         trace(f'Iteration {iteration}:')
         try:
             trace('Generating c program...')
-            seed = csmith_gen.run(compiler=args.compiler, compiler_options=args.compiler_options)
+            seed = csmith_gen.run(
+                compiler=args.compiler, 
+                compiler_options=args.compiler_options,
+                max_run_duration=args.max_duration)
             if not os.path.exists(f'{storage_path}/{seed}'):
                 trace('Transforming c program...')
-                transformator.transform(seed)
+                passed_test = transformator.transform(seed)
                 trace('Comparing checksums...')
-                passed_test = verify(seed)
+                if passed_test:
+                    passed_test = verify(seed)
                 if not passed_test:
                     trace('Test failed :(')
                     trace('Saving test info...')
