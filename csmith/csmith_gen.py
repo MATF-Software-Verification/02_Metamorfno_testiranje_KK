@@ -11,8 +11,9 @@ from typing import List, Tuple
 
 class Timeout:
     """
-    Helper Class that stops program execution after X seconds if it has not finished.
-    Used to filter programs with no lower chance of infinite loop (they do not last too long).
+    Pomocna funkcija koja zaustavlja rad programa nakon X sekundi ako rad tog programa nije zavrsen.
+    Koristi se da se filtriraju programi koji sigurno nemaju beskonacnu petlju.
+    Postoji sansa da se program prekine pod pretpostavkom da ima beskonacnu petlju, a samo predugo traje.
     """
     def __init__(self, seconds: int = 1, error_message: str = 'TimeoutError'):
         self.seconds = seconds
@@ -38,20 +39,20 @@ def trace(content: str, *args, **kwargs):
 
 def get_csmith_include() -> str:
     """
-    Finds relative path based on `CSMITH_PATH` environment variable value.
-    
-    CSmith output can be compiled with `<gcc/clang> <cfile> -I$CSMITH_PATH` but
-    AST library does not support `-I` option. This is solved by replacing:
+    Pronalazi relativnu putanju u zavisnosti od vrednosti `CSMITH_PATH` promenljive okruzenja.
+
+    CSmith moze da vrsi kompilaciju komandom `<gcc/clang> <cfile> -I$CSMITH_PATH`,
+    ali AST biblioteka ne podrzava `-I` opciju. Ovaj problem se resava tako sto:
 
     `#include "csmith.h"`
 
-    with 
+    sa
 
     `include "[REL_PATH]/csmith.h"`
 
     :return: `include "[REL_PATH]/csmith.h"`
     """
-    assert os.environ['CSMITH_PATH'] is not None, 'Please set "CSMITH_PATH" environment variable value!'
+    assert os.environ['CSMITH_PATH'] is not None, 'Nije podesena "CSMITH_PATH" promenljiva okruzenja!'
     csmith_abs_path = os.environ['CSMITH_PATH']
     script_abs_path = os.path.abspath('.')
     csmith_include_file = 'csmith.h'
@@ -63,39 +64,39 @@ def get_csmith_include() -> str:
 
 def run_csmith(args: List[str]) -> Tuple[str, int, List[str]]:
     """
-    Generates random C file using CSmith tool.
+    Generise nasumican C program uz pomoc CSmith alata.
 
-    This script takes same arguments as CSmith tool (it's just a wrapper)
+    Ovaj skript moze da prihvata sve dodatne opcije koje moze da prima i CSmith alat, jer je predstavlja samo okvir.
 
-    Option '-s' is deleted from args after first run.
+    Nakon prvog pokretanja se brise opcija '-s' (u slucaju da to seme izaziva beskonacnu petlju, mora da se izbaci).
 
-    :param args: Command line arguments without program name (first argument).
-    :return: Output filename, new (old) seed, new (old) args 
+    :param args: Argumenti komandne linije bez prvog argumenta (ime programa).
+    :return: Ime izlaznog direktorijuma, novo (staro) seme, novi (stari) args
     """
     csmith_args = []
 
-    # If no seed is chosen with `-s` option then random seed is generated
+    # Ako seme nije izabrano opcijom `-s`, onda se generise novo nasumicno seme
     try:
         seed_index = args.index('-s')
-        assert len(args) > seed_index+1, 'Missing seed number after "-s" option!'
+        assert len(args) > seed_index+1, 'Nedostaje broj nakon `-s` opcije!'
         seed = int(args[seed_index+1])
 
-        # Can only extract seed once
+        # Samo je jednom moguce iskoristiti seme
         del args[seed_index+1]
         del args[seed_index]
     except ValueError:
         seed = random.randrange(sys.maxsize)
 
-    # csmith filters all arguments except `-s` and `-o`
+    # csmith odbacuje sve argumente sem '-s' i '-o'
     csmith_args.append('-s')
     csmith_args.append(str(seed))
 
-    trace(f'Program seed is {seed}.')
+    trace(f'Seme programa je {seed}.')
 
-    # if no output filename is chosen with `-o` option then name is same as seed number
+    # Ako se ne izabare ime izlaza, onda ce to ime da odgovara semenu
     try:
         output_filename_index = args.index('-o')+1
-        assert len(args) > output_filename_index, 'Missing output file name after "-o" option!'
+        assert len(args) > output_filename_index, 'Nedostaje ime nakon `-o` opcije!'
         output_filename = args[output_filename_index]
     except ValueError:
         output_filename = f'{seed}.c'
@@ -113,17 +114,17 @@ def run_csmith(args: List[str]) -> Tuple[str, int, List[str]]:
 
 def replace_csmith_include(output_filename: str, csmith_include: str) -> None:
     """
-    Replacing `#include "csmith.h"` with `include "[csmith_include]"` in output_filename.
-    Check `get_csmith_include()` function.
+    Zamena `#include "csmith.h"` sa `include "[csmith_include]"` u `output_filename`.
+    Pogledati `get_csmith_include()` funkciju.
 
-    :param output_filename: CSmith generated C file
-    :param csmith_include: CSmith library relative path
+    :param output_filename: CSmith generisana datoteka
+    :param csmith_include: Relativna putanja CSmith biblioteke
     """
     with open(output_filename, 'r') as f:
         code = f.read()
 
-    # Tuning include path and fixed-width types
-    # CSmith generated variable types are not compatible with Clang library
+    # Podesavanja `include` putanje i preslikavanje tipova
+    # CSmith generisani tipovi promenljivih nisu kompatabilni sa Clang bibliotekom
     code = re.sub(r'#include "csmith.h"', f'#include "{csmith_include}"', code)
     code = re.sub(r'([(), ])int8_t([(), ])', r'\1signed char\2', code)
     code = re.sub(r'([(), ])int16_t([(), ])', r'\1short\2', code)
@@ -140,21 +141,21 @@ def replace_csmith_include(output_filename: str, csmith_include: str) -> None:
 
 def test_generated_c_code(compiler: str, output_filename: str, compiler_options: str, max_run_duration: int) -> bool:
     """
-    CSmith can generate C programs with infinite loop.
-    All files that need more than [MAX_RUN_DURATION] to finish are dumped.
+    CSmith moze da generise C program sa beskonacnom petljom.
+    Svi programi koji se izvrsavaju duze od [MAX_RUN_DURATION] se odbacuju.
 
-    In `[seed].c` is program.
-    In `[seed].checksum.txt` is program output.
+    Izlaz:
+    U `[seed].c` se nalazi program.
+    U `[seed].checksum.txt` se nalazi izlaz programa.
 
     :param compiler: clang/gcc
-    :param output_filename: CSmith generated C program
-    :param compiler_options: Compiler options
-    :param max_run_duration: All programs take mora than `max_run_duration` seconds to finish are considered
-        to have infinite loop
-    :return: True if program has not infinite loop and False instead.
+    :param output_filename: CSmith generisani C program
+    :param compiler_options: Opcije kompilatora
+    :param max_run_duration: Granica za odbacivanje programa koji mozda imaju beskonacnu petlju.
+    :return: True, ako program sigurno nema beskonacnu, a inace False
     """
     compiled_file_name = 'csmith.out'
-    # Option '-w' disables all warnings
+    # Opcija '-w' iskljucuje upozerenja
     compile_command = f'{compiler} {output_filename} -o {compiled_file_name} -w {compiler_options}'
     os.system(compile_command)
 
@@ -163,27 +164,36 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     filename = output_filename[:-2]
     warn_filename = filename + '.warn.txt'
     checksum_file = filename + '.checksum.txt'
-    with Timeout(seconds=max_run_duration, error_message='Program took too long to run!'):
+    with Timeout(seconds=max_run_duration, error_message='Programu treba previse dugo da se izvrsi!'):
         try:
             process = subprocess.Popen(f'{run_command} > {checksum_file}', shell=True)
             process.communicate()
         except TimeoutError:
-            trace('Generated program timed out...')
-            # Making sure he is dead...
+            trace('Programu je istekao mandat...')
+            # Ako je mozda zombi proces ostao, pravi se dodatni pokusaj ubistva strasti
             os.kill(process.pid, signal.SIGKILL)
-            # Removing files from dumped program
+            # Brisanje datoteka programa koji se odbacuje
             for file in [output_filename, checksum_file, warn_filename]:
                 if os.path.exists(file):
                     os.remove(file)
             return False
 
-    trace('New program is generated!')
-    # cleanup
+    trace('Generisan je novi program!')
+    # Ciscenje
     os.remove(compiled_file_name)
     return True
 
 
 def kill_remaining_zombies(keyword: str):
+    """
+    Kako klasa Timeout nije dovoljno pouzdana za ubijanje zombija u nekim situacijama i kako
+    dodatan pokusaj ubijanja zombija signalom u procesu ciscenja nije dovoljan, listaju se svi programi
+    koji su pokrenuti sa odgovarajucom kljucnom reci i ubijaju (jedan po jedan).
+
+    Ova funkcija se pokazala kao najpouzdanija za otklnjanje zombi procesa.
+
+    :param keyword: Kljucna rec (komanda kojom se poziva program)
+    """
     zombie_filename = 'zombies.txt'
     list_zombies_command = f'ps -ef | grep {keyword} > {zombie_filename}'
     subprocess.run(list_zombies_command, shell=True)
