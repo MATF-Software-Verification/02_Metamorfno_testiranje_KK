@@ -15,10 +15,10 @@ import signal
 
 def get_transformation_sequence(n: int = 3) -> List[str]:
     """
-    Generates random sequence of transformations.
+    Generise nasumicnu skvenci transformacija
 
-    :param n: Sequence length
-    :return: Sequence of transformations
+    :param n: Duzina sekvence
+    :return: Sekvenca transformacija
     """
     transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
 
@@ -48,9 +48,8 @@ def get_transformation_sequence(n: int = 3) -> List[str]:
 
 class Transformator:
     """
-    Transformations wrapper.
+    Okvir za transformacije.
     """
-
     def __init__(self,
                  verbosity: int,
                  compiler: str,
@@ -69,11 +68,11 @@ class Transformator:
 
     def _initialize(self) -> None:
         """
-        If transformations program is not compiled yet 
-        then it compiles before future Transformator usage.
+        Da bi transformator mogao da radi, neophodno je da se kompiliraju transformacije.
+        Uvek se automatski azuriraju promene u transformacijama.
         """
         build_path = f'build'
-        self._trace('Compilling transformator library!')
+        self._trace('Prevodjenje transformator biblioteke!')
         if not os.path.exists(f'{build_path}/trans'):
             Path(build_path).mkdir(parents=True, exist_ok=True)
 
@@ -93,17 +92,17 @@ class Transformator:
 
     def transform(self, seed: int) -> Tuple[bool, List[str]]:
         """
-        Transforms C file using random transformation.
+        Transformise C program koristeci nasumican niz transformacija.
 
-        Steps:
-        1. Transform C file using C++ compiled transformation program;
-        2. Compiles transformed C file;
-        3. Saves new output.
+        Koraci:
+        1. Transformacija C program koristeci C++ kompiliran program za transformacije.
+        2. Kompilacija izabrane C datoteke (uglavnom CSmith generisana)
+        3. Cuvanje izlaza.
 
-        :param seed: Seed
+        :param seed: seme
         :return: 
-            1. True if transformed program does not have infinite loop and False instead.
-            2. Sequence of transformations.
+            1. True, ako transformisan program sigurno nema beskonacnu petlju, a False inace
+            2. Sekvenca transformacija
         """
         c_file = f'{seed}.c'
         c_file_duplicate = f'{seed}.dup.c'
@@ -112,36 +111,36 @@ class Transformator:
 
         # 1
         shutil.copyfile(c_file, c_file_duplicate)
-        self._trace('Transforming generated C program!', verbosity=1)
+        self._trace('Transformacija generisanog C programa!', verbosity=1)
         sequence = get_transformation_sequence(n=self.trans_seq_len)
         with open(f'{seed}.trans.sequence.txt', 'w') as tseq_file:
             for transformation in sequence:
                 tseq_file.write(f'{transformation}\n')
-                self._trace(f'Next transformation is "{transformation}".', verbosity=1)
+                self._trace(f'Sledeca transformacija je "{transformation}".', verbosity=1)
                 transform_command = f'./{trans_path} {c_file_duplicate} tmp.c {transformation}'
                 os.system(transform_command)
                 os.rename('tmp.c', c_file_duplicate)
             os.rename(c_file_duplicate, c_transformed_file)
 
         # 2
-        # Option '-w' disables all warnings
-        self._trace('Compiling transformed generated C program!', verbosity=1)
+        # Opcija '-w' iskljucuje upozorenja
+        self._trace('Kompilacija transformisanog, generisanog C programa!', verbosity=1)
         compile_command = f'{self.compiler} {c_transformed_file}' \
                           + f'-o {self.compiled_program_name} -w {self.compiler_options}'
         os.system(compile_command)
 
         # 3
-        self._trace('Running transformed generated C program!', verbosity=1)
+        self._trace('Pokretanje transformisanog, generisanog C programa!', verbosity=1)
         output_file = f'{seed}.output.txt'
         run_command = f'./{self.compiled_program_name} > {output_file}'
 
         finished = True
-        with csmith_gen.Timeout(seconds=self.max_run_duration, error_message='Program took too long to run!'):
+        with csmith_gen.Timeout(seconds=self.max_run_duration, error_message='Programu je istekao mandat...'):
             try:
                 process = subprocess.Popen(run_command, shell=True)
                 process.communicate()
             except TimeoutError:
-                self._trace('Transformed program timed out...')
+                self._trace('Transformisanom programu je trebalo predugo da se izvrsi...')
                 # Making sure he is dead...
                 os.kill(process.pid, signal.SIGKILL)
                 finished = False
@@ -150,7 +149,7 @@ class Transformator:
 
     def cleanup(self) -> None:
         """
-        Deletes temporary files.
+        Brise privremene datoteke i ubija prezivele zombije.
         """
         self._trace('Taking trash out...', verbosity=1)
         if os.path.exists(self.compiled_program_name):
@@ -173,11 +172,11 @@ def trace(content: str, *args, **kwargs) -> None:
 
 def verify(seed: int) -> bool:
     """
-    Check if two files are equal.
-    If two files are equal then test passed else it failed.
+    Ova funkcija proverava da li su sadrzaji dve datoteke jednaki.
+    Ako su sadrzaji dve datoteke jednaki, onda je test prosao (isti je izlaz oba programa)
 
-    :param seed: Seed
-    :return: True if files are equals (transformed and original) and False instead.
+    :param seed: seme
+    :return: True, ako su sadrzaji obe datoteke jednaki, a False inace
     """
     expected_output_filename = f'{seed}.checksum.txt'
     result_output_filename = f'{seed}.output.txt'
@@ -186,9 +185,9 @@ def verify(seed: int) -> bool:
 
 def cleanup(seed: int) -> None:
     """
-    Deletes temporary files.
+    Brisanje privremenih datoteka (na globalnom nivou)
 
-    :param seed: Seed
+    :param seed: seme
     """
     if seed is not None:
         for path in Path('.').glob(f'{seed}.*'):
@@ -197,10 +196,10 @@ def cleanup(seed: int) -> None:
 
 def rename_files(seed: int, save_dir: str) -> None:
     """
-    Renames saved files in with more intuitive names.
+    Preimenuje sacuvane datoteke tako da su im imena intuitivnija.
 
-    :param seed: Seed
-    :param save_dir: Path where failed test data is stored.
+    :param seed: seme
+    :param save_dir: Putanja gde su datoteke sacuvane.
     """
     os.rename(f'{save_dir}/{seed}.c', f'{save_dir}/raw.c')
     os.rename(f'{save_dir}/{seed}.checksum.txt', f'{save_dir}/expected_output.txt')
@@ -211,10 +210,10 @@ def rename_files(seed: int, save_dir: str) -> None:
 
 def save_test_info(storage_path: str, seed: int) -> None:
     """
-    Saves test info to storage.
+    Cuva informacije o testovima u skladiste (storage).
 
-    :param storage_path: Path where failed test data is stored.
-    :param seed: Seed
+    :param storage_path: Putanja gde se cuvaju informacije o neuspelim testovima.
+    :param seed: seme
     """
     save_dir = f'{storage_path}/{seed}'
     if not os.path.exists(save_dir):
@@ -255,45 +254,45 @@ def run():
         test_history = {}
 
         while iteration <= max_iteration:
-            trace(f'Iteration {iteration}:')
+            trace(f'Iteracija {iteration}:')
             try:
-                trace('Generating c program...')
+                trace('Generisanje C programa...')
                 seed = csmith_gen.run(
                     compiler=args.compiler,
                     compiler_options=args.compiler_options,
                     max_run_duration=args.max_duration)
                 if not os.path.exists(f'{storage_path}/{seed}'):
-                    trace('Transforming c program...')
+                    trace('Transformacija c program...')
                     passed_test, sequence = transformator.transform(seed)
                     test_history[seed] = passed_test, sequence
-                    trace('Comparing checksums...')
+                    trace('Uporedjivanje sumi...')
                     if passed_test:
                         passed_test = verify(seed)
                     if not passed_test:
-                        trace('Test failed :(')
-                        trace('Saving test info...')
+                        trace('Test nije prosao :(')
+                        trace('Cuvanje informacija o testu...')
                         save_test_info(storage_path, seed)
                     else:
-                        trace('Test Passed :)')
+                        trace('Test je prosao :)')
 
                     iteration += 1
                 else:
-                    print('Test seed already exists. Skipping...')
+                    print('Test vec postoji u skladistu, preskacem ga...')
 
-                trace('Done!', end='\n\n')
+                trace('Kraj!', end='\n\n')
             finally:
                 cleanup(seed)
 
-        trace('Test Results...')
+        trace('Rezultati testa...')
         n_passed_test = 0
         for seed, test_info in test_history.items():
             passed_test, sequence = test_info
             if not passed_test:
-                trace(f'Test for seed {seed} failed... Sequence: {sequence}')
+                trace(f'Test koji ima seme "{seed}" nije prosao... Sekvenca transformacija: {sequence}')
             else:
                 n_passed_test += int(passed_test)
 
-        trace(f'Passed {n_passed_test}/{max_iteration}')
+        trace(f'Prolaznost: {n_passed_test}/{max_iteration}')
 
 
 if __name__ == '__main__':
