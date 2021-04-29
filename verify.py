@@ -3,15 +3,15 @@
 from csmith import csmith_gen
 import os
 import shutil
-import sys
 import filecmp
 from pathlib import Path
 import random
 import argparse
 import subprocess
 from typing import List, Tuple
-from functools import reduce
 import traceback
+import signal
+
 
 def get_transformation_sequence(n: int = 3) -> List[str]:
     """
@@ -32,28 +32,32 @@ def get_transformation_sequence(n: int = 3) -> List[str]:
             r = random.randrange(2)
             t = f'{t}{r}'
 
-            if hasO: continue
+            if hasO:
+                continue
             hasO = True
         if t == 'u':
             r = random.randrange(10, 50)
             t = f'{t}{r}'
 
-            if hasU: continue
+            if hasU:
+                continue
             hasU = True
         sequence.append(t)
     return sequence
+
 
 class Transformator:
     """
     Transformations wrapper.
     """
-    def __init__(self, 
-        verbosity: int, 
-        compiler: str, 
-        compiler_options: str,
-        trans_seq_len: int,
-        max_run_duration: int
-    ):
+
+    def __init__(self,
+                 verbosity: int,
+                 compiler: str,
+                 compiler_options: str,
+                 trans_seq_len: int,
+                 max_run_duration: int):
+
         self.compiled_program_name = 'run.out'
         self.verbosity = verbosity
         self.compiler = compiler
@@ -104,7 +108,6 @@ class Transformator:
         c_file = f'{seed}.c'
         c_file_duplicate = f'{seed}.dup.c'
         c_transformed_file = f'{seed}.transform.c'
-        checksum_file = f'{seed}.checksum.txt'
         trans_path = f'build/trans'
 
         # 1
@@ -123,7 +126,8 @@ class Transformator:
         # 2
         # Option '-w' disables all warnings
         self._trace('Compiling transformed generated C program!', verbosity=1)
-        compile_command = f'{self.compiler} {c_transformed_file} -o {self.compiled_program_name} -w {self.compiler_options}'
+        compile_command = f'{self.compiler} {c_transformed_file}' \
+                          + f'-o {self.compiled_program_name} -w {self.compiler_options}'
         os.system(compile_command)
 
         # 3
@@ -162,8 +166,10 @@ class Transformator:
             traceback.print_exception(exc_type, exc_value, tb)
         self.cleanup()
 
+
 def trace(content: str, *args, **kwargs) -> None:
     print(f'[verify-global]: {content}', *args, **kwargs)
+
 
 def verify(seed: int) -> bool:
     """
@@ -177,16 +183,17 @@ def verify(seed: int) -> bool:
     result_output_filename = f'{seed}.output.txt'
     return filecmp.cmp(expected_output_filename, result_output_filename)
 
+
 def cleanup(seed: int) -> None:
     """
     Deletes temporary files.
 
     :param seed: Seed
-    :param transformator: Transformator that needs to cleanup()
     """
     if seed is not None:
         for path in Path('.').glob(f'{seed}.*'):
             os.remove(path)
+
 
 def rename_files(seed: int, save_dir: str) -> None:
     """
@@ -200,6 +207,7 @@ def rename_files(seed: int, save_dir: str) -> None:
     os.rename(f'{save_dir}/{seed}.output.txt', f'{save_dir}/result_output.txt')
     os.rename(f'{save_dir}/{seed}.transform.c', f'{save_dir}/transformed.c')
     os.rename(f'{save_dir}/{seed}.trans.sequence.txt', f'{save_dir}/sequence.txt')
+
 
 def save_test_info(storage_path: str, seed: int) -> None:
     """
@@ -216,11 +224,11 @@ def save_test_info(storage_path: str, seed: int) -> None:
             shutil.copy(path_str, f'{save_dir}/{path_str}')
         rename_files(seed, save_dir)
 
+
 def run():
     parser = argparse.ArgumentParser()
     parser.add_argument('--verbosity', help='Increase output verbosity', default=0, type=int)
-    parser.add_argument('--compiler', help='gcc or clang', default='gcc', type=str,
-                        choices=['gcc', 'clang'])
+    parser.add_argument('--compiler', help='gcc or clang', default='gcc', type=str, choices=['gcc', 'clang'])
     parser.add_argument('--compiler-options', help='Compiler options', type=str, default='')
     parser.add_argument('--trans-seq', help='Length of transformation sequence', type=int, default=3)
     parser.add_argument('--tests', help='Number of tests', type=int, default=3)
@@ -251,7 +259,7 @@ def run():
             try:
                 trace('Generating c program...')
                 seed = csmith_gen.run(
-                    compiler=args.compiler, 
+                    compiler=args.compiler,
                     compiler_options=args.compiler_options,
                     max_run_duration=args.max_duration)
                 if not os.path.exists(f'{storage_path}/{seed}'):
@@ -290,4 +298,3 @@ def run():
 
 if __name__ == '__main__':
     run()
-

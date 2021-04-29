@@ -3,18 +3,18 @@
 import os
 import re
 import sys
-import time
 import random
 import signal
 import subprocess
 from typing import List, Tuple
+
 
 class Timeout:
     """
     Helper Class that stops program execution after X seconds if it has not finished.
     Used to filter programs with no lower chance of infinite loop (they do not last too long).
     """
-    def __init__(self, seconds: int = 1, error_message: str ='TimeoutError'):
+    def __init__(self, seconds: int = 1, error_message: str = 'TimeoutError'):
         self.seconds = seconds
         self.error_message = error_message
 
@@ -25,13 +25,16 @@ class Timeout:
         signal.signal(signal.SIGALRM, self.handle_timeout)
         signal.alarm(self.seconds)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, exc_type, exc_value, tb):
         signal.alarm(0)
+
 
 MAX_RUN_DURATION = 5
 
+
 def trace(content: str, *args, **kwargs):
     print(f'[csmith-gen]: {content}', *args, **kwargs)
+
 
 def get_csmith_include() -> str:
     """
@@ -57,7 +60,8 @@ def get_csmith_include() -> str:
     csmith_include = f'{csmith_relative_path}/{csmith_include_file}'
     return csmith_include
 
-def run_csmith(seed: int, args: List[str]) -> Tuple[str, int, List[str]]:
+
+def run_csmith(args: List[str]) -> Tuple[str, int, List[str]]:
     """
     Generates random C file using CSmith tool.
 
@@ -65,7 +69,6 @@ def run_csmith(seed: int, args: List[str]) -> Tuple[str, int, List[str]]:
 
     Option '-s' is deleted from args after first run.
 
-    :param seed: Seed
     :param args: Command line arguments without program name (first argument).
     :return: Output filename, new (old) seed, new (old) args 
     """
@@ -107,6 +110,7 @@ def run_csmith(seed: int, args: List[str]) -> Tuple[str, int, List[str]]:
 
     return output_filename, seed, args
 
+
 def replace_csmith_include(output_filename: str, csmith_include: str) -> None:
     """
     Replacing `#include "csmith.h"` with `include "[csmith_include]"` in output_filename.
@@ -115,8 +119,6 @@ def replace_csmith_include(output_filename: str, csmith_include: str) -> None:
     :param output_filename: CSmith generated C file
     :param csmith_include: CSmith library relative path
     """
-    result_lines = []
-
     with open(output_filename, 'r') as f:
         code = f.read()
 
@@ -134,6 +136,7 @@ def replace_csmith_include(output_filename: str, csmith_include: str) -> None:
 
     with open(output_filename, 'w') as f:
         f.write(code)
+
 
 def test_generated_c_code(compiler: str, output_filename: str, compiler_options: str, max_run_duration: int) -> bool:
     """
@@ -179,6 +182,7 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     os.remove(compiled_file_name)
     return True
 
+
 def kill_remaining_zombies(keyword: str):
     zombie_filename = 'zombies.txt'
     list_zombies_command = f'ps -ef | grep {keyword} > {zombie_filename}'
@@ -195,6 +199,7 @@ def kill_remaining_zombies(keyword: str):
                 pass
     os.remove(zombie_filename)
 
+
 def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max_run_duration: int = None) -> int:
     passed_test = False
     args = sys.argv[1:]
@@ -203,13 +208,13 @@ def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max
 
     while not passed_test:
         csmith_include = get_csmith_include()
-        output_filename, seed, args = run_csmith(seed, args)
+        output_filename, seed, args = run_csmith(args)
         replace_csmith_include(output_filename, csmith_include)
         passed_test = test_generated_c_code(compiler, output_filename, compiler_options, max_run_duration)
 
     kill_remaining_zombies('csmith.out')
     return seed
 
+
 if __name__ == '__main__':
     run()
-
