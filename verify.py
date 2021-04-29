@@ -67,18 +67,19 @@ class Transformator:
         then it compiles before future Transformator usage.
         """
         build_path = f'build'
+        self._trace('Compilling transformator library!')
         if not os.path.exists(f'{build_path}/trans'):
-            self._trace('Compiling transformator library!')
             Path(build_path).mkdir(parents=True, exist_ok=True)
-            owd = os.getcwd()
-            os.chdir(build_path)
 
-            build_command = 'cmake -G "Unix Makefiles" ../trans'
-            os.system(build_command)
+        owd = os.getcwd()
+        os.chdir(build_path)
 
-            os.system('make')
+        build_command = 'cmake -G "Unix Makefiles" ../trans'
+        os.system(build_command)
 
-            os.chdir(owd)
+        os.system('make')
+
+        os.chdir(owd)
 
     def _trace(self, content: str, verbosity: int = 0, *args, **kwargs) -> None:
         if verbosity <= self.verbosity:
