@@ -9,7 +9,8 @@ from pathlib import Path
 import random
 import argparse
 import subprocess
-from typing import List
+from typing import List, Tuple
+from functools import reduce
 
 def get_transformation_sequence(n: int = 3) -> List[str]:
     """
@@ -85,7 +86,7 @@ class Transformator:
         if verbosity <= self.verbosity:
             print(f'[verify-transformator]: {content}', *args, **kwargs)
 
-    def transform(self, seed: int) -> bool:
+    def transform(self, seed: int) -> Tuple[bool, List[str]]:
         """
         Transforms C file using random transformation.
 
@@ -95,7 +96,9 @@ class Transformator:
         3. Saves new output.
 
         :param seed: Seed
-        :return: True if transformed program does not have infinite loop and False instead.
+        :return: 
+            1. True if transformed program does not have infinite loop and False instead.
+            2. Sequence of transformations.
         """
         c_file = f'{seed}.c'
         c_file_duplicate = f'{seed}.dup.c'
@@ -106,8 +109,9 @@ class Transformator:
         # 1
         shutil.copyfile(c_file, c_file_duplicate)
         self._trace('Transforming generated C program!', verbosity=1)
+        sequence = get_transformation_sequence(n=self.trans_seq_len)
         with open(f'{seed}.trans.sequence.txt', 'w') as tseq_file:
-            for transformation in get_transformation_sequence(n=self.trans_seq_len):
+            for transformation in sequence:
                 tseq_file.write(f'{transformation}\n')
                 self._trace(f'Next transformation is "{transformation}".', verbosity=1)
                 transform_command = f'./{trans_path} {c_file_duplicate} tmp.c {transformation}'
@@ -126,6 +130,7 @@ class Transformator:
         output_file = f'{seed}.output.txt'
         run_command = f'./{self.compiled_program_name} > {output_file}'
 
+        finished = True
         with csmith_gen.Timeout(seconds=self.max_run_duration, error_message='Program took too long to run!'):
             try:
                 process = subprocess.Popen(run_command, shell=True)
@@ -134,8 +139,8 @@ class Transformator:
                 self._trace('Transformed program timed out...')
                 # Making sure he is dead...
                 os.kill(process.pid, signal.SIGKILL)
-                return False
-        return True
+                finished = False
+        return finished, sequence
 
     def cleanup(self) -> None:
         """
@@ -226,6 +231,8 @@ def run():
     iteration = 1
     max_iteration = args.tests
 
+    test_history = {}
+
     while iteration <= max_iteration:
         trace(f'Iteration {iteration}:')
         try:
@@ -236,7 +243,8 @@ def run():
                 max_run_duration=args.max_duration)
             if not os.path.exists(f'{storage_path}/{seed}'):
                 trace('Transforming c program...')
-                passed_test = transformator.transform(seed)
+                passed_test, sequence = transformator.transform(seed)
+                test_history[seed] = passed_test, sequence
                 trace('Comparing checksums...')
                 if passed_test:
                     passed_test = verify(seed)
@@ -254,6 +262,18 @@ def run():
             trace('Done!', end='\n\n')
         finally:
             cleanup(seed, transformator)
+
+    trace('Test Results...')
+    n_passed_test = 0
+    for seed, test_info in test_history.items():
+        passed_test, sequence = test_info
+        if not passed_test:
+            trace(f'Test for seed {seed} failed... Sequence: {sequence}')
+        else:
+            n_passed_test += int(passed_test)
+
+    trace(f'Passed {n_passed_test}/{max_iteration}')
+        
 
 
 if __name__ == '__main__':
