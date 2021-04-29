@@ -126,7 +126,7 @@ class Transformator:
         # Opcija '-w' iskljucuje upozorenja
         self._trace('Kompilacija transformisanog, generisanog C programa!', verbosity=1)
         compile_command = f'{self.compiler} {c_transformed_file}' \
-                          + f'-o {self.compiled_program_name} -w {self.compiler_options}'
+                          + f' -o {self.compiled_program_name} -w {self.compiler_options}'
         os.system(compile_command)
 
         # 3
@@ -151,7 +151,7 @@ class Transformator:
         """
         Brise privremene datoteke i ubija prezivele zombije.
         """
-        self._trace('Taking trash out...', verbosity=1)
+        self._trace('Bacanje djubreta...', verbosity=1)
         if os.path.exists(self.compiled_program_name):
             os.remove(self.compiled_program_name)
 
@@ -265,8 +265,8 @@ def run():
                     trace('Transformacija c program...')
                     passed_test, sequence = transformator.transform(seed)
                     test_history[seed] = passed_test, sequence
-                    trace('Uporedjivanje sumi...')
                     if passed_test:
+                        trace('Uporedjivanje sumi...')
                         passed_test = verify(seed)
                     if not passed_test:
                         trace('Test nije prosao :(')
@@ -277,7 +277,7 @@ def run():
 
                     iteration += 1
                 else:
-                    print('Test vec postoji u skladistu, preskacem ga...')
+                    print('Test vec postoji u skladistu, preskace se...')
 
                 trace('Kraj!', end='\n\n')
             finally:
