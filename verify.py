@@ -11,6 +11,7 @@ import argparse
 import subprocess
 from typing import List, Tuple
 from functools import reduce
+import traceback
 
 def get_transformation_sequence(n: int = 3) -> List[str]:
     """
@@ -140,14 +141,26 @@ class Transformator:
                 # Making sure he is dead...
                 os.kill(process.pid, signal.SIGKILL)
                 finished = False
+
         return finished, sequence
 
     def cleanup(self) -> None:
         """
         Deletes temporary files.
         """
+        self._trace('Taking trash out...', verbosity=1)
         if os.path.exists(self.compiled_program_name):
             os.remove(self.compiled_program_name)
+
+        csmith_gen.kill_remaining_zombies(self.compiled_program_name)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, tb):
+        if exc_type is not None:
+            traceback.print_exception(exc_type, exc_value, tb)
+        self.cleanup()
 
 def trace(content: str, *args, **kwargs) -> None:
     print(f'[verify-global]: {content}', *args, **kwargs)
@@ -164,7 +177,7 @@ def verify(seed: int) -> bool:
     result_output_filename = f'{seed}.output.txt'
     return filecmp.cmp(expected_output_filename, result_output_filename)
 
-def cleanup(seed: int, transformator: Transformator) -> None:
+def cleanup(seed: int) -> None:
     """
     Deletes temporary files.
 
@@ -174,7 +187,6 @@ def cleanup(seed: int, transformator: Transformator) -> None:
     if seed is not None:
         for path in Path('.').glob(f'{seed}.*'):
             os.remove(path)
-    transformator.cleanup()
 
 def rename_files(seed: int, save_dir: str) -> None:
     """
@@ -219,61 +231,61 @@ def run():
     if not os.path.exists(storage_path):
         os.mkdir(storage_path)
 
-    transformator = Transformator(
-        verbosity=args.verbosity, 
-        compiler=args.compiler,
-        compiler_options=args.compiler_options,
-        trans_seq_len=args.trans_seq,
-        max_run_duration=args.max_duration
-    )
+    transformator_params = {
+        'verbosity': args.verbosity,
+        'compiler': args.compiler,
+        'compiler_options': args.compiler_options,
+        'trans_seq_len': args.trans_seq,
+        'max_run_duration': args.max_duration
+    }
 
-    seed = None
-    iteration = 1
-    max_iteration = args.tests
+    with Transformator(**transformator_params) as transformator:
+        seed = None
+        iteration = 1
+        max_iteration = args.tests
 
-    test_history = {}
+        test_history = {}
 
-    while iteration <= max_iteration:
-        trace(f'Iteration {iteration}:')
-        try:
-            trace('Generating c program...')
-            seed = csmith_gen.run(
-                compiler=args.compiler, 
-                compiler_options=args.compiler_options,
-                max_run_duration=args.max_duration)
-            if not os.path.exists(f'{storage_path}/{seed}'):
-                trace('Transforming c program...')
-                passed_test, sequence = transformator.transform(seed)
-                test_history[seed] = passed_test, sequence
-                trace('Comparing checksums...')
-                if passed_test:
-                    passed_test = verify(seed)
-                if not passed_test:
-                    trace('Test failed :(')
-                    trace('Saving test info...')
-                    save_test_info(storage_path, seed)
+        while iteration <= max_iteration:
+            trace(f'Iteration {iteration}:')
+            try:
+                trace('Generating c program...')
+                seed = csmith_gen.run(
+                    compiler=args.compiler, 
+                    compiler_options=args.compiler_options,
+                    max_run_duration=args.max_duration)
+                if not os.path.exists(f'{storage_path}/{seed}'):
+                    trace('Transforming c program...')
+                    passed_test, sequence = transformator.transform(seed)
+                    test_history[seed] = passed_test, sequence
+                    trace('Comparing checksums...')
+                    if passed_test:
+                        passed_test = verify(seed)
+                    if not passed_test:
+                        trace('Test failed :(')
+                        trace('Saving test info...')
+                        save_test_info(storage_path, seed)
+                    else:
+                        trace('Test Passed :)')
+
+                    iteration += 1
                 else:
-                    trace('Test Passed :)')
+                    print('Test seed already exists. Skipping...')
 
-                iteration += 1
+                trace('Done!', end='\n\n')
+            finally:
+                cleanup(seed)
+
+        trace('Test Results...')
+        n_passed_test = 0
+        for seed, test_info in test_history.items():
+            passed_test, sequence = test_info
+            if not passed_test:
+                trace(f'Test for seed {seed} failed... Sequence: {sequence}')
             else:
-                print('Test seed already exists. Skipping...')
+                n_passed_test += int(passed_test)
 
-            trace('Done!', end='\n\n')
-        finally:
-            cleanup(seed, transformator)
-
-    trace('Test Results...')
-    n_passed_test = 0
-    for seed, test_info in test_history.items():
-        passed_test, sequence = test_info
-        if not passed_test:
-            trace(f'Test for seed {seed} failed... Sequence: {sequence}')
-        else:
-            n_passed_test += int(passed_test)
-
-    trace(f'Passed {n_passed_test}/{max_iteration}')
-        
+        trace(f'Passed {n_passed_test}/{max_iteration}')
 
 
 if __name__ == '__main__':
