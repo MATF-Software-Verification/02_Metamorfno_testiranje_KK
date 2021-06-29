@@ -5,7 +5,7 @@ import re
 import sys
 import random
 from typing import List, Tuple
-from timeout import saferun
+from csmith.timeout import saferun
 
 
 MAX_RUN_DURATION = 5
