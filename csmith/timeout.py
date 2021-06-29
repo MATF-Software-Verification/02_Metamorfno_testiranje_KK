@@ -35,7 +35,7 @@ def kill_remaining_zombies(keyword: str) -> None:
     :param keyword: Kljucna rec (komanda kojom se poziva program)
     """
     zombie_filename = 'zombies.txt'
-    list_zombies_command = f'ps -ef | grep {keyword} > {zombie_filename}'
+    list_zombies_command = f'ps -ef | grep "{keyword}" > {zombie_filename}'
     subprocess.run(list_zombies_command, shell=True)
     with open(zombie_filename, 'r') as f:
         lines = f.readlines()
