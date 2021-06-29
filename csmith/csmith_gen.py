@@ -4,30 +4,8 @@ import os
 import re
 import sys
 import random
-import signal
-import subprocess
 from typing import List, Tuple
-
-
-class Timeout:
-    """
-    Pomocna funkcija koja zaustavlja rad programa nakon X sekundi ako rad tog programa nije zavrsen.
-    Koristi se da se filtriraju programi koji sigurno nemaju beskonacnu petlju.
-    Postoji sansa da se program prekine pod pretpostavkom da ima beskonacnu petlju, a samo predugo traje.
-    """
-    def __init__(self, seconds: int = 1, error_message: str = 'TimeoutError'):
-        self.seconds = seconds
-        self.error_message = error_message
-
-    def handle_timeout(self, signum: int, frame: object):
-        raise TimeoutError(self.error_message)
-
-    def __enter__(self):
-        signal.signal(signal.SIGALRM, self.handle_timeout)
-        signal.alarm(self.seconds)
-
-    def __exit__(self, exc_type, exc_value, tb):
-        signal.alarm(0)
+from timeout import saferun
 
 
 MAX_RUN_DURATION = 5
@@ -164,50 +142,18 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     filename = output_filename[:-2]
     warn_filename = filename + '.warn.txt'
     checksum_file = filename + '.checksum.txt'
-    with Timeout(seconds=max_run_duration, error_message='Programu treba previse dugo da se izvrsi!'):
-        try:
-            process = subprocess.Popen(f'{run_command} > {checksum_file}', shell=True)
-            process.communicate()
-        except TimeoutError:
-            trace('Programu je istekao mandat...')
-            # Ako je mozda zombi proces ostao, pravi se dodatni pokusaj ubistva strasti
-            os.kill(process.pid, signal.SIGKILL)
-            # Brisanje datoteka programa koji se odbacuje
-            for file in [output_filename, checksum_file, warn_filename]:
-                if os.path.exists(file):
-                    os.remove(file)
-            return False
+
+    completed = saferun(f'{run_command} > {checksum_file}', max_run_duration)
+    if not completed:
+        trace('Programu je istekao mandat!')
+        for file in [output_filename, checksum_file, warn_filename]:
+            if os.path.exists(file):
+                os.remove(file)
 
     trace('Generisan je novi program!')
     # Ciscenje
     os.remove(compiled_file_name)
     return True
-
-
-def kill_remaining_zombies(keyword: str):
-    """
-    Kako klasa Timeout nije dovoljno pouzdana za ubijanje zombija u nekim situacijama i kako
-    dodatan pokusaj ubijanja zombija signalom u procesu ciscenja nije dovoljan, listaju se svi programi
-    koji su pokrenuti sa odgovarajucom kljucnom reci i ubijaju (jedan po jedan).
-
-    Ova funkcija se pokazala kao najpouzdanija za otklnjanje zombi procesa.
-
-    :param keyword: Kljucna rec (komanda kojom se poziva program)
-    """
-    zombie_filename = 'zombies.txt'
-    list_zombies_command = f'ps -ef | grep {keyword} > {zombie_filename}'
-    subprocess.run(list_zombies_command, shell=True)
-    with open(zombie_filename, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            content = line.split(' ')
-            content_without_spaces = list(filter(lambda w: w.strip() != '', content))
-            pid = int(content_without_spaces[1])
-            try:
-                os.kill(pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
-    os.remove(zombie_filename)
 
 
 def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max_run_duration: int = None) -> int:
@@ -222,7 +168,6 @@ def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max
         replace_csmith_include(output_filename, csmith_include)
         passed_test = test_generated_c_code(compiler, output_filename, compiler_options, max_run_duration)
 
-    kill_remaining_zombies('csmith.out')
     return seed
 
 
