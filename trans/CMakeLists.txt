@@ -39,46 +39,8 @@ include_directories(
 
 link_directories(${LibClang_LINK_PATH})
 
-add_executable(trans source/main.cpp
-                     header/MTKConsumer.hpp
-                     header/MTKContext.hpp
-                     source/MTKContext.cpp
-                     header/MTKTransformer.hpp
-                     source/MTKTransformer.cpp
-                     header/Do2ForVisitor.hpp
-                     source/Do2ForVisitor.cpp
-                     header/For2DoVisitor.hpp
-                     source/For2DoVisitor.cpp
-                     header/For2WhileVisitor.hpp
-                     source/For2WhileVisitor.cpp
-                     header/While2DoVisitor.hpp
-                     source/While2DoVisitor.cpp
-                     header/While2ForVisitor.hpp
-                     source/While2ForVisitor.cpp
-                     header/PrepForVisitor.hpp
-                     source/PrepForVisitor.cpp
-                     header/PrepIfVisitor.hpp
-                     source/PrepIfVisitor.cpp
-                     header/PrepIffVisitor.hpp
-                     source/PrepIffVisitor.cpp
-                     header/PrepSwitchVisitor.hpp
-                     source/PrepSwitchVisitor.cpp
-                     header/If2SwitchVisitor.hpp
-                     source/If2SwitchVisitor.cpp
-                     header/Switch2IfVisitor.hpp
-                     source/Switch2IfVisitor.cpp
-                     header/Rek2IterVisitor.hpp
-                     source/Rek2IterVisitor.cpp
-                     header/FinIterVisitor.hpp
-                     source/FinIterVisitor.cpp
-                     header/Iter2RekVisitor.hpp
-                     source/Iter2RekVisitor.cpp
-                     header/FinRekVisitor.hpp
-                     source/FinRekVisitor.cpp
-                     header/LoopUnrollVisitor.hpp
-                     source/LoopUnrollVisitor.cpp
-                     header/CodeImputVisitor.hpp
-                     source/CodeImputVisitor.cpp)
+file(GLOB trans_code "header/*.hpp" "source/*.cpp")
+add_executable(trans ${trans_code})
 
 target_link_libraries(trans libLLVM-11.so
                             libclangTooling.a
