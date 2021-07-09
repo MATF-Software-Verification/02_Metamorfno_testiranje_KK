@@ -211,7 +211,7 @@ IntegerLiteral *MTKContext::napraviFalse() const {
 
 /* Pravljenje naredbe deklaracije */
 DeclStmt *MTKContext::napraviDeclStmt(VarDecl *var) const {
-    return naHip(DeclStmt(DeclGroupRef(var), SourceLocation(), SourceLocation()));
+    return naHip<DeclStmt>(DeclGroupRef(var), SourceLocation(), SourceLocation());
 }
 
 /* Pravljenje naredbe deklaracije */
@@ -240,7 +240,7 @@ DeclStmt *MTKContext::napraviUslovnu(Decl *deklaracija,
 
 /* Pravljenje izraza u zagradi */
 ParenExpr *MTKContext::napraviParen(Expr *izraz) const {
-    return naHip(ParenExpr(SourceLocation(), SourceLocation(), izraz));
+    return naHip<ParenExpr>(SourceLocation(), SourceLocation(), izraz);
 }
 
 /* Pravljenje unarnog operatora */
@@ -347,8 +347,8 @@ IfStmt *MTKContext::napraviIf(Expr *ako, Stmt *onda, Stmt *inace) const {
 
 /* Pravljenje do petlje */
 DoStmt *MTKContext::napraviDo(Stmt *telo, Expr *uslov) const {
-    return naHip(DoStmt(telo, uslov, SourceLocation(),
-                        SourceLocation(), SourceLocation()));
+    return naHip<DoStmt>(telo, uslov, SourceLocation(),
+                        SourceLocation(), SourceLocation());
 }
 
 /* Pravljenje while petlje */
@@ -359,18 +359,18 @@ WhileStmt *MTKContext::napraviWhile(Expr *uslov, Stmt *telo) const {
 
 /* Pravljenje for petlje */
 ForStmt *MTKContext::napraviFor(Expr *uslov, Stmt *telo, Expr *korak) const {
-    return naHip(ForStmt(TheASTContext, nullptr, uslov, nullptr, korak, telo,
-                         SourceLocation(), SourceLocation(), SourceLocation()));
+    return naHip<ForStmt>(TheASTContext, nullptr, uslov, nullptr, korak, telo,
+                         SourceLocation(), SourceLocation(), SourceLocation());
 }
 
 /* Pravljenje continue naredbe */
 ContinueStmt *MTKContext::napraviCont() const {
-    return naHip(ContinueStmt(SourceLocation()));
+    return naHip<ContinueStmt>(SourceLocation());
 }
 
 /* Pravljenje break naredbe */
 BreakStmt *MTKContext::napraviBreak() const {
-    return naHip(BreakStmt(SourceLocation()));
+    return naHip<BreakStmt>(SourceLocation());
 }
 
 /* Pravljenje case klauze */
@@ -382,7 +382,8 @@ CaseStmt *MTKContext::napraviCase(Expr *izraz, Stmt *naredba) const {
 
 /* Pravljenje default klauze */
 DefaultStmt *MTKContext::napraviDefault(Stmt *naredba) const {
-    return naHip(DefaultStmt(SourceLocation(), SourceLocation(), naredba));
+    return naHip<DefaultStmt>(SourceLocation(), SourceLocation(), naredba);
+
 }
 
 /* Pravljenje switch naredbe */
@@ -526,4 +527,15 @@ ReturnStmt *MTKContext::napraviReturn(Expr *izraz) const {
 /* Pravljenje return naredbe */
 ReturnStmt *MTKContext::napraviReturn(bool vrednost) const {
     return napraviReturn(napraviInt(vrednost));
+}
+
+GotoStmt *MTKContext::napraviGoto(LabelStmt* labelStmtToJumpTo) const {
+    return naHip<GotoStmt>(labelStmtToJumpTo->getDecl(), SourceLocation(), labelStmtToJumpTo->getIdentLoc());
+}
+
+LabelStmt *MTKContext::napraviLabelStmt(FunctionDecl* kontekst, const std::string &naziv) const {
+    IdentifierInfo& labelIdentifer = TheASTContext.Idents.get(naziv);
+    auto labelDecl = LabelDecl::Create(TheASTContext, kontekst, SourceLocation(), &labelIdentifer);
+    auto labelStmt = naHip<LabelStmt>(labelDecl->getLocation(), labelDecl, nullptr);
+    return labelStmt;
 }

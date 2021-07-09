@@ -214,11 +214,16 @@ public:
     /* Pravljenje return naredbe */
     ReturnStmt *napraviReturn(bool vrednost) const;
 
+    GotoStmt* napraviGoto(LabelStmt* labelToJumpTo) const;
+
+    LabelStmt* napraviLabelStmt(FunctionDecl *functionDecl, const std::string& naziv) const;
     /* Prebacivanje naredbe na hip */
-    template <typename Naredba>
-    Naredba *naHip(const Naredba &nar) const {
-        const auto adresa = static_cast<Naredba *>(malloc(sizeof(nar)));
-        memcpy(adresa, &nar, sizeof(nar)); return adresa;
+
+
+    template<typename Naredba, typename ...Args>
+    Naredba* naHip(Args&& ...args) const {
+        auto rezultat = new (TheASTContext)Naredba(std::forward<Args>(args)...);
+        return rezultat;
     }
 
 protected:
@@ -235,6 +240,7 @@ protected:
 private:
     /* Poruka da nema slobodnog imena */
     static constexpr auto nemaImena = "Nije moguce pronaci slobodno ime!";
+
 };
 
 #endif
