@@ -30,7 +30,7 @@ def get_csmith_include() -> str:
 
     :return: `include "[REL_PATH]/csmith.h"`
     """
-    assert os.environ['CSMITH_PATH'] is not None, 'Nije podesena "CSMITH_PATH" promenljiva okruzenja!'
+    assert os.environ['CSMITH_PATH'] is not None, 'Nije podesena "CSMITH_PATH" promenljiva okruzenja! Procitati csmith/README.md za postavljenje CSMITH_PATH promenljive!'
     csmith_abs_path = os.environ['CSMITH_PATH']
     script_abs_path = os.path.abspath('.')
     csmith_include_file = 'csmith.h'
