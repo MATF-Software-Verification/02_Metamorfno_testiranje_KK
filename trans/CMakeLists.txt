@@ -39,7 +39,7 @@ include_directories(
 
 link_directories(${LibClang_LINK_PATH})
 
-file(GLOB trans_code "header/*.hpp" "source/*.cpp")
+file(GLOB trans_code "header/*.hpp" "source/*.cpp" "header/*.h")
 add_executable(trans ${trans_code})
 
 target_link_libraries(trans libLLVM-11.so
@@ -56,3 +56,6 @@ target_link_libraries(trans libLLVM-11.so
                             libclangSema.a
                             libclangSerialization.a
                             libclangTooling.a)
+                        if(CMAKE_BUILD_TYPE MATCHES Debug)
+                            add_definitions(-DDEBUG)
+                        endif(CMAKE_BUILD_TYPE MATCHES Debug)
