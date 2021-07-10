@@ -11,15 +11,15 @@ public:
       : MTKVisitor(R, A) {}
 
     /* Pretvaranje while petlji u for */
-    bool VisitWhileStmt(WhileStmt *s) const;
+    bool VisitWhileStmt(WhileStmt *s) ;
 
     /* Prekid obilaska kod while petlje */
     bool TraverseWhileStmt(WhileStmt *s);
 
     bool TraverseFunctionDecl(FunctionDecl*);
 private:
-    FunctionDecl *deklaracijaFunkcije_;
-
+    FunctionDecl *kontekstFunkcijaDecl_;
+    size_t jedinstveniIdLabelePetlji_{0};
 };
 
 #endif

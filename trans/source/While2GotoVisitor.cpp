@@ -16,14 +16,16 @@
  ***********************/
 
 #include "Assert.hpp"
-bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) const {
+bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) {
     Assert(kontekstFunkcijaDecl_ != nullptr, "Kontekst funkcija mora biti pronadjena pre transformacije While petlje");
     std::vector<Stmt*> naredbe;
     naredbe.reserve(5);
 
     // TODO(Marko): Osiguraj jedinstvenost naziva labele
     std::string labelaPocetakPetljeNaziv("labela_while_loop_begin");
+    labelaPocetakPetljeNaziv.append(std::to_string(jedinstveniIdLabelePetlji_++));
     std::string labelaKrajPetljeNaziv("labela_while_loop_end");
+    labelaKrajPetljeNaziv.append(std::to_string(jedinstveniIdLabelePetlji_++));
 
     auto labelaKrajPetlje =napraviLabelStmt(kontekstFunkcijaDecl_, labelaKrajPetljeNaziv);
 
@@ -53,5 +55,5 @@ bool While2GotoVisitor::TraverseWhileStmt(WhileStmt *s) {
 bool While2GotoVisitor::TraverseFunctionDecl(FunctionDecl *f)
 {
     kontekstFunkcijaDecl_ = f;
-    return MTKVisitor::TraverseDecl(f);
+    return true;
 }
