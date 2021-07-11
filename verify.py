@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 
 from csmith import csmith_gen
+from csmith.timeout import saferun
 import os
 import shutil
 import filecmp
 from pathlib import Path
 import random
 import argparse
-import subprocess
 from typing import List, Tuple
 import traceback
-import signal
 
 
 def get_transformation_sequence(n: int = 3) -> List[str]:
@@ -134,16 +133,7 @@ class Transformator:
         output_file = f'{seed}.output.txt'
         run_command = f'./{self.compiled_program_name} > {output_file}'
 
-        finished = True
-        with csmith_gen.Timeout(seconds=self.max_run_duration, error_message='Programu je istekao mandat...'):
-            try:
-                process = subprocess.Popen(run_command, shell=True)
-                process.communicate()
-            except TimeoutError:
-                self._trace('Transformisanom programu je trebalo predugo da se izvrsi...')
-                # Making sure he is dead...
-                os.kill(process.pid, signal.SIGKILL)
-                finished = False
+        finished = saferun(run_command, self.max_run_duration)
 
         return finished, sequence
 
@@ -154,8 +144,6 @@ class Transformator:
         self._trace('Bacanje djubreta...', verbosity=1)
         if os.path.exists(self.compiled_program_name):
             os.remove(self.compiled_program_name)
-
-        csmith_gen.kill_remaining_zombies(self.compiled_program_name)
 
     def __enter__(self):
         return self
@@ -262,7 +250,7 @@ def run():
                     compiler_options=args.compiler_options,
                     max_run_duration=args.max_duration)
                 if not os.path.exists(f'{storage_path}/{seed}'):
-                    trace('Transformacija c program...')
+                    trace('Transformacija C programa...')
                     passed_test, sequence = transformator.transform(seed)
                     test_history[seed] = passed_test, sequence
                     if passed_test:
