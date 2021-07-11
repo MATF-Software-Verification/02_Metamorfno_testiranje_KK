@@ -1,6 +1,19 @@
 #ifndef ASSERT_H
 #define ASSERT_H
 
+template<bool> struct CompileTimeAssert
+{
+    CompileTimeAssert(...);
+};
+
+
+template<> struct CompileTimeAssert<false> {};
+
+#define STATIC_ASSERT(expr, msg)\
+{\
+    class COMPILE_TIME_ERROR_##msg {};\
+    (void)sizeof(CompileTimeAssert<expr>(COMPILE_TIME_ERROR_##msg()));\
+}
 
 #if DEBUG
 #include<iostream>
