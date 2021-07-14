@@ -12,8 +12,16 @@ from typing import List, Tuple
 import traceback
 import signal
 import multiprocessing
+import platform
 
+class BuildingTransLibraryException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
 
+class TransformationException(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+ 
 def get_transformation_sequence(n: int = 3) -> List[str]:
     """
     Generise nasumicnu skvenci transformacija
@@ -67,6 +75,8 @@ class Transformator:
         self.max_run_duration = max_run_duration
         self.parallel_cmake_jobs = parallel_cmake_jobs
 
+        self.platform = platform.system()
+
         self._initialize()
 
     def _initialize(self) -> None:
@@ -83,9 +93,14 @@ class Transformator:
         os.chdir(build_path)
 
         build_command = f'cmake -G "Unix Makefiles" --parallel {self.parallel_cmake_jobs} ../trans'
-        os.system(build_command)
+        cmake_exitcode = os.waitstatus_to_exitcode(os.system(build_command))
+       
+        if cmake_exitcode != 0:
+            raise BuildingTransLibraryException(f'CMake nije uspeo da generise potrebne datoteke. ExitCode: {cmake_exitcode}')
 
-        os.system('make')
+        make_exitcode = os.waitstatus_to_exitcode(os.system('make'))
+        if make_exitcode != 0:
+            raise BuildingTransLibraryException(f'Make nije uspeo da napravi izvrsivi fajl za trans biblioteku. ExitCode: {make_exitcode}')
 
         os.chdir(owd)
 
