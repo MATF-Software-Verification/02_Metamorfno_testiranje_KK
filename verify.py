@@ -19,7 +19,7 @@ def get_transformation_sequence(n: int = 3) -> List[str]:
     :param n: Duzina sekvence
     :return: Sekvenca transformacija
     """
-    transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u', 'goto']
+    transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
 
     sequence = []
     hasO = False
@@ -54,8 +54,7 @@ class Transformator:
                  compiler: str,
                  compiler_options: str,
                  trans_seq_len: int,
-                 max_run_duration: int,
-                 parallel_cmake_jobs: int):
+                 max_run_duration: int):
 
         self.compiled_program_name = 'run.out'
         self.verbosity = verbosity
@@ -63,7 +62,6 @@ class Transformator:
         self.compiler_options = compiler_options
         self.trans_seq_len = trans_seq_len
         self.max_run_duration = max_run_duration
-        self.parallel_cmake_jobs = parallel_cmake_jobs
 
         self._initialize()
 
@@ -80,7 +78,7 @@ class Transformator:
         owd = os.getcwd()
         os.chdir(build_path)
 
-        build_command = f'cmake -G "Unix Makefiles" --parallel {self.parallel_cmake_jobs} ../trans'
+        build_command = 'cmake -G "Unix Makefiles" ../trans'
         os.system(build_command)
 
         os.system('make')
@@ -222,8 +220,6 @@ def run():
     parser.add_argument('--trans-seq', help='Length of transformation sequence', type=int, default=3)
     parser.add_argument('--tests', help='Number of tests', type=int, default=3)
     parser.add_argument('--max-duration', help='Maximum program time duration', type=int, default=5)
-    parser.add_argument('--parallel_cmake_jobs', help='Number of parallel cmake jobs to build trans library', type=int,
-                        default=1)
     args = parser.parse_args()
 
     storage_path = 'storage'
@@ -235,8 +231,7 @@ def run():
         'compiler': args.compiler,
         'compiler_options': args.compiler_options,
         'trans_seq_len': args.trans_seq,
-        'max_run_duration': args.max_duration,
-        'parallel_cmake_jobs': args.parallel_cmake_jobs
+        'max_run_duration': args.max_duration
     }
 
     with Transformator(**transformator_params) as transformator:
