@@ -136,7 +136,9 @@ class Transformator:
                 tseq_file.write(f'{transformation}\n')
                 self._trace(f'Sledeca transformacija je "{transformation}".', verbosity=1)
                 transform_command = f'./{trans_path} {c_file_duplicate} tmp.c {transformation}'
-                os.system(transform_command)
+                transform_exitstatus = os.waitstatus_to_exitcode(os.system(transform_command))
+                if transform_exitstatus != 0:
+                    raise TransformationException(f'Komanda: {transform_command} nije uspela. ExitCode: {transform_exitstatus}')
                 os.rename('tmp.c', c_file_duplicate)
             os.rename(c_file_duplicate, c_transformed_file)
 
@@ -145,7 +147,9 @@ class Transformator:
         self._trace('Kompilacija transformisanog, generisanog C programa!', verbosity=1)
         compile_command = f'{self.compiler} {c_transformed_file}' \
                           + f' -o {self.compiled_program_name} -w {self.compiler_options}'
-        os.system(compile_command)
+        compile_command_exitstatus = os.waitstatus_to_exitcode(os.system(compile_command))
+        if compile_command_exitstatus != 0:
+            raise TransformationException(f'Komanda: {compile_command} nije uspela. ExitCode: {compile_command_exitstatus}')
 
         # 3
         self._trace('Pokretanje transformisanog, generisanog C programa!', verbosity=1)
@@ -159,7 +163,7 @@ class Transformator:
                 process.communicate()
             except TimeoutError:
                 self._trace('Transformisanom programu je trebalo predugo da se izvrsi...')
-                # Making sure he is dead...
+                # Making sure he is dead...VELJOOOOOO
                 os.kill(process.pid, signal.SIGKILL)
                 finished = False
 
