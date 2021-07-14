@@ -1,5 +1,5 @@
-#ifndef WHILE2FOR_H
-#define WHILE2FOR_H
+#ifndef WHILE2GOTO_H
+#define WHILE2GOTO_H
 
 #include "MTKConsumer.hpp"
 
