@@ -1,6 +1,7 @@
 import signal
 import subprocess
 import os
+from typing import Optional
 
 
 class Timeout:
@@ -50,22 +51,24 @@ def kill_remaining_zombies(keyword: str) -> None:
     os.remove(zombie_filename)
 
 
-def saferun(command: str, max_run_duration: int) -> bool:
+def saferun(command: str, max_run_duration: int, keyword: Optional[str] = None) -> bool:
     """
     Uokviruje proces izvrsavanje komande sa ogranicenim vremenom i unistavanje
     zombi procesa koji mogu potencijalno da ostanu nakon pokretanja `subprocess` komdande
 
     :param command: Komanda koja se izvrsava
     :param max_run_duration: Dozvoljena duzina za izvrsavanje komance
+    :param keyword: Kljucna rec za identifikaciju potencijalnih zombija
     :return: Da li je komanda uspesno izvrsena
     """
+    if keyword is None:
+        keyword = command
+
     with Timeout(seconds=max_run_duration, error_message='Programu treba previse dugo da se izvrsi!'):
         try:
             process = subprocess.Popen(command, shell=True)
             process.communicate()
         except TimeoutError:
-            kill_remaining_zombies(command)
+            kill_remaining_zombies(keyword)
             return False
     return True
-
-

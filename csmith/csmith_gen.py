@@ -5,10 +5,16 @@ import re
 import sys
 import random
 from typing import List, Tuple
-from csmith.timeout import saferun
-from csmith.timeout import *
+from csmith.timeout import saferun, kill_remaining_zombies
+import atexit
+
 
 MAX_RUN_DURATION = 5
+
+
+def csmith_cleanup():
+    kill_remaining_zombies('csmith.out')
+    sys.exit(-1)
 
 
 def trace(content: str, *args, **kwargs):
@@ -30,7 +36,8 @@ def get_csmith_include() -> str:
 
     :return: `include "[REL_PATH]/csmith.h"`
     """
-    assert os.environ['CSMITH_PATH'] is not None, 'Nije podesena "CSMITH_PATH" promenljiva okruzenja! Procitati csmith/README.md za postavljenje CSMITH_PATH promenljive!'
+    assert os.environ['CSMITH_PATH'] is not None, 'Nije podesena "CSMITH_PATH" promenljiva okruzenja!' + \
+                                                  'Procitati csmith/README.md za postavljenje CSMITH_PATH promenljive!'
     csmith_abs_path = os.environ['CSMITH_PATH']
     script_abs_path = os.path.abspath('.')
     csmith_include_file = 'csmith.h'
@@ -143,7 +150,7 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     warn_filename = filename + '.warn.txt'
     checksum_file = filename + '.checksum.txt'
 
-    completed = saferun(f'{run_command} > {checksum_file}', max_run_duration)
+    completed = saferun(f'{run_command} > {checksum_file}', max_run_duration, keyword=compile_command)
     if not completed:
         trace('Programu je istekao mandat!')
         for file in [output_filename, checksum_file, warn_filename]:
@@ -157,6 +164,8 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
 
 
 def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max_run_duration: int = None) -> int:
+    atexit.register(csmith_cleanup)
+
     passed_test = False
     args = sys.argv[1:]
     if max_run_duration is None:
