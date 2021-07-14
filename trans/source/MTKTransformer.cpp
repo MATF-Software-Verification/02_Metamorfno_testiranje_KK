@@ -15,6 +15,8 @@
 #include "If2SwitchVisitor.hpp"
 #include "Switch2IfVisitor.hpp"
 #include "CodeImputVisitor.hpp"
+#include "For2GotoVisitor.hpp"
+#include "While2GotoVisitor.hpp"
 
 #include "MTKTransformer.hpp"
 
@@ -135,6 +137,9 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
     } else if (std::regex_match(radnja, pogodak, ru)) {
         postaviVerovatnocu(std::stoull(pogodak[1].str()));
         trans.primeni(Izmena::CodeImput);
+    } else if (radnja == "goto") {
+        trans.primeni(Izmena::For2Goto);
+        trans.primeni(Izmena::While2Goto);
     /* Prekid pogresno pokrenutog programa */
     } else return greska(upotreba);
 
@@ -170,6 +175,8 @@ ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     case Izmena::If2Switch: return new MTKConsumer<If2SwitchVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::Switch2If: return new MTKConsumer<Switch2IfVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::CodeImput: return new MTKConsumer<CodeImputVisitor>(*TheRewriter, *TheASTContext);
+    case Izmena::While2Goto: return new MTKConsumer<While2GotoVisitor>(*TheRewriter, *TheASTContext);
+    case Izmena::For2Goto: return new MTKConsumer<For2GotoVisitor>(*TheRewriter, *TheASTContext);
     }
 }
 

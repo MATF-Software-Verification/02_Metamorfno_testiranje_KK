@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 
 from csmith import csmith_gen
-from csmith.timeout import saferun
 import os
 import shutil
 import filecmp
 from pathlib import Path
 import random
 import argparse
+import subprocess
 from typing import List, Tuple
 import traceback
+import signal
+import multiprocessing
 
 
 def get_transformation_sequence(n: int = 3) -> List[str]:
@@ -19,7 +21,7 @@ def get_transformation_sequence(n: int = 3) -> List[str]:
     :param n: Duzina sekvence
     :return: Sekvenca transformacija
     """
-    transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
+    transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u', 'goto']
 
     sequence = []
     hasO = False
@@ -54,7 +56,8 @@ class Transformator:
                  compiler: str,
                  compiler_options: str,
                  trans_seq_len: int,
-                 max_run_duration: int):
+                 max_run_duration: int,
+                 parallel_cmake_jobs: int):
 
         self.compiled_program_name = 'run.out'
         self.verbosity = verbosity
@@ -62,6 +65,7 @@ class Transformator:
         self.compiler_options = compiler_options
         self.trans_seq_len = trans_seq_len
         self.max_run_duration = max_run_duration
+        self.parallel_cmake_jobs = parallel_cmake_jobs
 
         self._initialize()
 
@@ -78,7 +82,7 @@ class Transformator:
         owd = os.getcwd()
         os.chdir(build_path)
 
-        build_command = 'cmake -G "Unix Makefiles" ../trans'
+        build_command = f'cmake -G "Unix Makefiles" --parallel {self.parallel_cmake_jobs} ../trans'
         os.system(build_command)
 
         os.system('make')
@@ -133,7 +137,16 @@ class Transformator:
         output_file = f'{seed}.output.txt'
         run_command = f'./{self.compiled_program_name} > {output_file}'
 
-        finished = saferun(run_command, self.max_run_duration)
+        finished = True
+        with csmith_gen.Timeout(seconds=self.max_run_duration, error_message='Programu je istekao mandat...'):
+            try:
+                process = subprocess.Popen(run_command, shell=True)
+                process.communicate()
+            except TimeoutError:
+                self._trace('Transformisanom programu je trebalo predugo da se izvrsi...')
+                # Making sure he is dead...
+                os.kill(process.pid, signal.SIGKILL)
+                finished = False
 
         return finished, sequence
 
@@ -144,6 +157,8 @@ class Transformator:
         self._trace('Bacanje djubreta...', verbosity=1)
         if os.path.exists(self.compiled_program_name):
             os.remove(self.compiled_program_name)
+
+        csmith_gen.kill_remaining_zombies(self.compiled_program_name)
 
     def __enter__(self):
         return self
@@ -220,6 +235,7 @@ def run():
     parser.add_argument('--trans-seq', help='Length of transformation sequence', type=int, default=3)
     parser.add_argument('--tests', help='Number of tests', type=int, default=3)
     parser.add_argument('--max-duration', help='Maximum program time duration', type=int, default=5)
+    parser.add_argument('--parallel_cmake_jobs', help='Number of parallel cmake jobs to build trans library', type=int, default=1)
     args = parser.parse_args()
 
     storage_path = 'storage'
@@ -231,7 +247,8 @@ def run():
         'compiler': args.compiler,
         'compiler_options': args.compiler_options,
         'trans_seq_len': args.trans_seq,
-        'max_run_duration': args.max_duration
+        'max_run_duration': args.max_duration,
+        'parallel_cmake_jobs': args.parallel_cmake_jobs
     }
 
     with Transformator(**transformator_params) as transformator:
@@ -250,7 +267,7 @@ def run():
                     compiler_options=args.compiler_options,
                     max_run_duration=args.max_duration)
                 if not os.path.exists(f'{storage_path}/{seed}'):
-                    trace('Transformacija C programa...')
+                    trace('Transformacija c program...')
                     passed_test, sequence = transformator.transform(seed)
                     test_history[seed] = passed_test, sequence
                     if passed_test:
