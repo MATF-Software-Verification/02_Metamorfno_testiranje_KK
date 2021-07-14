@@ -156,6 +156,7 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
         for file in [output_filename, checksum_file, warn_filename]:
             if os.path.exists(file):
                 os.remove(file)
+        return False
 
     trace('Generisan je novi program!')
     # Ciscenje
