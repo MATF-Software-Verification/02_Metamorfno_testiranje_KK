@@ -18,10 +18,10 @@
  ***********************/
 
 /* Posetilac koji for pretvara u while */
-bool For2GotoVisitor::VisitFunctionDecl(FunctionDecl *f)
+bool For2GotoVisitor::TraverseFunctionDecl(FunctionDecl *f)
 {
    kontekstFunkcija_ = f;
-   return true;
+   return MTKVisitor::TraverseFunctionDecl(f);
 }
 
 bool For2GotoVisitor::VisitForStmt(ForStmt *s) {
@@ -40,6 +40,8 @@ bool For2GotoVisitor::VisitForStmt(ForStmt *s) {
     labelaForLoopBeginNaziv.append(std::to_string(jedinstveniIdLabela_++));
     auto forLoopBeginLabel = napraviLabelStmt(kontekstFunkcija_, labelaForLoopBeginNaziv);
     Assert(forLoopBeginLabel != nullptr, "");
+
+    naredbe.push_back(forLoopBeginLabel);
 
     std::string labelaForLoopEndNaziv("for_loop_end_");
     labelaForLoopEndNaziv.append(std::to_string(jedinstveniIdLabela_++));
@@ -68,6 +70,7 @@ bool For2GotoVisitor::VisitForStmt(ForStmt *s) {
 
     return true;
 }
+
 
 /* Prekid obilaska kod while petlje */
 bool For2GotoVisitor::TraverseForStmt(ForStmt *s) {

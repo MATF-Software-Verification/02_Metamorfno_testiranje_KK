@@ -10,7 +10,7 @@ public:
         : MTKVisitor(r, ac) {}
 
 
-    bool VisitFunctionDecl(FunctionDecl* );
+    bool TraverseFunctionDecl(FunctionDecl* );
 
     /* Pretvaranje for petlji u while */
     bool VisitForStmt(ForStmt *s);

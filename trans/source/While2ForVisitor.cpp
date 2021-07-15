@@ -22,6 +22,7 @@ bool While2ForVisitor::VisitWhileStmt(WhileStmt *s) const {
     return true;
 }
 
+
 /* Prekid obilaska kod while petlje */
 bool While2ForVisitor::TraverseWhileStmt(WhileStmt *s) {
     return WalkUpFromWhileStmt(s);
