@@ -3,14 +3,13 @@
 
 #include "MTKConsumer.hpp"
 
-/* Posetilac koji while pretvara u for */
+/* Posetilac koji while pretvara u goto */
 class While2GotoVisitor : public MTKVisitor<While2GotoVisitor> {
 public:
     /* Inicijalizacija prepisivaca i konteksta */
     While2GotoVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {}
-
-    /* Pretvaranje while petlji u for */
+    /* Pretvaranje while petlji u goto */
     bool VisitWhileStmt(WhileStmt *s) ;
 
     /* Prekid obilaska kod while petlje */

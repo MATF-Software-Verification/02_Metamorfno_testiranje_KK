@@ -40,6 +40,22 @@ bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) {
     naredbe.emplace_back(ifCond);
 
     auto teloWhile = s->getBody();
+
+    auto teloBegin = std::begin(s->getBody()->children());
+    auto teloEnd = std::end(s->getBody()->children());
+
+    for (auto dete = teloBegin; dete != teloEnd; ++dete) {
+        if (auto breakStmt = dyn_cast<BreakStmt>(*dete)) {
+            auto gotoLoopEnd = napraviGoto(labelaKrajPetlje);
+            zameni(breakStmt, gotoLoopEnd);
+        } else if (auto continueStmt = dyn_cast<ContinueStmt>(*dete)) {
+            auto gotoLoopBegin = napraviGoto(labelaPocetakPetlje);
+            zameni(breakStmt, gotoLoopBegin);
+        } else if (auto switchStmt = dyn_cast<SwitchStmt>(*dete)) {
+
+        }
+    }
+
     Assert(teloWhile != nullptr, "");
     naredbe.emplace_back(teloWhile);
 
@@ -62,5 +78,5 @@ bool While2GotoVisitor::TraverseWhileStmt(WhileStmt *s) {
 bool While2GotoVisitor::TraverseFunctionDecl(FunctionDecl *f)
 {
     kontekstFunkcijaDecl_ = f;
-    return true;
+    return MTKVisitor::TraverseFunctionDecl(f);
 }
