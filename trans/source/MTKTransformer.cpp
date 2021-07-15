@@ -28,7 +28,7 @@
 #include <regex>
 #include <fstream>
 #include <sstream>
-
+#include <iostream>
 /* Podatak o uocenoj gresci */
 bool MTKTransformer::error = false;
 

@@ -536,6 +536,6 @@ GotoStmt *MTKContext::napraviGoto(LabelStmt* labelStmtToJumpTo) const {
 LabelStmt *MTKContext::napraviLabelStmt(FunctionDecl* kontekst, const std::string &naziv) const {
     IdentifierInfo& labelIdentifer = TheASTContext.Idents.get(naziv);
     auto labelDecl = LabelDecl::Create(TheASTContext, kontekst, SourceLocation(), &labelIdentifer);
-    auto labelStmt = naHip<LabelStmt>(labelDecl->getLocation(), labelDecl, nullptr);
+    auto labelStmt = naHip<LabelStmt>(labelDecl->getLocation(), labelDecl, naHip<NullStmt>(SourceLocation()));
     return labelStmt;
 }
