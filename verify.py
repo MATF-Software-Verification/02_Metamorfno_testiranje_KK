@@ -29,7 +29,7 @@ def get_transformation_sequence(n: int = 3) -> List[str]:
     :param n: Duzina sekvence
     :return: Sekvenca transformacija
     """
-    transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u', 'goto']
+    transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
 
     sequence = []
     hasO = False
