@@ -8,10 +8,8 @@ import filecmp
 from pathlib import Path
 import random
 import argparse
-import subprocess
 from typing import List, Tuple
 import traceback
-import signal
 
 
 def get_transformation_sequence(n: int = 3) -> List[str]:

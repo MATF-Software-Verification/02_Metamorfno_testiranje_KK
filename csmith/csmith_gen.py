@@ -12,11 +12,6 @@ import atexit
 MAX_RUN_DURATION = 5
 
 
-def csmith_cleanup():
-    kill_remaining_zombies('csmith.out')
-    sys.exit(-1)
-
-
 def trace(content: str, *args, **kwargs):
     print(f'[csmith-gen]: {content}', *args, **kwargs)
 
@@ -165,8 +160,6 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
 
 
 def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max_run_duration: int = None) -> int:
-    atexit.register(csmith_cleanup)
-
     passed_test = False
     args = sys.argv[1:]
     if max_run_duration is None:

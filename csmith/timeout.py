@@ -2,6 +2,7 @@ import signal
 import subprocess
 import os
 from typing import Optional
+import atexit
 
 
 class Timeout:
@@ -54,7 +55,12 @@ def kill_remaining_zombies(keyword: str) -> None:
 def saferun(command: str, max_run_duration: int, keyword: Optional[str] = None) -> bool:
     """
     Uokviruje proces izvrsavanje komande sa ogranicenim vremenom i unistavanje
-    zombi procesa koji mogu potencijalno da ostanu nakon pokretanja `subprocess` komdande
+    zombi procesa koji mogu potencijalno da ostanu nakon pokretanja `subprocess` komande.
+
+    Zbog neplokapanja PID u Python-u sa PID-om na OS-u, nije moguce brisati procese preko PID-a, pa
+    se zbog toga koristi kljucna za pretragu komandi koje treba da se obrisu.
+
+    Funkcija je otporna na prekide programa, u smislu da ubija zombije cak i u tom slucaju uz pomocu `atexit` modula.
 
     :param command: Komanda koja se izvrsava
     :param max_run_duration: Dozvoljena duzina za izvrsavanje komance
@@ -63,6 +69,7 @@ def saferun(command: str, max_run_duration: int, keyword: Optional[str] = None) 
     """
     if keyword is None:
         keyword = command
+    atexit.register(kill_remaining_zombies, keyword)
 
     with Timeout(seconds=max_run_duration, error_message='Programu treba previse dugo da se izvrsi!'):
         try:
