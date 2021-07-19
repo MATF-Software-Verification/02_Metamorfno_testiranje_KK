@@ -12,14 +12,25 @@ public:
 
     bool TraverseFunctionDecl(FunctionDecl* );
 
+    bool VisitBreakStmt(BreakStmt* s);
+
+    bool VisitContinueStmt(ContinueStmt *s);
+
     /* Pretvaranje for petlji u while */
     bool VisitForStmt(ForStmt *s);
-
-    /* Prekid obilaska kod for petlje */
-    bool TraverseForStmt(ForStmt *s);
 private:
-    FunctionDecl *kontekstFunkcija_;
-    size_t jedinstveniIdLabela_{0};
+    FunctionDecl *kontekstFunkcijaDecl_;
+
+    struct ForLoopLabels {
+        std::string forLoopPocetakLabelaNaziv;
+        std::string forLoopIncLabelaNaziv;
+        std::string forLoopKrajLabelaNaziv;
+    };
+
+    static std::unordered_map<size_t, For2GotoVisitor::ForLoopLabels> forLoopGotoLabels;
+    static bool zamenjeniSviBreakIContinueStmt;
+    static size_t jedinstveniIdLabelePetlji_;
+
 };
 
 #endif // FOR2GOTOVISITOR_HPP
