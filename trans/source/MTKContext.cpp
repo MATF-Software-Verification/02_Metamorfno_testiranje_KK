@@ -539,3 +539,5 @@ LabelStmt *MTKContext::napraviLabelStmt(FunctionDecl* kontekst, const std::strin
     auto labelStmt = naHip<LabelStmt>(labelDecl->getLocation(), labelDecl, naHip<NullStmt>(SourceLocation()));
     return labelStmt;
 }
+
+

@@ -138,7 +138,7 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
         postaviVerovatnocu(std::stoull(pogodak[1].str()));
         trans.primeni(Izmena::CodeImput);
     } else if (radnja == "goto") {
-        trans.primeni(Izmena::For2Goto);
+        //trans.primeni(Izmena::For2Goto);
         trans.primeni(Izmena::While2Goto);
     /* Prekid pogresno pokrenutog programa */
     } else return greska(upotreba);
@@ -297,7 +297,8 @@ void MTKTransformer::primeni(Izmena izmena) {
             izmena == Izmena::If2Switch ||
             izmena == Izmena::Rek2Iter ||
             izmena == Izmena::FinIter ||
-            izmena == Izmena::CodeImput)
+            izmena == Izmena::CodeImput
+            )
             return;
     }
 }

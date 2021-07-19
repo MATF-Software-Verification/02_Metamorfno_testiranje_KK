@@ -8,75 +8,129 @@
  *   telo;
  * ---------------------
  * loop_{loop_id}_begin:
- * if (!cond) 
+ * if (!cond)
  *   goto loop_line_num_end:
  * telo;
  * goto loop_{loop_id}_begin;
  * loop_{loop_id}_end:
  ***********************/
-
+#include <iostream>
 #include "Assert.hpp"
+
+std::unordered_map<size_t, While2GotoVisitor::WhileLoopLabels> While2GotoVisitor::whileLoopGotoLabels = {};
+bool zamenjeniSviBreakIContinueStmt = false;
+size_t While2GotoVisitor::jedinstveniIdLabelePetlji_ = 0;
+
 bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) {
+
+    trenutiWhile = s;
+    std::cerr << __PRETTY_FUNCTION__ << '\n';
+    std::cerr << id++ << '\n';
     Assert(s != nullptr, "Mora biti WhileStmt");
     Assert(kontekstFunkcijaDecl_ != nullptr, "Kontekst funkcija mora biti pronadjena pre transformacije While petlje");
-    std::vector<Stmt*> naredbe;
-    naredbe.reserve(5);
 
-    // TODO(Marko): Osiguraj jedinstvenost naziva labele
-    std::string labelaPocetakPetljeNaziv("labela_while_loop_begin");
-    labelaPocetakPetljeNaziv.append(std::to_string(jedinstveniIdLabelePetlji_++));
-    std::string labelaKrajPetljeNaziv("labela_while_loop_end");
-    labelaKrajPetljeNaziv.append(std::to_string(jedinstveniIdLabelePetlji_++));
+    if (zamenjeniSviBreakIContinueStmt) {
+        std::cerr << "Zameni WhileStmt sa GOto\n";
+        auto labele = whileLoopGotoLabels.find(++jedinstveniIdLabelePetlji_);
+        Assert(labele != whileLoopGotoLabels.end(), "Ne postojoje labele za dati while");
 
-    auto labelaKrajPetlje =napraviLabelStmt(kontekstFunkcijaDecl_, labelaKrajPetljeNaziv);
-    Assert(labelaKrajPetlje != nullptr, "");
+        auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labele->second.whileLoopPocetakLabelaNaziv);
+        auto labelaKrajPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labele->second.whileLoopKrajLabelaNaziv);
 
-    auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labelaPocetakPetljeNaziv);
-    Assert(labelaPocetakPetlje != nullptr, "");
-    naredbe.emplace_back(labelaPocetakPetlje);
+        std::vector<Stmt*> noveNaredbe;
+        noveNaredbe.reserve(5);
 
-    auto ifCond = napraviIf(s->getCond(), napraviGoto(labelaKrajPetlje));
-    Assert(ifCond != nullptr, "");
-    naredbe.emplace_back(ifCond);
+        noveNaredbe.emplace_back(labelaPocetakPetlje);
 
-    auto teloWhile = s->getBody();
+        auto ifCond = napraviIf(napraviNegaciju(s->getCond()), napraviGoto(labelaKrajPetlje));
+        Assert(ifCond != nullptr, "Nije uspelo pravljenje if jump to end of loop");
+        noveNaredbe.emplace_back(ifCond);
 
-    auto teloBegin = std::begin(s->getBody()->children());
-    auto teloEnd = std::end(s->getBody()->children());
+        noveNaredbe.emplace_back(s->getBody());
 
-    for (auto dete = teloBegin; dete != teloEnd; ++dete) {
-        if (auto breakStmt = dyn_cast<BreakStmt>(*dete)) {
-            auto gotoLoopEnd = napraviGoto(labelaKrajPetlje);
-            zameni(breakStmt, gotoLoopEnd);
-        } else if (auto continueStmt = dyn_cast<ContinueStmt>(*dete)) {
-            auto gotoLoopBegin = napraviGoto(labelaPocetakPetlje);
-            zameni(breakStmt, gotoLoopBegin);
-        } else if (auto switchStmt = dyn_cast<SwitchStmt>(*dete)) {
+        noveNaredbe.emplace_back(napraviGoto(labelaPocetakPetlje));
+        noveNaredbe.emplace_back(labelaKrajPetlje);
+        zameni(s, napraviSlozenu(noveNaredbe));
 
-        }
+        return false; // Obustavi obilzak
+    } else if (whileLoopGotoLabels.find(jedinstveniIdLabelePetlji_ + 1) == std::end(whileLoopGotoLabels)){
+        // Ako prvi put vidimo WhileStmt napravi jedinstevene goto labele
+        // TODO(Marko): Osiguraj jedinstvenost naziva labele
+        std::cerr << "Napravi GotoLabele \n";
+        std::string labelaPocetakPetljeNaziv("labela_while_loop_begin");
+        labelaPocetakPetljeNaziv.append(std::to_string(++jedinstveniIdLabelePetlji_));
+        std::string labelaKrajPetljeNaziv("labela_while_loop_end");
+        labelaKrajPetljeNaziv.append(std::to_string(jedinstveniIdLabelePetlji_));
+
+//        auto labelaKrajPetlje =napraviLabelStmt(kontekstFunkcijaDecl_, labelaKrajPetljeNaziv);
+//        Assert(labelaKrajPetlje != nullptr, "");
+
+//        auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labelaPocetakPetljeNaziv);
+//        Assert(labelaPocetakPetlje != nullptr, "");
+        whileLoopGotoLabels[jedinstveniIdLabelePetlji_] = WhileLoopLabels{labelaPocetakPetljeNaziv, labelaKrajPetljeNaziv};
+
+        return true; // Nastavi obilazak
     }
 
-    Assert(teloWhile != nullptr, "");
-    naredbe.emplace_back(teloWhile);
-
-    auto gotoLabelaPocetakPetlje = napraviGoto(labelaPocetakPetlje);
-    Assert(gotoLabelaPocetakPetlje != nullptr, "");
-    naredbe.emplace_back(gotoLabelaPocetakPetlje);
-
-    naredbe.emplace_back(labelaKrajPetlje);
-
-    auto slozenaNaredba = napraviSlozenu(naredbe);
-    Assert(slozenaNaredba != nullptr, "");
-    zameni(s, slozenaNaredba);
     return true;
 }
 
-bool While2GotoVisitor::TraverseWhileStmt(WhileStmt *s) {
-    return WalkUpFromWhileStmt(s);
+
+bool While2GotoVisitor::VisitBreakStmt(BreakStmt *s)
+{
+    if (zamenjeniSviBreakIContinueStmt)
+        return true;
+
+    for (auto roditeljIter = rods.find(s); roditeljIter != std::end(rods); roditeljIter = rods.find(roditeljIter->second)) {
+        auto roditelj = roditeljIter->second;
+        if (const WhileStmt* whileStmtRoditelj = dyn_cast<WhileStmt>(roditelj))	{
+           // Zameni break sa goto whileStmtRoditelj end loop labelom
+            auto labelaKrajPetljeNaziv = whileLoopGotoLabels.find(jedinstveniIdLabelePetlji_)->second.whileLoopKrajLabelaNaziv;
+            zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcijaDecl_, labelaKrajPetljeNaziv)));
+            break;
+        } else if (isa<SwitchStmt>(*roditelj) || isa<ForStmt>(*roditelj) || isa<DoStmt>(*roditelj)) {
+            break;
+        }
+    }
+    return true;
+}
+
+bool While2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
+{
+    if (zamenjeniSviBreakIContinueStmt)
+        return true;
+
+    for (auto roditeljIter = rods.find(s); roditeljIter != std::end(rods); roditeljIter = rods.find(roditeljIter->second)) {
+        auto roditelj = roditeljIter->second;
+        if (const WhileStmt* whileStmtRoditelj = dyn_cast<WhileStmt>(roditelj)) {
+            // Zameni continue sa goto whileStmtROiditelj begin loop labelonm
+            auto labelaPocetakPetljeNaziv = whileLoopGotoLabels.find(jedinstveniIdLabelePetlji_)->second.whileLoopPocetakLabelaNaziv;
+            zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcijaDecl_, labelaPocetakPetljeNaziv)));
+            break;
+        } else if (isa<ForStmt>(*roditelj) || isa<DoStmt>(*roditelj)) {
+            break;
+        }
+    }
+    return true;
 }
 
 bool While2GotoVisitor::TraverseFunctionDecl(FunctionDecl *f)
 {
+    std::cerr << __PRETTY_FUNCTION__ << '\n';
+
     kontekstFunkcijaDecl_ = f;
-    return MTKVisitor::TraverseFunctionDecl(f);
+    if (f->hasBody()) {
+        std::cerr << "\n\n";
+        f->dump(llvm::errs());
+        std::cerr << "\n\n";
+        MTKVisitor::izracunajDecu(f->getBody());
+    }
+
+    bool rezultat = MTKVisitor::TraverseFunctionDecl(f);
+    if (zamenjeniSviBreakIContinueStmt == false) {
+        jedinstveniIdLabelePetlji_ = 0;
+    }
+    zamenjeniSviBreakIContinueStmt = true; // kada se prvi put prodje kroz ast sve break i continue naredbe su zamenjenje
+    // kada se visitor pozove drugi put pocece da menja while petlje
+    return rezultat;
 }

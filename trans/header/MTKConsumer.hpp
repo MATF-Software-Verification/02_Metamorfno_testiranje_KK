@@ -26,6 +26,36 @@ public:
         }
     }
 
+    template<typename ParentType>
+    const ParentType* nadjiPrvogRoditelja(const Stmt* stmt) {
+        const ParentType* roditelj = nullptr;
+        while(true) {
+            auto roditeljIter = rods.find(stmt);
+            if (roditeljIter == std::end(rods)) {
+                break;
+            }
+
+            if (auto trenutniRoditelj = dyn_cast<ParentType>(*roditeljIter)) {
+                roditelj = trenutniRoditelj;
+                break;
+            }
+        }
+        return roditelj;
+    }
+
+    template<typename ParentType>
+    bool imaRoditelja(const Stmt* stmt) {
+        auto roditeljStmt = nadjiPrvogRoditelja<ParentType>(stmt);
+        return roditeljStmt != nullptr;
+    }
+
+
+    template<typename ParentType>
+    bool nemaRoditelja(const Stmt* stmt) {
+        auto roditeljStmt = nadjiPrvogRoditelja<ParentType>(stmt);
+        return roditeljStmt == nullptr;
+    }
+
     /* Javno cuvanje mape roditelja */
     std::unordered_map<const Stmt *, const Stmt *> rods;
 };
