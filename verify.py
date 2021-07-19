@@ -10,39 +10,66 @@ import random
 import argparse
 from typing import List, Tuple
 import traceback
+from enum import Enum
+
+class TransformationSequencePolicy:
+    def __init__(self):
+        self.transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
+    def get_transformations_sequence(self) -> List[str]:
+        pass
+    def get_available_transformations(self):
+        return self.transformations
+
+class RandomTransformationSequence(TransformationSequencePolicy):
+    def __init__(self, num_of_transformations):
+        super().__init__()
+        self.n = num_of_transformations
+
+    def get_transformations_sequence(self):
+        """
+        Generise nasumicnu skvenci transformacija
+
+        :param n: Duzina sekvence
+        :return: Sekvenca transformacija
+        """
+        transformations = self.transformations 
+        sequence = []
+        hasO = False
+        hasU = False
+
+        for _ in range(self.n):
+            t = random.choice(transformations)
+            if t == 'o':
+                r = random.randrange(2)
+                t = f'{t}{r}'
+
+                if hasO:
+                    continue
+                hasO = True
+            if t == 'u':
+                r = random.randrange(10, 50)
+                t = f'{t}{r}'
+
+                if hasU:
+                    continue
+                hasU = True
+            sequence.append(t)
+        return sequence
 
 
-def get_transformation_sequence(n: int = 3) -> List[str]:
-    """
-    Generise nasumicnu skvenci transformacija
+class SelectedTransformationsSequence(TransformationSequencePolicy):
+    def __init__(self, transformations):
+        self.transformations_to_return = [t.strip() for t in transformations]
 
-    :param n: Duzina sekvence
-    :return: Sekvenca transformacija
-    """
-    transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
-
-    sequence = []
-    hasO = False
-    hasU = False
-
-    for _ in range(n):
-        t = random.choice(transformations)
-        if t == 'o':
-            r = random.randrange(2)
-            t = f'{t}{r}'
-
-            if hasO:
-                continue
-            hasO = True
-        if t == 'u':
-            r = random.randrange(10, 50)
-            t = f'{t}{r}'
-
-            if hasU:
-                continue
-            hasU = True
-        sequence.append(t)
-    return sequence
+    def get_transformations_sequence(self) -> List[str]:
+        for t in self.transformations_to_return:
+            if t.startswith('o'):
+                num = int(t[1:])
+                assert(num == 0 or num == 1)
+            elif t.startswith('u'):
+                num = int(t[1:])
+                assert(num >= 10 and num < 50)
+        return self.transformations_to_return
 
 
 class Transformator:
@@ -53,7 +80,7 @@ class Transformator:
                  verbosity: int,
                  compiler: str,
                  compiler_options: str,
-                 trans_seq_len: int,
+                 trans_seq: str,
                  max_run_duration: int,
                  parallel_cmake_jobs: int):
 
@@ -61,7 +88,8 @@ class Transformator:
         self.verbosity = verbosity
         self.compiler = compiler
         self.compiler_options = compiler_options
-        self.trans_seq_len = trans_seq_len
+        self.transformation_policy = RandomTransformationSequence(int(trans_seq)) if trans_seq.isnumeric() else SelectedTransformationsSequence(trans_seq.split(','))
+        #self.trans_seq_len = trans_seq_len
         self.max_run_duration = max_run_duration
         self.parallel_cmake_jobs = parallel_cmake_jobs
 
@@ -113,7 +141,7 @@ class Transformator:
         # 1
         shutil.copyfile(c_file, c_file_duplicate)
         self._trace('Transformacija generisanog C programa!', verbosity=1)
-        sequence = get_transformation_sequence(n=self.trans_seq_len)
+        sequence = self.transformation_policy.get_transformations_sequence() 
         with open(f'{seed}.trans.sequence.txt', 'w') as tseq_file:
             for transformation in sequence:
                 tseq_file.write(f'{transformation}\n')
@@ -218,7 +246,7 @@ def run():
     parser.add_argument('--verbosity', help='Increase output verbosity', default=0, type=int)
     parser.add_argument('--compiler', help='gcc or clang', default='gcc', type=str, choices=['gcc', 'clang'])
     parser.add_argument('--compiler-options', help='Compiler options', type=str, default='')
-    parser.add_argument('--trans-seq', help='Length of transformation sequence', type=int, default=3)
+    parser.add_argument('--trans-seq', help='Length of transformation sequence if value provided is a number. Or the exact transfomration sequence if --trans=seq="while, goto, for" for example', type=str, default="3")
     parser.add_argument('--tests', help='Number of tests', type=int, default=3)
     parser.add_argument('--max-duration', help='Maximum program time duration', type=int, default=5)
     parser.add_argument('--parallel_cmake_jobs', help='Number of parallel cmake jobs to build trans library', type=int,
@@ -233,7 +261,7 @@ def run():
         'verbosity': args.verbosity,
         'compiler': args.compiler,
         'compiler_options': args.compiler_options,
-        'trans_seq_len': args.trans_seq,
+        'trans_seq': args.trans_seq,
         'max_run_duration': args.max_duration,
         'parallel_cmake_jobs': args.parallel_cmake_jobs
     }
