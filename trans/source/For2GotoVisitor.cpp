@@ -31,6 +31,8 @@ bool For2GotoVisitor::VisitForStmt(ForStmt *s) {
     naredbe.reserve(7);
     Assert(naredbe.capacity() >= 7, "");
     {
+        // TODO(Marko): init moze biti null
+        // for(;;)
         auto init = s->getInit();
         Assert(init != nullptr, "");
         naredbe.push_back(init);

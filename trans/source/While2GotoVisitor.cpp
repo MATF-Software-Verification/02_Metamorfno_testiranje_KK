@@ -24,8 +24,7 @@ size_t While2GotoVisitor::jedinstveniIdLabelePetlji_ = 0;
 bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) {
 
     trenutiWhile = s;
-    std::cerr << __PRETTY_FUNCTION__ << '\n';
-    std::cerr << id++ << '\n';
+
     Assert(s != nullptr, "Mora biti WhileStmt");
     Assert(kontekstFunkcijaDecl_ != nullptr, "Kontekst funkcija mora biti pronadjena pre transformacije While petlje");
 
@@ -56,17 +55,11 @@ bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) {
     } else if (whileLoopGotoLabels.find(jedinstveniIdLabelePetlji_ + 1) == std::end(whileLoopGotoLabels)){
         // Ako prvi put vidimo WhileStmt napravi jedinstevene goto labele
         // TODO(Marko): Osiguraj jedinstvenost naziva labele
-        std::cerr << "Napravi GotoLabele \n";
         std::string labelaPocetakPetljeNaziv("labela_while_loop_begin");
         labelaPocetakPetljeNaziv.append(std::to_string(++jedinstveniIdLabelePetlji_));
         std::string labelaKrajPetljeNaziv("labela_while_loop_end");
         labelaKrajPetljeNaziv.append(std::to_string(jedinstveniIdLabelePetlji_));
 
-//        auto labelaKrajPetlje =napraviLabelStmt(kontekstFunkcijaDecl_, labelaKrajPetljeNaziv);
-//        Assert(labelaKrajPetlje != nullptr, "");
-
-//        auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labelaPocetakPetljeNaziv);
-//        Assert(labelaPocetakPetlje != nullptr, "");
         whileLoopGotoLabels[jedinstveniIdLabelePetlji_] = WhileLoopLabels{labelaPocetakPetljeNaziv, labelaKrajPetljeNaziv};
 
         return true; // Nastavi obilazak
@@ -116,13 +109,10 @@ bool While2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
 
 bool While2GotoVisitor::TraverseFunctionDecl(FunctionDecl *f)
 {
-    std::cerr << __PRETTY_FUNCTION__ << '\n';
+
 
     kontekstFunkcijaDecl_ = f;
     if (f->hasBody()) {
-        std::cerr << "\n\n";
-        f->dump(llvm::errs());
-        std::cerr << "\n\n";
         MTKVisitor::izracunajDecu(f->getBody());
     }
 

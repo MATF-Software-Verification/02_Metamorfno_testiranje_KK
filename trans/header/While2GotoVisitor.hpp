@@ -10,7 +10,6 @@ public:
     /* Inicijalizacija prepisivaca i konteksta */
     While2GotoVisitor(Rewriter &R, ASTContext &A)
       : MTKVisitor(R, A) {
-        std::cerr << '\n' << __PRETTY_FUNCTION__ << '\n';
     }
     /* Pretvaranje while petlji u goto */
     bool VisitWhileStmt(WhileStmt *s) ;
