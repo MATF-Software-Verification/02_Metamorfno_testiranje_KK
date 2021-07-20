@@ -1,5 +1,5 @@
-#ifndef PREPFOR2GOTO_HPP
-#define PREPFOR2GOTO_HPP
+#ifndef PREPFOR2GOTOVISITOR_HPP
+#define PREPFOR2GOTOVISITOR_HPP
 
 #include "MTKConsumer.hpp"
 
@@ -21,4 +21,4 @@ private:
     FunctionDecl* kontekstFunkcija_;
 };
 
-#endif // PREPFOR2GOTO_HPP
+#endif // PREPFOR2GOTOVISITOR_HPP

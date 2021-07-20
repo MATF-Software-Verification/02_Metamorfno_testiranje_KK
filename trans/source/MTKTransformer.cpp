@@ -18,9 +18,12 @@
 #include "For2GotoVisitor.hpp"
 #include "While2GotoVisitor.hpp"
 #include "Do2GotoVisitor.h"
+#include "PrepWhile2GotoVisitor.hpp"
+#include "PrepFor2GotoVisitor.hpp"
+#include "PrepDo2GotoVisitor.hpp"
+
 #include "MTKTransformer.hpp"
-#include "PrepWhile2Goto.hpp"
-#include "PrepFor2Goto.hpp"
+
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Parse/ParseAST.h"
@@ -141,9 +144,11 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
     } else if (radnja == "goto") {
         trans.primeni(Izmena::PrepWhile2Goto);
         trans.primeni(Izmena::PrepFor2Goto);
+        trans.primeni(Izmena::PrepDo2Goto);
 
-        trans.primeni(Izmena::For2Goto);
         trans.primeni(Izmena::While2Goto);
+        trans.primeni(Izmena::For2Goto);
+        trans.primeni(Izmena::Do2Goto);
     /* Prekid pogresno pokrenutog programa */
     } else return greska(upotreba);
 
@@ -184,6 +189,7 @@ ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     case Izmena::Do2Goto: return new MTKConsumer<Do2GotoVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::PrepFor2Goto: return new MTKConsumer<PrepFor2GotoVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::PrepWhile2Goto: return new MTKConsumer<PrepWhile2GotoVisitor>(*TheRewriter, *TheASTContext);
+    case Izmena::PrepDo2Goto: return new MTKConsumer<PrepDo2GotoVisitor>(*TheRewriter, *TheASTContext);
     }
 }
 

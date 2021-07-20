@@ -42,6 +42,7 @@ public:
         Do2Goto,
         PrepWhile2Goto,
         PrepFor2Goto
+        PrepDo2Goto
     };
 
     /* Prijavljivanje greske u radu */

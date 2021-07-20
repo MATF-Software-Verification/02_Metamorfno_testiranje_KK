@@ -1,26 +1,26 @@
-#include "PrepWhile2Goto.hpp"
+#include "PrepDo2GotoVisitor.hpp"
 #include <unordered_map>
 static size_t id = 0;
-static std::unordered_map<const WhileStmt*, size_t> id_petlje;
+static std::unordered_map<const DoStmt*, size_t> id_petlje;
 
-bool PrepWhile2GotoVisitor::VisitWhileStmt(WhileStmt *s)
+bool PrepDo2GotoVisitor::VisitDoStmt(DoStmt *s)
 {
     ++id;
     id_petlje[s] = id;
     return true;
 }
 
-bool PrepWhile2GotoVisitor::VisitBreakStmt(BreakStmt *s)
+bool PrepDo2GotoVisitor::VisitBreakStmt(BreakStmt *s)
 {
      for (auto it = rods.find(s); it != rods.end(); it = rods.find(it->second)) {
         auto roditelj = it->second;
-        if (const WhileStmt* petlja = dyn_cast<WhileStmt>(roditelj)) {
+        if (const DoStmt* petlja = dyn_cast<DoStmt>(roditelj)) {
             size_t id = id_petlje.find(petlja)->second;
-            std::string nazivGotoLabele("while_loop_end_");
+            std::string nazivGotoLabele("do_loop_end_");
             nazivGotoLabele.append(std::to_string(id));
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcija_, nazivGotoLabele)));
             break;
-        } else if (isa<ForStmt>(*roditelj) || isa<DoStmt>(*roditelj) || isa<SwitchStmt>(*roditelj)) {
+        } else if (isa<ForStmt>(*roditelj) || isa<WhileStmt>(*roditelj) || isa<SwitchStmt>(*roditelj)) {
             break;
         }
     }
@@ -28,24 +28,24 @@ bool PrepWhile2GotoVisitor::VisitBreakStmt(BreakStmt *s)
 
 }
 
-bool PrepWhile2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
+bool PrepDo2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
 {
     for (auto it = rods.find(s); it != rods.end(); it = rods.find(it->second)) {
         auto roditelj = it->second;
-        if (const WhileStmt* petlja = dyn_cast<WhileStmt>(roditelj)) {
+        if (const DoStmt* petlja = dyn_cast<DoStmt>(roditelj)) {
             size_t id = id_petlje.find(petlja)->second;
-            std::string nazivGotoLabele("while_loop_begin_");
+            std::string nazivGotoLabele("do_loop_cond_");
             nazivGotoLabele.append(std::to_string(id));
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcija_, nazivGotoLabele)));
             break;
-        } else if (isa<ForStmt>(*roditelj) || isa<DoStmt>(*roditelj)) {
+        } else if (isa<ForStmt>(*roditelj) || isa<WhileStmt>(*roditelj)) {
             break;
         }
     }
     return true;
 }
 
-bool PrepWhile2GotoVisitor::TraverseFunctionDecl(FunctionDecl *decl)
+bool PrepDo2GotoVisitor::TraverseFunctionDecl(FunctionDecl *decl)
 {
     kontekstFunkcija_ = decl;
     id = 0;
