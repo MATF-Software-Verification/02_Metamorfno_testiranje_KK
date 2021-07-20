@@ -16,55 +16,82 @@
  * goto for_loop_begin_unique_id;
  * for_loop_end_{unique_id};
  ***********************/
-
+#include<iostream>
+#include <memory>
+#if 0
 std::unordered_map<size_t, For2GotoVisitor::ForLoopLabels> For2GotoVisitor::forLoopGotoLabels = {};
 bool For2GotoVisitor::zamenjeniSviBreakIContinueStmt = false;
 size_t For2GotoVisitor::jedinstveniIdLabelePetlji_ = 0;
 
+std::unordered_set<std::string> For2GotoVisitor::vidjeneFunkcije;
+#endif
+
+std::unordered_map<std::string, std::unique_ptr<For2GotoVisitor::FunctionData>> For2GotoVisitor::podaciFunkcije;
+
 /* Posetilac koji for pretvara u while */
 bool For2GotoVisitor::TraverseFunctionDecl(FunctionDecl *f)
 {
-      kontekstFunkcijaDecl_ = f;
+    kontekstFunkcijaDecl_ = f;
+
+    imeTrenutneFunkcije = f->getDeclName().getAsString();
+    std::string imeFUnkcije = imeTrenutneFunkcije;
+    std::cerr << __PRETTY_FUNCTION__ << '\n' << imeTrenutneFunkcije << '\n';
+    bool rezultat = true;
     if (f->hasBody()) {
         MTKVisitor::izracunajDecu(f->getBody());
-    }
+        auto& entry = podaciFunkcije[imeTrenutneFunkcije];
+        if (!entry) {
+            entry = std::make_unique<For2GotoVisitor::FunctionData>();
+        }
 
-    bool rezultat = MTKVisitor::TraverseFunctionDecl(f);
-    if (zamenjeniSviBreakIContinueStmt == false) {
-        jedinstveniIdLabelePetlji_ = 0;
+        if (entry->zamenjeniSviBreakIContinueStmt && entry->prviProlaz) {
+            entry->trenutniRedniBrojPetljeUFunkcijiZaObradu = 0;
+            entry->prviProlaz = false;
+        }
+        rezultat = MTKVisitor::TraverseFunctionDecl(f);
+        Assert(imeFUnkcije == imeTrenutneFunkcije, "Promenilo se ime funkcije, deklaracija u deklaraciji");
+        kontekstFunkcijaDecl_ = f;
+        imeTrenutneFunkcije = f->getDeclName().getAsString();
+        entry->zamenjeniSviBreakIContinueStmt = true;
     }
-    zamenjeniSviBreakIContinueStmt = true; // kada se prvi put prodje kroz ast sve break i continue naredbe su zamenjenje
-    // kada se visitor pozove drugi put pocece da menja while petlje
     return rezultat;
 }
 
 bool For2GotoVisitor::VisitForStmt(ForStmt *s) {
     Assert(s != nullptr, "nema ForStmt");
 
-    if (zamenjeniSviBreakIContinueStmt) {
+    auto& entry = podaciFunkcije.find(imeTrenutneFunkcije)->second;
+    Assert(entry != nullptr, "Mora postojati podataka u trenutnoj funkciji koja se obradjuje!");
+
+    std::cerr << __PRETTY_FUNCTION__ << '\n' << imeTrenutneFunkcije << '\n';
+    std::cerr << "for:" << s->getForLoc().printToString(TheRewriter.getSourceMgr()) << '\n';
+    if (entry->zamenjeniSviBreakIContinueStmt) {
         // Zameni for petlju u goto
         std::vector<Stmt*> noveNaredbe;
         if (auto initStmt = s->getInit()) {
             noveNaredbe.emplace_back(initStmt);
         }
-        auto labele = forLoopGotoLabels.find(++jedinstveniIdLabelePetlji_);
-        Assert(labele != forLoopGotoLabels.end(), "Nema labeli");
-        auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labele->second.forLoopPocetakLabelaNaziv);
-        auto labelaKrajPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labele->second.forLoopKrajLabelaNaziv);
+        size_t id = ++(entry->trenutniRedniBrojPetljeUFunkcijiZaObradu);
+        std::cerr << "zamenjeniVsiBreakiContinueId: " << id << '\n';
+        auto labele = entry->labeleZaPetlju.find(id);
+        Assert(labele != entry->labeleZaPetlju.end(), "Nema labeli");
+
+        auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labele->second.nazivLabelePocetakPetlje);
+        auto labelaKrajPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, labele->second.nazivLabeleKrajPetlje);
 
         noveNaredbe.emplace_back(labelaPocetakPetlje);
 
         if (auto condExpr = s->getCond()) {
-            noveNaredbe.emplace_back(napraviIf(napraviNegaciju(condExpr), napraviGoto(labelaKrajPetlje)));
+            auto ifCond = napraviIf(napraviNegaciju(condExpr), napraviGoto(labelaKrajPetlje));
+            Assert(ifCond, "Nije napravljen ifCond");
+            noveNaredbe.emplace_back(ifCond);
         }
 
         if (auto loopBody = s->getBody()) {
             noveNaredbe.emplace_back(napraviSlozenu({loopBody}));
-        } else {
-            noveNaredbe.emplace_back(napraviNullStmt());
         }
 
-        noveNaredbe.emplace_back(napraviLabelStmt(kontekstFunkcijaDecl_, labele->second.forLoopIncLabelaNaziv));
+        noveNaredbe.emplace_back(napraviLabelStmt(kontekstFunkcijaDecl_, labele->second.nazivLabeleIncPetlje));
         if (auto loopIncr = s->getInc()) {
             noveNaredbe.emplace_back(loopIncr);
         }
@@ -72,21 +99,25 @@ bool For2GotoVisitor::VisitForStmt(ForStmt *s) {
         noveNaredbe.emplace_back(labelaKrajPetlje);
         zameni(s, napraviSlozenu(noveNaredbe));
         return false; // zaustavi oblizak
-    } else if (forLoopGotoLabels.find(jedinstveniIdLabelePetlji_ + 1) == forLoopGotoLabels.end()) {
+    } else if(entry->prviProlaz) {
+        //if (entry->labeleZaPetlju.find(entry->trenutniRedniBrojPetljeUFunkcijiZaObradu + 1) == entry->labeleZaPetlju.end()) {
         // Prvi put
         // Ako prvi put vidimo ForStmt napravi jedinstevene goto labele
         // TODO(Marko): Osiguraj jedinstvenost naziva labele
+        size_t id = ++entry->trenutniRedniBrojPetljeUFunkcijiZaObradu;
+        std::cerr << "prviProlazId: " << id << '\n';
+        std::string id_string = std::to_string(id);
         std::string labelaPocetakPetljeNaziv("labela_for_loop_begin_");
-        labelaPocetakPetljeNaziv.append(std::to_string(++jedinstveniIdLabelePetlji_));
+        labelaPocetakPetljeNaziv.append(id_string);
+
         std::string labelaKrajPetljeNaziv("labela_for_loop_end_");
-        labelaKrajPetljeNaziv.append(std::to_string(jedinstveniIdLabelePetlji_));
+        labelaKrajPetljeNaziv.append(id_string);
 
         std::string labelaIncPetljeNaziv("labela_for_loop_inc_");
-        labelaIncPetljeNaziv.append(std::to_string(jedinstveniIdLabelePetlji_));
+        labelaIncPetljeNaziv.append(id_string);
 
-        forLoopGotoLabels[jedinstveniIdLabelePetlji_] = ForLoopLabels{labelaPocetakPetljeNaziv, labelaIncPetljeNaziv, labelaKrajPetljeNaziv};
+        entry->labeleZaPetlju[id] = ForLoopLabels{labelaPocetakPetljeNaziv, labelaIncPetljeNaziv, labelaKrajPetljeNaziv};
         return true; // nastavi oblizak
-
     }
     return true;
 }
@@ -94,14 +125,16 @@ bool For2GotoVisitor::VisitForStmt(ForStmt *s) {
 
 bool For2GotoVisitor::VisitBreakStmt(BreakStmt *s)
 {
-    if (zamenjeniSviBreakIContinueStmt)
+    auto &entry = podaciFunkcije.find(imeTrenutneFunkcije)->second;
+    if (entry->zamenjeniSviBreakIContinueStmt)
         return true;
 
     for (auto roditeljIter = rods.find(s); roditeljIter != std::end(rods); roditeljIter = rods.find(roditeljIter->second)) {
         auto roditelj = roditeljIter->second;
         if (const ForStmt* forStmtRoditelj = dyn_cast<ForStmt>(roditelj))	{
            // Zameni break sa goto whileStmtRoditelj end loop labelom
-            auto labelaKrajPetljeNaziv = forLoopGotoLabels.find(jedinstveniIdLabelePetlji_)->second.forLoopKrajLabelaNaziv;
+            auto labelaKrajPetljeNaziv = entry->labeleZaPetlju
+                    .find(entry->trenutniRedniBrojPetljeUFunkcijiZaObradu)->second.nazivLabeleKrajPetlje;
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcijaDecl_, labelaKrajPetljeNaziv)));
             break;
         } else if (isa<SwitchStmt>(*roditelj) || isa<WhileStmt>(*roditelj) || isa<DoStmt>(*roditelj)) {
@@ -113,14 +146,16 @@ bool For2GotoVisitor::VisitBreakStmt(BreakStmt *s)
 
 bool For2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
 {
-    if (zamenjeniSviBreakIContinueStmt)
+    auto &entry = podaciFunkcije.find(imeTrenutneFunkcije)->second;
+    if (entry->zamenjeniSviBreakIContinueStmt)
         return true;
 
     for (auto roditeljIter = rods.find(s); roditeljIter != std::end(rods); roditeljIter = rods.find(roditeljIter->second)) {
         auto roditelj = roditeljIter->second;
         if (const ForStmt* forStmtRoditelj = dyn_cast<ForStmt>(roditelj)) {
             // Zameni continue sa goto whileStmtROiditelj begin loop labelonm
-            auto labelaIncPetljeNaziv = forLoopGotoLabels.find(jedinstveniIdLabelePetlji_)->second.forLoopIncLabelaNaziv;
+            auto labelaIncPetljeNaziv = entry->labeleZaPetlju
+                    .find(entry->trenutniRedniBrojPetljeUFunkcijiZaObradu)->second.nazivLabeleIncPetlje;
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcijaDecl_, labelaIncPetljeNaziv)));
             break;
         } else if (isa<WhileStmt>(*roditelj) || isa<DoStmt>(*roditelj)) {
