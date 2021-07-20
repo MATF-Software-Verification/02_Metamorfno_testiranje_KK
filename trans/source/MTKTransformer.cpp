@@ -312,8 +312,8 @@ void MTKTransformer::primeni(Izmena izmena) {
             izmena == Izmena::FinIter ||
             izmena == Izmena::CodeImput ||
             izmena == Izmena::PrepWhile2Goto ||
-            izmena == Izmena::PrepFor2Goto
-
+            izmena == Izmena::PrepFor2Goto ||
+            izmena == Izmena::PrepDo2Goto
             )
             return;
     }

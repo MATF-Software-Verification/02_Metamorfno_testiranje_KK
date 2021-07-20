@@ -41,7 +41,7 @@ public:
         For2Goto,
         Do2Goto,
         PrepWhile2Goto,
-        PrepFor2Goto
+        PrepFor2Goto,
         PrepDo2Goto
     };
 
