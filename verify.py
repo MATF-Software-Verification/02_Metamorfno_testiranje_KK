@@ -14,7 +14,7 @@ from enum import Enum
 
 class TransformationSequencePolicy:
     def __init__(self):
-        self.transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u']
+        self.transformations = ['do', 'while', 'for', 'o', 'if', 'switch', 'iter', 'u', 'goto']
     def get_transformations_sequence(self) -> List[str]:
         pass
     def get_available_transformations(self):

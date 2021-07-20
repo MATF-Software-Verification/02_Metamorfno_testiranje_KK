@@ -31,16 +31,29 @@ def get_csmith_include() -> str:
 
     :return: `include "[REL_PATH]/csmith.h"`
     """
-    assert os.environ['CSMITH_PATH'] is not None, 'Nije podesena "CSMITH_PATH" promenljiva okruzenja!' + \
-                                                  'Procitati csmith/README.md za postavljenje CSMITH_PATH promenljive!'
-    csmith_abs_path = os.environ['CSMITH_PATH']
+    def find(name, path):
+        for root, dirs, files in os.walk(path):
+            if name in files:
+                return os.path.join(root, name)
+
     script_abs_path = os.path.abspath('.')
+     
+    if 'CSMITH_PATH' not in os.environ:
+        csmith_h_path = find('csmith.h', '.')
+        csmith_include = os.path.abspath(os.path.join(script_abs_path, os.path.dirname(csmith_h_path))) 
+        answer = input(f'Podesi CSMITH_PATH na {csmith_include} [Y/n]')
+        if answer.lower() == 'y' or answer.lower() == 'yes':
+            os.environ['CSMITH_PATH'] = csmith_include
+        else:
+            print('Podesite promenljivu okruzenja CSMITH_PATH na include/ direktorijum u kome se nalazi csmith.h')
+            # raise CSmithException('Nije podesena CSMITH_PATH promenljiva okruzenja')
+    assert os.environ['CSMITH_PATH'] is not None, 'Nije podesena "CSMITH_PATH" promenljiva okruzenja! Procitati csmith/README.md za postavljenje CSMITH_PATH promenljive!'
+    csmith_abs_path = os.environ['CSMITH_PATH']
     csmith_include_file = 'csmith.h'
     
     csmith_relative_path = os.path.relpath(csmith_abs_path, script_abs_path)
     csmith_include = f'{csmith_relative_path}/{csmith_include_file}'
     return csmith_include
-
 
 def run_csmith(args: List[str]) -> Tuple[str, int, List[str]]:
     """
