@@ -22,7 +22,7 @@ bool Do2GotoVisitor::VisitDoStmt(DoStmt *s) {
     std::string nazivLabeleCondPetlje("do_loop_cond_");
     nazivLabeleCondPetlje.append(std::to_string(id));
 
-    std::string nazivLabeleKrajPetlje("do_loop_kraj_");
+    std::string nazivLabeleKrajPetlje("do_loop_end_");
     nazivLabeleKrajPetlje.append(std::to_string(id));
 
     auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, nazivLabelePocetakPetlje);
