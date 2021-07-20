@@ -10,6 +10,7 @@ set(CMAKE_MODULE_PATH
 set(CMAKE_C_COMPILER clang-11)
 set(CMAKE_CXX_COMPILER clang++-11)
 
+set(CMAKE_CXX_STANDARD 17)
 execute_process(
   COMMAND llvm-config-11 --cxxflags
   OUTPUT_VARIABLE LibClang_DEFINITIONS)
@@ -59,3 +60,5 @@ target_link_libraries(trans libLLVM-11.so
                         if(CMAKE_BUILD_TYPE MATCHES Debug)
                             add_definitions(-DDEBUG)
                         endif(CMAKE_BUILD_TYPE MATCHES Debug)
+
+add_definitions(-DENABLE_ASSERT)
