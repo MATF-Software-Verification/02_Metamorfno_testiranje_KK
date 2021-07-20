@@ -40,7 +40,8 @@ public:
         While2Goto,
         For2Goto,
         Do2Goto,
-        PrepWhile2Goto
+        PrepWhile2Goto,
+        PrepFor2Goto
     };
 
     /* Prijavljivanje greske u radu */

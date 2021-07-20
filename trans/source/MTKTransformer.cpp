@@ -20,7 +20,7 @@
 #include "Do2GotoVisitor.h"
 #include "MTKTransformer.hpp"
 #include "PrepWhile2Goto.hpp"
-
+#include "PrepFor2Goto.hpp"
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Parse/ParseAST.h"
@@ -139,10 +139,10 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
         postaviVerovatnocu(std::stoull(pogodak[1].str()));
         trans.primeni(Izmena::CodeImput);
     } else if (radnja == "goto") {
-        //trans.primeni(Izmena::For2Goto);
-        //trans.primeni(Izmena::While2Goto);
-        //trans.primeni(Izmena::Do2Goto);
         trans.primeni(Izmena::PrepWhile2Goto);
+        trans.primeni(Izmena::PrepFor2Goto);
+
+        trans.primeni(Izmena::For2Goto);
         trans.primeni(Izmena::While2Goto);
     /* Prekid pogresno pokrenutog programa */
     } else return greska(upotreba);
@@ -182,6 +182,7 @@ ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     case Izmena::While2Goto: return new MTKConsumer<While2GotoVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::For2Goto: return new MTKConsumer<For2GotoVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::Do2Goto: return new MTKConsumer<Do2GotoVisitor>(*TheRewriter, *TheASTContext);
+    case Izmena::PrepFor2Goto: return new MTKConsumer<PrepFor2GotoVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::PrepWhile2Goto: return new MTKConsumer<PrepWhile2GotoVisitor>(*TheRewriter, *TheASTContext);
     }
 }
@@ -303,7 +304,10 @@ void MTKTransformer::primeni(Izmena izmena) {
             izmena == Izmena::If2Switch ||
             izmena == Izmena::Rek2Iter ||
             izmena == Izmena::FinIter ||
-            izmena == Izmena::CodeImput || izmena == Izmena::PrepWhile2Goto
+            izmena == Izmena::CodeImput ||
+            izmena == Izmena::PrepWhile2Goto ||
+            izmena == Izmena::PrepFor2Goto
+
             )
             return;
     }
