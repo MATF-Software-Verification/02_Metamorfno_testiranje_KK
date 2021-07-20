@@ -38,7 +38,9 @@ public:
         Switch2If,
         CodeImput,
         While2Goto,
-        For2Goto
+        For2Goto,
+        Do2Goto,
+        PrepWhile2Goto
     };
 
     /* Prijavljivanje greske u radu */

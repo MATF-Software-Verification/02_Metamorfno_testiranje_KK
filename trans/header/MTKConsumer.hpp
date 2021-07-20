@@ -56,6 +56,8 @@ public:
         return roditeljStmt == nullptr;
     }
 
+
+
     /* Javno cuvanje mape roditelja */
     std::unordered_map<const Stmt *, const Stmt *> rods;
 };

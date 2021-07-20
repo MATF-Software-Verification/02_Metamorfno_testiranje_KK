@@ -529,6 +529,7 @@ ReturnStmt *MTKContext::napraviReturn(bool vrednost) const {
     return napraviReturn(napraviInt(vrednost));
 }
 
+
 GotoStmt *MTKContext::napraviGoto(LabelStmt* labelStmtToJumpTo) const {
     return naHip<GotoStmt>(labelStmtToJumpTo->getDecl(), SourceLocation(), labelStmtToJumpTo->getIdentLoc());
 }
@@ -538,6 +539,18 @@ LabelStmt *MTKContext::napraviLabelStmt(FunctionDecl* kontekst, const std::strin
     auto labelDecl = LabelDecl::Create(TheASTContext, kontekst, SourceLocation(), &labelIdentifer);
     auto labelStmt = naHip<LabelStmt>(labelDecl->getLocation(), labelDecl, naHip<NullStmt>(SourceLocation()));
     return labelStmt;
+}
+
+LabelStmt *MTKContext::napraviLabelStmt(FunctionDecl* kontekst, const std::string &naziv, Stmt* body) const {
+    IdentifierInfo& labelIdentifer = TheASTContext.Idents.get(naziv);
+    auto labelDecl = LabelDecl::Create(TheASTContext, kontekst, SourceLocation(), &labelIdentifer);
+    auto labelStmt = naHip<LabelStmt>(labelDecl->getLocation(), labelDecl, body);
+    return labelStmt;
+}
+
+
+NullStmt* MTKContext::napraviNullStmt() const {
+    return naHip<NullStmt>(SourceLocation());
 }
 
 

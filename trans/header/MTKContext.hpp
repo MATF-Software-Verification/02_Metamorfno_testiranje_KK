@@ -220,7 +220,10 @@ public:
     /* Prebacivanje naredbe na hip */
 
 
-    template<typename Naredba, typename ...Args>
+    LabelStmt *napraviLabelStmt(FunctionDecl* kontekst, const std::string &naziv, Stmt* body) const;
+    NullStmt* napraviNullStmt() const;
+
+        template<typename Naredba, typename ...Args>
     Naredba* naHip(Args&& ...args) const {
         auto rezultat = new (TheASTContext)Naredba(std::forward<Args>(args)...);
         return rezultat;
