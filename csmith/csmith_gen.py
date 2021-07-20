@@ -158,7 +158,7 @@ def test_generated_c_code(compiler: str, output_filename: str, compiler_options:
     warn_filename = filename + '.warn.txt'
     checksum_file = filename + '.checksum.txt'
 
-    completed = saferun(f'{run_command} > {checksum_file}', max_run_duration, keyword=compile_command)
+    completed = saferun(f'{run_command} > {checksum_file}', max_run_duration, keyword='csmith.out')
     if not completed:
         trace('Programu je istekao mandat!')
         for file in [output_filename, checksum_file, warn_filename]:
