@@ -14,23 +14,10 @@ public:
     /* Pretvaranje while petlji u goto */
     bool VisitWhileStmt(WhileStmt *s) ;
 
-    bool VisitBreakStmt(BreakStmt* s);
-
-    bool VisitContinueStmt(ContinueStmt *s);
-
     bool TraverseFunctionDecl(FunctionDecl*);
 private:
-    size_t id{0};
-
-    FunctionDecl *kontekstFunkcijaDecl_;
-    static size_t jedinstveniIdLabelePetlji_;
-    struct WhileLoopLabels {
-        std::string whileLoopPocetakLabelaNaziv;
-        std::string whileLoopKrajLabelaNaziv;
-    };
-    WhileStmt* trenutiWhile{nullptr};
-    static std::unordered_map<size_t, WhileLoopLabels> whileLoopGotoLabels;
-    static std::unordered_set<const Stmt*> netrebaZamena;
+    FunctionDecl* kontekstFunkcija_;
+    std::string nazivKontekstFunkcije_;
 };
 
 #endif
