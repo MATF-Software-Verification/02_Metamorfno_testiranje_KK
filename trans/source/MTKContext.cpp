@@ -283,10 +283,17 @@ Expr *MTKContext::dohvatiCelobrojnu(Expr *izraz) const {
     const auto tip = TheASTContext.IntTy;
     const auto tsi = TheASTContext.getTrivialTypeSourceInfo(tip, SourceLocation());
 
+
+#if LLVM_VERSION < 12
     /* Kastovanje u celobrojni klasicni int */
     return CStyleCastExpr::Create(TheASTContext, tip, VK_RValue,
                                   CK_IntegralCast, izraz, nullptr, tsi,
                                   SourceLocation(), SourceLocation());
+#else
+    return CStyleCastExpr::Create(TheASTContext, tip, VK_RValue,
+                                  CK_IntegralCast, izraz, nullptr, FPOptionsOverride(TheASTContext.getLangOpts()), tsi,
+                                  SourceLocation(), SourceLocation());
+#endif
 }
 
 /* Dohvatanje istinitosne vrednosti */
@@ -340,9 +347,16 @@ CompoundStmt *MTKContext::napraviSlozenu(const std::vector<Stmt *> &naredbe) con
 
 /* Pravljenje uslovne naredbe */
 IfStmt *MTKContext::napraviIf(Expr *ako, Stmt *onda, Stmt *inace) const {
+#if CLANG_VERSION < 12
     return IfStmt::Create(TheASTContext, SourceLocation(),
                           false, nullptr, nullptr, ako,
                           onda, SourceLocation(), inace);
+#else
+     return IfStmt::Create(TheASTContext, SourceLocation(),
+                          false, nullptr, nullptr, ako, SourceLocation(), SourceLocation(),
+                          onda, SourceLocation(), inace);
+
+#endif
 }
 
 /* Pravljenje do petlje */
@@ -388,8 +402,13 @@ DefaultStmt *MTKContext::napraviDefault(Stmt *naredba) const {
 
 /* Pravljenje switch naredbe */
 SwitchStmt *MTKContext::napraviSwitch(Expr *uslov, Stmt *telo) const {
+#if CLANG_VERSION < 12
     const auto sw = SwitchStmt::Create(TheASTContext, nullptr, nullptr, uslov);
-    sw->setBody(telo); return sw;
+#else
+    const auto sw = SwitchStmt::Create(TheASTContext, nullptr, nullptr, uslov, SourceLocation(), SourceLocation());
+#endif
+    sw->setBody(telo);
+    return sw;
 }
 
 /* Pravljenje funkcije */
@@ -464,9 +483,16 @@ FunctionDecl *MTKContext::napraviRefFunkciju(DeclContext *kontekst,
 /* Pravljenje poziva */
 CallExpr *MTKContext::napraviPoziv(FunctionDecl *funkcija,
                                    const std::vector<Expr *> &args) const {
+#if CLANG_VERSION < 12
     return CallExpr::Create(TheASTContext, napraviDeclExpr(funkcija),
                             args, funkcija->getReturnType(),
                             VK_RValue, SourceLocation());
+#else
+    return CallExpr::Create(TheASTContext, napraviDeclExpr(funkcija),
+                            args, funkcija->getReturnType(),
+                            VK_RValue, SourceLocation(), FPOptionsOverride(TheASTContext.getLangOpts()));
+
+#endif
 }
 
 /* Pravljenje ref poziva */

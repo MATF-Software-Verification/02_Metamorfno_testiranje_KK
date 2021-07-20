@@ -7,22 +7,27 @@ set(CMAKE_MODULE_PATH
   "${CMAKE_SOURCE_DIR}/cmake/modules"
 )
 
-set(CMAKE_C_COMPILER clang-11)
-set(CMAKE_CXX_COMPILER clang++-11)
+set(LLVM_VERSION 12)
+set(CLANG_VERSION 12)
+
+add_definitions(-DCLANG_VERSION=${CLANG_VERSION} -DLLVM_VERSION=${LLVM_VERSION})
+
+set(CMAKE_C_COMPILER clang-${CLANG_VERSION})
+set(CMAKE_CXX_COMPILER clang++-${CLANG_VERSION})
 
 set(CMAKE_CXX_STANDARD 17)
 execute_process(
-  COMMAND llvm-config-11 --cxxflags
+  COMMAND llvm-config-${LLVM_VERSION} --cxxflags
   OUTPUT_VARIABLE LibClang_DEFINITIONS)
 
 set(LibClang_DEFINITIONS ${LibClang_DEFINITIONS} "-fno-rtti")
 
 execute_process(
-  COMMAND llvm-config-11 --includedir
+  COMMAND llvm-config-${LLVM_VERSION} --includedir
   OUTPUT_VARIABLE LibClang_INCLUDE_DIR)
 
-set(LibClang_LIBRARY /usr/lib/llvm-11/lib/libclang.so)
-set(LibClang_LINK_PATH /usr/lib/llvm-11/lib)
+set(LibClang_LIBRARY /usr/lib/llvm-${LLVM_VERSION}/lib/libclang.so)
+set(LibClang_LINK_PATH /usr/lib/llvm-${LLVM_VERSION}/lib)
 
 find_library(LibClang_LIBRARY NAMES clang)
 
@@ -43,7 +48,7 @@ link_directories(${LibClang_LINK_PATH})
 file(GLOB trans_code "header/*.hpp" "source/*.cpp" "header/*.h")
 add_executable(trans ${trans_code})
 
-target_link_libraries(trans libLLVM-11.so
+target_link_libraries(trans libLLVM-${LLVM_VERSION}.so
                             libclangTooling.a
                             libclangAnalysis.a
                             libclangAST.a
