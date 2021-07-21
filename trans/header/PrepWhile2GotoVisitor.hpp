@@ -16,6 +16,9 @@ public:
 
     bool TraverseFunctionDecl(FunctionDecl* decl);
 
+    static constexpr const char* WhileLoopBeginLabelPrefixStr = "while_loop_begin_";
+    static constexpr const char* WhileLoopEndLabelPrefixStr = "while_loop_end_";
+
 private:
 
     FunctionDecl* kontekstFunkcija_;

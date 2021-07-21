@@ -16,17 +16,17 @@
  ***********************/
 #include <iostream>
 #include "Assert.hpp"
-
+#include "PrepWhile2GotoVisitor.hpp"
 static std::unordered_map<std::string, size_t> id_trenutne_petlje;
 
 bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) {
 
     size_t id = ++id_trenutne_petlje[nazivKontekstFunkcije_];
 
-    std::string nazivLabelePocetakPetlje("while_loop_begin_");
+    std::string nazivLabelePocetakPetlje(PrepWhile2GotoVisitor::WhileLoopBeginLabelPrefixStr);
     nazivLabelePocetakPetlje.append(std::to_string(id));
 
-    std::string nazivLabeleKrajPetlje("while_loop_end_");
+    std::string nazivLabeleKrajPetlje(PrepWhile2GotoVisitor::WhileLoopEndLabelPrefixStr);
     nazivLabeleKrajPetlje.append(std::to_string(id));
 
     auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcija_, nazivLabelePocetakPetlje);

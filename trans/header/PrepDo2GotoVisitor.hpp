@@ -16,6 +16,9 @@ public:
 
     bool TraverseFunctionDecl(FunctionDecl* decl);
 
+    static constexpr const char* DoLoopBeginLabelPrefixStr = "do_loop_begin_";
+    static constexpr const char* DoLoopCondLabelPrefixStr = "do_loop_cond_";
+    static constexpr const char* DoLoopEndLabelPrefixStr = "do_loop_end_";
 private:
 
     FunctionDecl* kontekstFunkcija_;

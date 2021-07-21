@@ -16,7 +16,7 @@ bool PrepWhile2GotoVisitor::VisitBreakStmt(BreakStmt *s)
         auto roditelj = it->second;
         if (const WhileStmt* petlja = dyn_cast<WhileStmt>(roditelj)) {
             size_t id = id_petlje.find(petlja)->second;
-            std::string nazivGotoLabele("while_loop_end_");
+            std::string nazivGotoLabele(WhileLoopEndLabelPrefixStr);
             nazivGotoLabele.append(std::to_string(id));
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcija_, nazivGotoLabele)));
             break;
@@ -34,7 +34,7 @@ bool PrepWhile2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
         auto roditelj = it->second;
         if (const WhileStmt* petlja = dyn_cast<WhileStmt>(roditelj)) {
             size_t id = id_petlje.find(petlja)->second;
-            std::string nazivGotoLabele("while_loop_begin_");
+            std::string nazivGotoLabele(WhileLoopBeginLabelPrefixStr);
             nazivGotoLabele.append(std::to_string(id));
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcija_, nazivGotoLabele)));
             break;

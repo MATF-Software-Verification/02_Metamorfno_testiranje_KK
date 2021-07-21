@@ -1,6 +1,6 @@
 #include "For2GotoVisitor.hpp"
 #include "Assert.hpp"
-
+#include "PrepFor2GotoVisitor.hpp"
 /***********************
  * Shema transformacije
  * ---------------------
@@ -31,13 +31,13 @@ bool For2GotoVisitor::VisitForStmt(ForStmt *s)
 {
     size_t id = ++id_trenutne_petlje[nazivKontekstFunkcije_];
 
-    std::string nazivLabelePocetak("for_loop_begin_");
+    std::string nazivLabelePocetak(PrepFor2GotoVisitor::ForLoopLabelBeginPrefixStr);
     nazivLabelePocetak.append(std::to_string(id));
 
-    std::string nazivLabeleKraj("for_loop_end_");
+    std::string nazivLabeleKraj(PrepFor2GotoVisitor::ForLoopLabelEndPrefixStr);
     nazivLabeleKraj.append(std::to_string(id));
 
-    std::string nazivLabeleInc("for_loop_inc_");
+    std::string nazivLabeleInc(PrepFor2GotoVisitor::ForLoopLabelIncPrefixStr);
     nazivLabeleInc.append(std::to_string(id));
 
 

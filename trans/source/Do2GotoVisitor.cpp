@@ -1,5 +1,6 @@
 #include "Do2GotoVisitor.h"
 #include "Assert.hpp"
+#include "PrepDo2GotoVisitor.hpp"
 #include<unordered_map>
 static std::unordered_map<const DoStmt*, size_t> id_petlje_trenutne_petlje;
 
@@ -16,13 +17,13 @@ bool Do2GotoVisitor::VisitDoStmt(DoStmt *s) {
 
     size_t id = ++id_petlje_trenutne_petlje[s];
 
-    std::string nazivLabelePocetakPetlje("do_loop_begin_");
+    std::string nazivLabelePocetakPetlje(PrepDo2GotoVisitor::DoLoopBeginLabelPrefixStr);
     nazivLabelePocetakPetlje.append(std::to_string(id));
 
-    std::string nazivLabeleCondPetlje("do_loop_cond_");
+    std::string nazivLabeleCondPetlje(PrepDo2GotoVisitor::DoLoopCondLabelPrefixStr);
     nazivLabeleCondPetlje.append(std::to_string(id));
 
-    std::string nazivLabeleKrajPetlje("do_loop_end_");
+    std::string nazivLabeleKrajPetlje(PrepDo2GotoVisitor::DoLoopEndLabelPrefixStr);
     nazivLabeleKrajPetlje.append(std::to_string(id));
 
     auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, nazivLabelePocetakPetlje);

@@ -16,7 +16,7 @@ bool PrepDo2GotoVisitor::VisitBreakStmt(BreakStmt *s)
         auto roditelj = it->second;
         if (const DoStmt* petlja = dyn_cast<DoStmt>(roditelj)) {
             size_t id = id_petlje.find(petlja)->second;
-            std::string nazivGotoLabele("do_loop_end_");
+            std::string nazivGotoLabele(DoLoopEndLabelPrefixStr);
             nazivGotoLabele.append(std::to_string(id));
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcija_, nazivGotoLabele)));
             break;
@@ -34,7 +34,7 @@ bool PrepDo2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
         auto roditelj = it->second;
         if (const DoStmt* petlja = dyn_cast<DoStmt>(roditelj)) {
             size_t id = id_petlje.find(petlja)->second;
-            std::string nazivGotoLabele("do_loop_cond_");
+            std::string nazivGotoLabele(DoLoopCondLabelPrefixStr);
             nazivGotoLabele.append(std::to_string(id));
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcija_, nazivGotoLabele)));
             break;
