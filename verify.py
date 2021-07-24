@@ -293,16 +293,16 @@ def run():
                 if not os.path.exists(f'{storage_path}/{seed}'):
                     trace('Transformacija c program...')
                     passed_test, sequence = transformator.transform(seed)
-                    test_history[seed] = passed_test, sequence
-                    if passed_test:
+                    if passed_test:  # Proslo je izvrsavanje programa
                         trace('Uporedjivanje sumi...')
                         passed_test = verify(seed)
-                    if not passed_test:
+                    if not passed_test:  # Nije proslo izvrsavanje programa
                         trace('Test nije prosao :(')
                         trace('Cuvanje informacija o testu...')
                         save_test_info(storage_path, seed)
                     else:
                         trace('Test je prosao :)')
+                    test_history[seed] = passed_test, sequence
 
                     iteration += 1
                 else:
