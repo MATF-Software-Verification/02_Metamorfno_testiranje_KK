@@ -17,11 +17,11 @@ sudo apt install g++-10 clang-11 libclang-11-dev llvm-11-dev clang-format-11 qtb
 Korišćeni sistem izgradnje je [CMake](https://cmake.org/).
 
 ## Upustvo za koriscenje skripte :neckbeard:
-Sve biblioteke su iz standardne `python` biblioteke. Pokretanje: 
+Sve biblioteke su iz standardne `python` biblioteke. Preporučena verzija za `python` je `3.9+`. Pokretanje: 
 - `python verify.py`, odnosno:
 - `python3 verify.py`
 
-U tom slucaju se skripti pokrece sa podrazumevanim vrednostima za parametre. Primer izlaza:
+U tom slucaju se skripti pokreće sa podrazumevanim vrednostima za parametre. Primer izlaza:
 ```
 [verify-transformator]: Prevodjenje transformator biblioteke!
 ...
@@ -62,7 +62,7 @@ metamorfnog testiranja. Svaka iteracija podrazumeva generisanje C programa preko
   Ukoliko se kod uspešno prevodi i daje identičan izlat, onda se smatra da je test prošao. U suprotnom je 
   test pao i čuva se u `storage` direktorijumu.
 
-**Opcije:
+**Opcije**:
 - `verbosity`: Ispisuju se dodatne informacije pri izvršavanju skripti što je korisno pri debagovanju. U ovom slučaju
 se ispisuju informacije o izabranim transformacijama nad testu. Veći broj odgovara većem broju detalja.
 - `compiler`: Da li se koristi `gcc` ili `clang`.
