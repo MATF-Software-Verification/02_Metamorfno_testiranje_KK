@@ -275,7 +275,7 @@ def run():
         'parallel_cmake_jobs': args.parallel_cmake_jobs
     }
 
-    seeds = [int(s) for s in args.seeds.split(',')]
+    seeds = [int(s) for s in args.seeds.split(',')] if args.seeds is not None else []
     n_seeds = len(seeds)
 
     with Transformator(**transformator_params) as transformator:
