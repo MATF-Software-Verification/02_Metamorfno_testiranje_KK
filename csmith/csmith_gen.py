@@ -5,8 +5,7 @@ import re
 import sys
 import random
 from typing import List, Tuple
-from csmith.timeout import saferun, kill_remaining_zombies
-import atexit
+from csmith.timeout import saferun
 
 
 MAX_RUN_DURATION = 5
@@ -47,7 +46,9 @@ def get_csmith_include() -> str:
         else:
             print('Podesite promenljivu okruzenja CSMITH_PATH na include/ direktorijum u kome se nalazi csmith.h')
             # raise CSmithException('Nije podesena CSMITH_PATH promenljiva okruzenja')
-    assert os.environ['CSMITH_PATH'] is not None, 'Nije podesena "CSMITH_PATH" promenljiva okruzenja! Procitati csmith/README.md za postavljenje CSMITH_PATH promenljive!'
+    assert os.environ['CSMITH_PATH'] is not None, \
+        'Nije podesena "CSMITH_PATH" promenljiva okruzenja!' + \
+        'Procitati csmith/README.md za postavljenje CSMITH_PATH promenljive!'
     csmith_abs_path = os.environ['CSMITH_PATH']
     csmith_include_file = 'csmith.h'
     
@@ -55,7 +56,8 @@ def get_csmith_include() -> str:
     csmith_include = f'{csmith_relative_path}/{csmith_include_file}'
     return csmith_include
 
-def run_csmith(args: List[str]) -> Tuple[str, int, List[str]]:
+
+def run_csmith(args: List[str], seed: int = None) -> Tuple[str, int, List[str]]:
     """
     Generise nasumican C program uz pomoc CSmith alata.
 
@@ -78,7 +80,8 @@ def run_csmith(args: List[str]) -> Tuple[str, int, List[str]]:
         del args[seed_index+1]
         del args[seed_index]
     except ValueError:
-        seed = random.randrange(sys.maxsize)
+        if seed is None:
+            seed = random.randrange(sys.maxsize)
 
     # csmith odbacuje sve argumente sem '-s' i '-o'
     csmith_args.append('-s')
@@ -178,13 +181,15 @@ def run(seed: int = None, compiler: str = 'gcc', compiler_options: str = '', max
     if max_run_duration is None:
         max_run_duration = MAX_RUN_DURATION
 
+    final_seed = None
     while not passed_test:
         csmith_include = get_csmith_include()
-        output_filename, seed, args = run_csmith(args)
+        output_filename, final_seed, args = run_csmith(args, seed)
         replace_csmith_include(output_filename, csmith_include)
         passed_test = test_generated_c_code(compiler, output_filename, compiler_options, max_run_duration)
+        seed = None
 
-    return seed
+    return final_seed
 
 
 if __name__ == '__main__':

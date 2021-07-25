@@ -259,6 +259,7 @@ def run():
     parser.add_argument('--max-duration', help='Maximum program time duration', type=int, default=5)
     parser.add_argument('--parallel_cmake_jobs', help='Number of parallel cmake jobs to build trans library', type=int,
                         default=1)
+    parser.add_argument('--seeds', help='List of seeds', type=str, default=None)
     args = parser.parse_args()
 
     storage_path = 'storage'
@@ -274,8 +275,10 @@ def run():
         'parallel_cmake_jobs': args.parallel_cmake_jobs
     }
 
+    seeds = [int(s) for s in args.seeds.split(',')]
+    n_seeds = len(seeds)
+
     with Transformator(**transformator_params) as transformator:
-        seed = None
         iteration = 1
         max_iteration = args.tests
 
@@ -285,10 +288,12 @@ def run():
             trace(f'Iteracija {iteration}:')
             try:
                 trace('Generisanje C programa...')
+                seed = seeds[iteration-1] if iteration <= n_seeds else None
                 seed = csmith_gen.run(
                     compiler=args.compiler,
                     compiler_options=args.compiler_options,
-                    max_run_duration=args.max_duration
+                    max_run_duration=args.max_duration,
+                    seed=seed
                 )
                 if not os.path.exists(f'{storage_path}/{seed}'):
                     trace('Transformacija c program...')
