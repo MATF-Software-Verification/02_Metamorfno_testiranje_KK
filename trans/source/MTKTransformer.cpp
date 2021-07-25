@@ -157,7 +157,7 @@ int MTKTransformer::obradi(int argc, const char *argv[]) {
 
     /* Lepo formatiranje novog koda */
     std::ostringstream buffer;
-    buffer << "clang-format-11 -i " << nova;
+    buffer << "clang-format-12 -i " << nova;
     std::system(buffer.str().c_str());
 
     /* Normalno zavrsavanje programa */
@@ -237,7 +237,7 @@ bool MTKTransformer::izmeniKod(Izmena izmena) {
 void MTKTransformer::proveri() const {
     /* Pokusaj prevodjenja ulaza */
     std::ostringstream buffer;
-    buffer << "clang-11 -fsyntax-only " << stara << " 2>/dev/null";
+    buffer << "clang-12 -fsyntax-only " << stara << " 2>/dev/null";
     const auto ret
         = std::system(buffer.str().c_str());
 
