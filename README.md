@@ -55,11 +55,11 @@ U tom slucaju se skripti pokreće sa podrazumevanim vrednostima za parametre. Pr
 
 **Objašnjenje:**
 U prvom koraku se prevodi biblioteka za transformacije (cmake build), a tek nakon toga se izvršavaju iteracije
-metamorfnog testiranja. Svaka iteracija podrazumeva generisanje C programa preko `CSmith` alata. Alat generise
-  nasumični C kod (koji ne mora da se razvršava). Izlaz iz ovog programa je suma koji je izračunata nizom
+metamorfnog testiranja. Svaka iteracija podrazumeva generisanje C programa preko `CSmith` alata. Alat generiše
+  nasumični C kod (koji ne mora da se završava). Izlaz iz ovog programa je suma koji je izračunata nizom
   nekih nasumičnih operacija. Ukoliko se kod sigurno završava (ovo se proverava prevođenjem i pokretanjem), 
   onda se izvršava niz transformacija nad kodom. Nakon toga se transformisani C kod prevodi i pokreće opet.
-  Ukoliko se kod uspešno prevodi i daje identičan izlat, onda se smatra da je test prošao. U suprotnom je 
+  Ukoliko se kod uspešno prevodi i daje identičan izlaz, onda se smatra da je test prošao. U suprotnom je 
   test pao i čuva se u `storage` direktorijumu.
 
 **Opcije**:
