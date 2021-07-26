@@ -42,7 +42,8 @@ public:
         Do2Goto,
         PrepWhile2Goto,
         PrepFor2Goto,
-        PrepDo2Goto
+        PrepDo2Goto,
+        Identitet
     };
 
     /* Prijavljivanje greske u radu */

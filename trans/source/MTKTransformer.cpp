@@ -21,6 +21,7 @@
 #include "PrepWhile2GotoVisitor.hpp"
 #include "PrepFor2GotoVisitor.hpp"
 #include "PrepDo2GotoVisitor.hpp"
+#include "IdentityVisitor.hpp"
 
 #include "MTKTransformer.hpp"
 
@@ -190,6 +191,7 @@ ASTConsumer *MTKTransformer::odaberiTransformator(Izmena izmena) {
     case Izmena::PrepFor2Goto: return new MTKConsumer<PrepFor2GotoVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::PrepWhile2Goto: return new MTKConsumer<PrepWhile2GotoVisitor>(*TheRewriter, *TheASTContext);
     case Izmena::PrepDo2Goto: return new MTKConsumer<PrepDo2GotoVisitor>(*TheRewriter, *TheASTContext);
+    default: return new MTKConsumer<IdentityVisitor>(*TheRewriter, *TheASTContext);
     }
 }
 
