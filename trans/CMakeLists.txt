@@ -46,7 +46,7 @@ include_directories(
 link_directories(${LibClang_LINK_PATH})
 
 file(GLOB trans_code "header/*.hpp" "source/*.cpp" "header/*.h")
-add_executable(trans ${trans_code})
+add_executable(trans source/main/main.cpp ${trans_code})
 
 target_link_libraries(trans libLLVM-${LLVM_VERSION}.so
                             libclangTooling.a
