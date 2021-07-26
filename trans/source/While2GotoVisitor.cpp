@@ -41,6 +41,7 @@ bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) {
     noveNaredbe.emplace_back(labelaPocetakPetlje);
     noveNaredbe.emplace_back(ifCond);
     noveNaredbe.emplace_back(teloPetlje);
+    noveNaredbe.emplace_back(napraviGoto(labelaPocetakPetlje)); // <-- u refaktorisanju sam ovo zaboravio!
     noveNaredbe.emplace_back(labelaKrajPetlje);
 
     zameni(s, napraviSlozenu(noveNaredbe));
