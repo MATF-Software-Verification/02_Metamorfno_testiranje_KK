@@ -23,10 +23,10 @@ bool While2GotoVisitor::VisitWhileStmt(WhileStmt *s) {
 
     size_t id = ++id_trenutne_petlje[nazivKontekstFunkcije_];
 
-    std::string nazivLabelePocetakPetlje(PrepWhile2GotoVisitor::WhileLoopBeginLabelPrefixStr);
+    std::string nazivLabelePocetakPetlje(nazivKontekstFunkcije_ + "_" + PrepWhile2GotoVisitor::WhileLoopBeginLabelPrefixStr);
     nazivLabelePocetakPetlje.append(std::to_string(id));
 
-    std::string nazivLabeleKrajPetlje(PrepWhile2GotoVisitor::WhileLoopEndLabelPrefixStr);
+    std::string nazivLabeleKrajPetlje(nazivKontekstFunkcije_ + "_" +PrepWhile2GotoVisitor::WhileLoopEndLabelPrefixStr);
     nazivLabeleKrajPetlje.append(std::to_string(id));
 
     auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcija_, nazivLabelePocetakPetlje);

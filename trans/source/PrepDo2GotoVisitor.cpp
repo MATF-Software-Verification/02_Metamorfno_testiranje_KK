@@ -16,7 +16,7 @@ bool PrepDo2GotoVisitor::VisitBreakStmt(BreakStmt *s)
         auto roditelj = it->second;
         if (const DoStmt* petlja = dyn_cast<DoStmt>(roditelj)) {
             size_t id = id_petlje.find(petlja)->second;
-            std::string nazivGotoLabele(DoLoopEndLabelPrefixStr);
+            std::string nazivGotoLabele(nazivKontekstFunkcije_ + "_" + DoLoopEndLabelPrefixStr);
             nazivGotoLabele.append(std::to_string(id));
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcija_, nazivGotoLabele)));
             break;
@@ -34,7 +34,7 @@ bool PrepDo2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
         auto roditelj = it->second;
         if (const DoStmt* petlja = dyn_cast<DoStmt>(roditelj)) {
             size_t id = id_petlje.find(petlja)->second;
-            std::string nazivGotoLabele(DoLoopCondLabelPrefixStr);
+            std::string nazivGotoLabele(nazivKontekstFunkcije_ + "_" + DoLoopCondLabelPrefixStr);
             nazivGotoLabele.append(std::to_string(id));
             zameni(s, napraviGoto(napraviLabelStmt(kontekstFunkcija_, nazivGotoLabele)));
             break;
@@ -48,6 +48,7 @@ bool PrepDo2GotoVisitor::VisitContinueStmt(ContinueStmt *s)
 bool PrepDo2GotoVisitor::TraverseFunctionDecl(FunctionDecl *decl)
 {
     kontekstFunkcija_ = decl;
+    nazivKontekstFunkcije_ = decl->getDeclName().getAsString();
     id = 0;
     id_petlje.clear();
     return MTKVisitor::TraverseFunctionDecl(decl);

@@ -22,6 +22,7 @@ public:
 private:
 
     FunctionDecl* kontekstFunkcija_;
+    std::string nazivKontekstFunkcije_;
 };
 
 #endif // PREPFOR2GOTOVISITOR_HPP

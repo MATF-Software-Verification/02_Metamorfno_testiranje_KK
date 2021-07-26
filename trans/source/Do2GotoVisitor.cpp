@@ -17,13 +17,13 @@ bool Do2GotoVisitor::VisitDoStmt(DoStmt *s) {
 
     size_t id = ++id_petlje_trenutne_petlje[s];
 
-    std::string nazivLabelePocetakPetlje(PrepDo2GotoVisitor::DoLoopBeginLabelPrefixStr);
+    std::string nazivLabelePocetakPetlje(nazivKontekstFunkcije_ + "_" + PrepDo2GotoVisitor::DoLoopBeginLabelPrefixStr);
     nazivLabelePocetakPetlje.append(std::to_string(id));
 
-    std::string nazivLabeleCondPetlje(PrepDo2GotoVisitor::DoLoopCondLabelPrefixStr);
+    std::string nazivLabeleCondPetlje(nazivKontekstFunkcije_ + "_" + PrepDo2GotoVisitor::DoLoopCondLabelPrefixStr);
     nazivLabeleCondPetlje.append(std::to_string(id));
 
-    std::string nazivLabeleKrajPetlje(PrepDo2GotoVisitor::DoLoopEndLabelPrefixStr);
+    std::string nazivLabeleKrajPetlje(nazivKontekstFunkcije_ + "_" + PrepDo2GotoVisitor::DoLoopEndLabelPrefixStr);
     nazivLabeleKrajPetlje.append(std::to_string(id));
 
     auto labelaPocetakPetlje = napraviLabelStmt(kontekstFunkcijaDecl_, nazivLabelePocetakPetlje);

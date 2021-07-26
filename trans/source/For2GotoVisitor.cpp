@@ -31,13 +31,13 @@ bool For2GotoVisitor::VisitForStmt(ForStmt *s)
 {
     size_t id = ++id_trenutne_petlje[nazivKontekstFunkcije_];
 
-    std::string nazivLabelePocetak(PrepFor2GotoVisitor::ForLoopLabelBeginPrefixStr);
+    std::string nazivLabelePocetak( nazivKontekstFunkcije_ + "_" + PrepFor2GotoVisitor::ForLoopLabelBeginPrefixStr);
     nazivLabelePocetak.append(std::to_string(id));
 
-    std::string nazivLabeleKraj(PrepFor2GotoVisitor::ForLoopLabelEndPrefixStr);
+    std::string nazivLabeleKraj(nazivKontekstFunkcije_ + "_" + PrepFor2GotoVisitor::ForLoopLabelEndPrefixStr);
     nazivLabeleKraj.append(std::to_string(id));
 
-    std::string nazivLabeleInc(PrepFor2GotoVisitor::ForLoopLabelIncPrefixStr);
+    std::string nazivLabeleInc(nazivKontekstFunkcije_ + "_" + PrepFor2GotoVisitor::ForLoopLabelIncPrefixStr);
     nazivLabeleInc.append(std::to_string(id));
 
 
