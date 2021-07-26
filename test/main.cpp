@@ -28,6 +28,7 @@ private Q_SLOTS:
     void rekurzija();
     void umetanje();
     void greske();
+    void gotos();
 };
 
 /* Pozicioniranje u konstruktoru */
@@ -38,7 +39,7 @@ MTKTest::MTKTest() {
 /* Prevodjenje zadatog programa */
 void MTKTest::prevedi(const std::string &in,
                       const std::string &out) {
-    const auto prev = "clang-11 -O0 " + in
+    const auto prev = "clang-12 -O0 " + in
                       + " 2> /dev/null";
     std::system(prev.c_str());
 
@@ -209,6 +210,15 @@ void MTKTest::greske() {
         const int argc = sizeof argv / sizeof *argv;
         QVERIFY(MTKTransformer::obradi(argc, argv));
     }
+}
+
+void MTKTest::gotos()
+{
+    chdir("goto");
+    prevedi("loops.c", "output.txt");
+    akcija("loops.c", "loops_goto.c", "goto");
+
+    chdir("..");
 }
 
 /* Automatski main sa jednom klasom */

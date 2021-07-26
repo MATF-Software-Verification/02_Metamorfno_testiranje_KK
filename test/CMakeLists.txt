@@ -60,7 +60,7 @@ file(GLOB trans_headers "../trans/header/*.hpp")
 
 add_executable(trans_test main.cpp ${trans_sources} ${trans_headers})
 
-add_test(NAME trans_test COMMAND trans_test)
+add_test(NAME test COMMAND trans_test)
 
 target_link_libraries(trans_test libLLVM-${LLVM_VERSION}.so
                            libclangTooling.a
