@@ -10,21 +10,26 @@ set(CMAKE_MODULE_PATH
 set(CMAKE_C_COMPILER gcc-10)
 set(CMAKE_CXX_COMPILER g++-10)
 
+set(LLVM_VERSION 12)
+set(CLANG_VERSION 12)
+
+add_definitions(-DCLANG_VERSION=${CLANG_VERSION} -DLLVM_VERSION=${LLVM_VERSION})
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 
 execute_process(
-  COMMAND llvm-config-11 --cxxflags
+  COMMAND llvm-config-${LLVM_VERSION} --cxxflags
   OUTPUT_VARIABLE LibClang_DEFINITIONS)
 
 set(LibClang_DEFINITIONS ${LibClang_DEFINITIONS} "-fno-rtti")
 
 execute_process(
-  COMMAND llvm-config-11 --includedir
+  COMMAND llvm-config-${LLVM_VERSION} --includedir
   OUTPUT_VARIABLE LibClang_INCLUDE_DIR)
 
-set(LibClang_LIBRARY /usr/lib/llvm-11/lib/libclang.so)
-set(LibClang_LINK_PATH /usr/lib/llvm-11/lib)
+set(LibClang_LIBRARY /usr/lib/llvm-${LLVM_VERSION}/lib/libclang.so)
+set(LibClang_LINK_PATH /usr/lib/llvm-${LLVM_VERSION}/lib)
 
 find_library(LibClang_LIBRARY NAMES clang)
 
@@ -50,50 +55,14 @@ set(CMAKE_AUTOMOC ON)
 
 enable_testing(true)
 
-add_executable(test main.cpp
-                    ../trans/header/MTKConsumer.hpp
-                    ../trans/header/MTKContext.hpp
-                    ../trans/source/MTKContext.cpp
-                    ../trans/header/MTKTransformer.hpp
-                    ../trans/source/MTKTransformer.cpp
-                    ../trans/header/Do2ForVisitor.hpp
-                    ../trans/source/Do2ForVisitor.cpp
-                    ../trans/header/For2DoVisitor.hpp
-                    ../trans/source/For2DoVisitor.cpp
-                    ../trans/header/For2WhileVisitor.hpp
-                    ../trans/source/For2WhileVisitor.cpp
-                    ../trans/header/While2DoVisitor.hpp
-                    ../trans/source/While2DoVisitor.cpp
-                    ../trans/header/While2ForVisitor.hpp
-                    ../trans/source/While2ForVisitor.cpp
-                    ../trans/header/PrepForVisitor.hpp
-                    ../trans/source/PrepForVisitor.cpp
-                    ../trans/header/PrepIfVisitor.hpp
-                    ../trans/source/PrepIfVisitor.cpp
-                    ../trans/header/PrepIffVisitor.hpp
-                    ../trans/source/PrepIffVisitor.cpp
-                    ../trans/header/PrepSwitchVisitor.hpp
-                    ../trans/source/PrepSwitchVisitor.cpp
-                    ../trans/header/If2SwitchVisitor.hpp
-                    ../trans/source/If2SwitchVisitor.cpp
-                    ../trans/header/Switch2IfVisitor.hpp
-                    ../trans/source/Switch2IfVisitor.cpp
-                    ../trans/header/Rek2IterVisitor.hpp
-                    ../trans/source/Rek2IterVisitor.cpp
-                    ../trans/header/FinIterVisitor.hpp
-                    ../trans/source/FinIterVisitor.cpp
-                    ../trans/header/Iter2RekVisitor.hpp
-                    ../trans/source/Iter2RekVisitor.cpp
-                    ../trans/header/FinRekVisitor.hpp
-                    ../trans/source/FinRekVisitor.cpp
-                    ../trans/header/LoopUnrollVisitor.hpp
-                    ../trans/source/LoopUnrollVisitor.cpp
-                    ../trans/header/CodeImputVisitor.hpp
-                    ../trans/source/CodeImputVisitor.cpp)
+file(GLOB trans_sources "../trans/source/*.cpp")
+file(GLOB trans_headers "../trans/header/*.hpp")
 
-add_test(NAME test COMMAND test)
+add_executable(trans_test main.cpp ${trans_sources} ${trans_headers})
 
-target_link_libraries(test libLLVM-11.so
+add_test(NAME trans_test COMMAND trans_test)
+
+target_link_libraries(trans_test libLLVM-${LLVM_VERSION}.so
                            libclangTooling.a
                            libclangAnalysis.a
                            libclangAST.a
