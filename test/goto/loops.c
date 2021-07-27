@@ -154,7 +154,7 @@ int main() {
     {
         int x = 0;
         int i = 0;
-        while (i < 3) {
+        while (++i < 3) {
             int j = 1;
             for (; j < 4; ++j) {
                 continue;
@@ -167,7 +167,7 @@ int main() {
     {
         int x = 0;
         int i = 0;
-        while (i < 3) {
+        while (++i < 3) {
             int j = 1;
             for (; j < 4; ++j, --x) {
                 break;
@@ -190,6 +190,7 @@ int main() {
                 case 1:break;
                 case 0: continue; break;
                 }
+                break;
             }
             continue;
             ++x;
@@ -199,6 +200,64 @@ int main() {
 
 
 #if ENABLE_WHILE_DO
+    {
+        int i = 0;
+        while (i++ < 10) {
+            do {
+                continue;
+                break;
+            }while(++i < 5);
+            continue;
+        }
+    }
 
+    {
+        int i = 0;
+        do {
+            while(++i < 5) {
+                continue;
+                break;
+            }
+            continue;
+            break;
+        }while(++i < 10);
+    }
+#endif
+
+#if ENABLE_FOR_DO
+
+    {
+        int i = 4;
+        for (; i > 0; --i) {
+            do {
+                switch(i) {
+                case 1: break;
+                }
+                --i;
+                if (i > 10)
+                    break;
+            } while(i > 1);
+            continue;
+            if (i > 10)
+                break;
+        }
+    }
+
+    {
+        int i = 5;
+        do {
+            if (i == 10)
+                break;
+            if (i == 2)
+                continue;
+            for (int j = 3; j <6; ++j ) {
+                if (j == 5)
+                    continue;
+                if(j == 10)
+                    break;
+            }
+            continue;
+        }while(--i > 0);
+    }
 #endif
 }
