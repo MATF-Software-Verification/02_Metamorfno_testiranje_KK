@@ -7,7 +7,15 @@
 #define ENABLE_WHILE_DO 1
 #define ENABLE_FOR_DO 1
 
+#define ENABLE_WHILE_FOR_DO 1
+
 #include <assert.h>
+
+#define CASE()
+
+#define BLOCK(name)
+#define ENDBLOC(name)
+
 
 int main() {
 #if ENABLE_WHILE
@@ -52,7 +60,8 @@ int main() {
     {
         int i = 0;
         int x = 4;
-        for (i = 0; i < 5; ++i) {
+        for (i = 0; i < 5; ) {
+            ++i;
             continue;
             --x;
         }
@@ -94,4 +103,102 @@ int main() {
     }
 #endif
 
+#if ENABLE_DO
+    {
+        int i = 0;
+        do {
+            ++i;
+        }while(i < 5);
+    }
+    {
+        int i = 0;
+        do {
+            ++i;
+            switch(i) {
+            case 1: break;
+            case 2:continue;
+            }
+        }while(i < 5);
+    }
+
+     {
+        int i = 0;
+        do {
+            ++i;
+            switch(i) {
+            case 1: break;
+            case 2:continue;
+            }
+        }while(i < 5);
+
+     }
+
+    {
+        int k = 2;
+        do {
+            switch (k) {
+            case 3:
+
+                break;
+            default:
+                ++k;
+                continue;
+            }
+            break;
+            ++k;
+        }while(k < 4);
+    }
+#endif
+
+#if ENABLE_WHILE_FOR
+    {
+        int x = 0;
+        int i = 0;
+        while (i < 3) {
+            int j = 1;
+            for (; j < 4; ++j) {
+                continue;
+                ++x;
+            }
+            continue;
+            ++x;
+        }
+    }
+    {
+        int x = 0;
+        int i = 0;
+        while (i < 3) {
+            int j = 1;
+            for (; j < 4; ++j, --x) {
+                break;
+                ++x;
+            }
+            break;
+            ++x;
+        }
+    }
+
+    {
+        int x = 0;
+        int i = 0;
+        for (i = 2; i > 0; --i) {
+            break;
+            int x = 2;
+            while (i > 0) {
+                --x;
+                switch(x) {
+                case 1:break;
+                case 0: continue; break;
+                }
+            }
+            continue;
+            ++x;
+        }
+    }
+#endif
+
+
+#if ENABLE_WHILE_DO
+
+#endif
 }
