@@ -211,9 +211,8 @@ bool MTKTransformer::izmeniKod(Izmena izmena) {
         /* Upisivanje rezultata */
         izlaz << std::string(RewriteBuf->begin(), RewriteBuf->end());
     } else if (stara == nova) {
-        if ((izmena != Izmena::FinRek ||
-             FinRekVisitor::imaloPosla()) &&
-             izmena != Izmena::PrepFor) return true;
+        if (FinRekVisitor::imaloPosla() &&
+            izmena != Izmena::PrepFor) return true;
     } else {
         /* Otvaranje ulazne i izlazne datoteke */
         std::ifstream ulaz(stara);

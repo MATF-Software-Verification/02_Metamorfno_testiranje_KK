@@ -37,11 +37,11 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2021-04-21 06:30:02</td>
+            <td class="headerValue">2021-08-08 22:39:01</td>
             <td></td>
             <td class="headerItem">Functions:</td>
-            <td class="headerCovTableEntry">8</td>
-            <td class="headerCovTableEntry">8</td>
+            <td class="headerCovTableEntry">11</td>
+            <td class="headerCovTableEntry">11</td>
             <td class="headerCovTableEntryHi">100.0 %</td>
           </tr>
           <tr>
@@ -92,8 +92,8 @@
 <a name="14"><span class="lineNum">      14 </span>                :            : public:</a>
 <a name="15"><span class="lineNum">      15 </span>                :            :     /* Konstruktor inicijalizuje posetioca</a>
 <a name="16"><span class="lineNum">      16 </span>                :            :      * prepisivacem i kontekstom parsiranja */</a>
-<a name="17"><span class="lineNum">      17 </span>                :<span class="lineCov">         95 :     MTKContext(Rewriter &amp;R, ASTContext &amp;A)</span></a>
-<a name="18"><span class="lineNum">      18 </span>                :<span class="lineCov">         95 :       : TheRewriter(R), TheASTContext(A) {}</span></a>
+<a name="17"><span class="lineNum">      17 </span>                :<span class="lineCov">        139 :     MTKContext(Rewriter &amp;R, ASTContext &amp;A)</span></a>
+<a name="18"><span class="lineNum">      18 </span>                :<span class="lineCov">        139 :       : TheRewriter(R), TheASTContext(A) {}</span></a>
 <a name="19"><span class="lineNum">      19 </span>                :            : </a>
 <a name="20"><span class="lineNum">      20 </span>                :            :     /* Staticka inicijalizacija posecenih funkcija */</a>
 <a name="21"><span class="lineNum">      21 </span>                :            :     static void postaviFje(std::unordered_set&lt;std::string&gt; &amp;f);</a>
@@ -292,30 +292,39 @@
 <a name="214"><span class="lineNum">     214 </span>                :            :     /* Pravljenje return naredbe */</a>
 <a name="215"><span class="lineNum">     215 </span>                :            :     ReturnStmt *napraviReturn(bool vrednost) const;</a>
 <a name="216"><span class="lineNum">     216 </span>                :            : </a>
-<a name="217"><span class="lineNum">     217 </span>                :            :     /* Prebacivanje naredbe na hip */</a>
-<a name="218"><span class="lineNum">     218 </span>                :            :     template &lt;typename Naredba&gt;</a>
-<a name="219"><span class="lineNum">     219 </span>                :<span class="lineCov">        433 :     Naredba *naHip(const Naredba &amp;nar) const {</span></a>
-<a name="220"><span class="lineNum">     220 </span>                :<span class="lineCov">        433 :         const auto adresa = static_cast&lt;Naredba *&gt;(malloc(sizeof(nar)));</span></a>
-<a name="221"><span class="lineNum">     221 </span>                :<span class="lineCov">        433 :         memcpy(adresa, &amp;nar, sizeof(nar)); return adresa;</span></a>
-<a name="222"><span class="lineNum">     222 </span>                :            :     }</a>
-<a name="223"><span class="lineNum">     223 </span>                :            : </a>
-<a name="224"><span class="lineNum">     224 </span>                :            : protected:</a>
-<a name="225"><span class="lineNum">     225 </span>                :            :     /* Zasticeno cuvanje prepisivaca i konteksta */</a>
-<a name="226"><span class="lineNum">     226 </span>                :            :     Rewriter &amp;TheRewriter;</a>
-<a name="227"><span class="lineNum">     227 </span>                :            :     ASTContext &amp;TheASTContext;</a>
-<a name="228"><span class="lineNum">     228 </span>                :            : </a>
-<a name="229"><span class="lineNum">     229 </span>                :            :     /* Staticko cuvanje posecenih funkcija */</a>
-<a name="230"><span class="lineNum">     230 </span>                :            :     static std::unordered_set&lt;std::string&gt; *fje;</a>
+<a name="217"><span class="lineNum">     217 </span>                :            :     GotoStmt* napraviGoto(LabelStmt* labelToJumpTo) const;</a>
+<a name="218"><span class="lineNum">     218 </span>                :            : </a>
+<a name="219"><span class="lineNum">     219 </span>                :            :     LabelStmt* napraviLabelStmt(FunctionDecl *functionDecl, const std::string&amp; naziv) const;</a>
+<a name="220"><span class="lineNum">     220 </span>                :            :     /* Prebacivanje naredbe na hip */</a>
+<a name="221"><span class="lineNum">     221 </span>                :            : </a>
+<a name="222"><span class="lineNum">     222 </span>                :            : </a>
+<a name="223"><span class="lineNum">     223 </span>                :            :     LabelStmt *napraviLabelStmt(FunctionDecl* kontekst, const std::string &amp;naziv, Stmt* body) const;</a>
+<a name="224"><span class="lineNum">     224 </span>                :            :     NullStmt* napraviNullStmt() const;</a>
+<a name="225"><span class="lineNum">     225 </span>                :            : </a>
+<a name="226"><span class="lineNum">     226 </span>                :            :         template&lt;typename Naredba, typename ...Args&gt;</a>
+<a name="227"><span class="lineNum">     227 </span>                :<span class="lineCov">        744 :     Naredba* naHip(Args&amp;&amp; ...args) const {</span></a>
+<a name="228"><span class="lineNum">     228 </span>                :<span class="lineCov">        744 :         auto rezultat = new (TheASTContext)Naredba(std::forward&lt;Args&gt;(args)...);</span></a>
+<a name="229"><span class="lineNum">     229 </span>                :<span class="lineCov">        744 :         return rezultat;</span></a>
+<a name="230"><span class="lineNum">     230 </span>                :            :     }</a>
 <a name="231"><span class="lineNum">     231 </span>                :            : </a>
-<a name="232"><span class="lineNum">     232 </span>                :            :     /* Staticko cuvanje izlazne datoteke */</a>
-<a name="233"><span class="lineNum">     233 </span>                :            :     static const std::string *dat;</a>
-<a name="234"><span class="lineNum">     234 </span>                :            : </a>
-<a name="235"><span class="lineNum">     235 </span>                :            : private:</a>
-<a name="236"><span class="lineNum">     236 </span>                :            :     /* Poruka da nema slobodnog imena */</a>
-<a name="237"><span class="lineNum">     237 </span>                :            :     static constexpr auto nemaImena = &quot;Nije moguce pronaci slobodno ime!&quot;;</a>
-<a name="238"><span class="lineNum">     238 </span>                :            : };</a>
+<a name="232"><span class="lineNum">     232 </span>                :            : protected:</a>
+<a name="233"><span class="lineNum">     233 </span>                :            :     /* Zasticeno cuvanje prepisivaca i konteksta */</a>
+<a name="234"><span class="lineNum">     234 </span>                :            :     Rewriter &amp;TheRewriter;</a>
+<a name="235"><span class="lineNum">     235 </span>                :            :     ASTContext &amp;TheASTContext;</a>
+<a name="236"><span class="lineNum">     236 </span>                :            : </a>
+<a name="237"><span class="lineNum">     237 </span>                :            :     /* Staticko cuvanje posecenih funkcija */</a>
+<a name="238"><span class="lineNum">     238 </span>                :            :     static std::unordered_set&lt;std::string&gt; *fje;</a>
 <a name="239"><span class="lineNum">     239 </span>                :            : </a>
-<a name="240"><span class="lineNum">     240 </span>                :            : #endif</a>
+<a name="240"><span class="lineNum">     240 </span>                :            :     /* Staticko cuvanje izlazne datoteke */</a>
+<a name="241"><span class="lineNum">     241 </span>                :            :     static const std::string *dat;</a>
+<a name="242"><span class="lineNum">     242 </span>                :            : </a>
+<a name="243"><span class="lineNum">     243 </span>                :            : private:</a>
+<a name="244"><span class="lineNum">     244 </span>                :            :     /* Poruka da nema slobodnog imena */</a>
+<a name="245"><span class="lineNum">     245 </span>                :            :     static constexpr auto nemaImena = &quot;Nije moguce pronaci slobodno ime!&quot;;</a>
+<a name="246"><span class="lineNum">     246 </span>                :            : </a>
+<a name="247"><span class="lineNum">     247 </span>                :            : };</a>
+<a name="248"><span class="lineNum">     248 </span>                :            : </a>
+<a name="249"><span class="lineNum">     249 </span>                :            : #endif</a>
 </pre>
       </td>
     </tr>

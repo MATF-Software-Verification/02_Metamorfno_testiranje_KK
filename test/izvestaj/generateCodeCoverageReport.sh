@@ -60,6 +60,9 @@ if [[ $SOURCE_DIR == */ ]]; then
 fi
 
 # check if there are gcno files in source_dir
+shopt -s globstar
+
+cp **/*.gcno .
 
 if [ ! -e ${SOURCE_DIR}/*.gcno ]; then
     if [ ! -e ${SOURCE_DIR}/Makefile ]; then
@@ -79,9 +82,6 @@ if [ ! -e ${SOURCE_DIR}/*.gcno ]; then
       fi
     fi
 fi
-
-
-
 
 # clear source_dir from gcda files from previous runs
 lcov -z -d $SOURCE_DIR
@@ -104,7 +104,7 @@ lcov --rc lcov_branch_coverage=1  -c -d $SOURCE_DIR -o $TARGET_DIR/coverage-test
 lcov -a $TARGET_DIR/coverage-init.info -a $TARGET_DIR/coverage-test.info --rc lcov_branch_coverage=1 -o $TARGET_DIR/coverage.info 
 
 # remove system files from coverage, because we do not try to cover them
-lcov --rc lcov_branch_coverage=1 -r $TARGET_DIR/coverage.info '**/main.c*' '/usr/*' '*.moc'  '/opt/*' -o $TARGET_DIR/coverage-filtered.info
+lcov --rc lcov_branch_coverage=1 -r $TARGET_DIR/coverage.info '**/main.c*' '/usr/*' '*.moc'  '/opt/*' '**/Assert*' '**/Identity*' -o $TARGET_DIR/coverage-filtered.info
 
 echo ""
 echo "Generate HTML for coverage:"
