@@ -51,7 +51,7 @@ Primer pokretanja (testiranja) programa:
 Na ovaj način će na osnovu koda rekiter.c biti formiran kod samoiter.c koji sadrži isključivo iterativno repno ponavljanje (petlja tipa while).
 
 ## Imputacija koda :new:
-Na kraju, peta implementirana transformacija je imputacija koda. Program umeće (imputira) nove AST čvorove u C kod, menjajući pritom svaki n-ti već postojeći. Za te potrebe koristi se klasa CodeImputVisitor, pri čemu umetnuti kod ne menja semantiku polaznog programa, pošto se suštinski ne izvršava.
+Peta implementirana transformacija je imputacija koda. Program umeće (imputira) nove AST čvorove u C kod, menjajući pritom svaki n-ti već postojeći. Za te potrebe koristi se klasa CodeImputVisitor, pri čemu umetnuti kod ne menja semantiku polaznog programa, pošto se suštinski ne izvršava.
 
 Primer pokretanja (testiranja) transformatora:
 ```
@@ -60,6 +60,15 @@ Primer pokretanja (testiranja) transformatora:
 ```
 
 Na ovaj način će na osnovu koda normal.c biti formiran kod bloated.c koji sadrži mnogo više koda nego što je to neophodno, umetnunog nakon svake treće naredbe.
+
+## Eliminacija petlji:
+Poslednja šesta transformacija je eliminacija petlji. Petlje se eliminišu tako što se transformišu u semantički ekvivalentnu sekvencu labela, uslovnih i bezuslovnih skokova i samo tela petlji. Klase PrepWhile2GotoVisitor, PrepFor2GotoVisitor, PrepDo2GotoVisitor pripremaju telo petlje za transformaciju tako što menjaju break i continue naredbe sa skokovima na odgovarajuće labele petlje u kojima se nalaze. Zatim klase While2GotoVisitor, For2GotoVisitor i Do2GotoVisitor transformišu samu petlju u labele, uslovne i bezuslovne skokove.
+
+Primer pokretanja (testiranja) transformatora
+```
+./ <ulaz> <izlaz> goto
+./trans loops.c out_loops.c goto
+```
 
 ## Podešavanje :memo:
 Primer prevođenja programa sistemom CMake:
